@@ -103,6 +103,20 @@ function createTestModel (signature) {
                           },
                           "myFloat": {
                             "float": {}
+                          },
+                          "myUnion": {
+                            "union": {
+                              "caseA": {
+                                "string": {}
+                              }
+                            }
+                          },
+                          "myStruct": {
+                            "struct": {
+                              "myKeyA": {
+                                "string": {}
+                              }
+                            }
                           }
                         }
                       }
@@ -179,7 +193,26 @@ function createEntries (signature) {
                   "contextual": {
                     "myString": "foo",
                     "myInt": 555,
-                    "myFloat": 5.55
+                    "myFloat": 5.55,
+                    "myUnion": {
+                      "caseA": "myCaseAString"
+                    },
+                    "myStruct": {
+                      "myKeyA": "myStructKeyA"
+                    }
+                  }
+                },
+                "b": {
+                  "contextual": {
+                    "myString": "bar",
+                    "myInt": 999,
+                    "myFloat": 5.55,
+                    "myUnion": {
+                      "caseA": "myCaseAString"
+                    },
+                    "myStruct": {
+                      "myKeyA": "myStructKeyA"
+                    }
                   }
                 }
               }
@@ -212,17 +245,64 @@ function makeMigration (signature) {
               },
               "expression": {
                 "newStruct": {
-                  "myString": {
+                  "myRenamedString": {
                     "field": "myString"
                   },
                   "myInt": {
                     "field": "myInt"
                   },
+                  "myNewInt": {
+                    "floatToInt": {
+                      "field": "myFloat"
+                    }
+                  },
                   "myFloat": {
                     "field": "myFloat"
                   },
-                  "myBool": {
+                  "myNewFloat": {
+                    "add": [
+                      {
+                        "intToFloat": {
+                          "field": "myInt"
+                        }
+                      },
+                      {
+                        "field": "myFloat"
+                      }
+                    ]
+                  },
+                  "myStruct": {
+                    "newStruct": {
+                      "myKeyA": {
+                        "field": {
+                          "name": "myKeyA",
+                          "value": {
+                            "field": "myStruct"
+                          }
+                        }
+                      },
+                      "myKeyB": {
+                        "newInt": 888
+                      }
+                    }
+                  },
+                  "myUnion": {
+                    "newUnion": {
+                      "caseA": {
+                        "assertCase": {
+                          "case": "caseA",
+                          "value": {
+                            "field": "myUnion"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "myNewBool": {
                     "newBool": true
+                  },
+                  "myNewString": {
+                    "newString": "Lorem ipsum"
                   }
                 }
               }
@@ -236,22 +316,36 @@ function makeMigration (signature) {
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
     .afterJSON(function (json) {
-      getAll(signature)
+      getModelEntries(signature)
     })
     .inspectBody()
     .toss();
 }
 
 
-function getAll (signature) {
-  frisby.create('function create entries')
+function getModelEntries (signature) {
+  frisby.create('get model entires')
     .post(KARMA_ENDPOINT, null,
       {
         json: false,
         body: JSON.stringify(
           {
-            "all": {
-              "tag": "testModel"
+            "first": {
+              "filter": {
+                "value": {
+                  "all": {
+                    "tag": "testModel"
+                  }
+                },
+                "expression": {
+                  "equal": [
+                    "foo",
+                    {
+                      "field": "myRenamedString"
+                    }
+                  ]
+                }
+              }
             }
           }
         )
@@ -261,7 +355,109 @@ function getAll (signature) {
     .addHeader('X-Karma-Database', dbName)
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
-    .expectJSON([{"myFloat": 5.55, "myInt": 555, "myString": "foo"}])
+    .expectJSON({
+        "myFloat": 5.55,
+        "myInt": 555,
+        "myNewBool": true,
+        "myNewFloat": 560.55,
+        "myNewInt": 5,
+        "myNewString": "Lorem ipsum",
+        "myRenamedString": "foo",
+        "myStruct": {
+          "myKeyA": "myStructKeyA",
+          "myKeyB": 888
+        },
+        "myUnion": {
+          "caseA": "myCaseAString"
+        }
+      }
+    )
+    .inspectBody()
+    .afterJSON(function (json) {
+      getTestModel(signature)
+    })
+    .toss();
+}
+
+function getTestModel (signature) {
+  frisby.create('get model entires')
+    .post(KARMA_ENDPOINT, null,
+      {
+        json: false,
+        body: JSON.stringify(
+          {
+            "first": {
+              "filter": {
+                "value": {
+                  "all": {
+                    "tag": "_model"
+                  }
+                },
+                "expression": {
+                  "equal": [
+                    {
+                      "refTo": {
+                        "id": {}
+                      }
+                    },
+                    {
+                      "tag": "testModel"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        )
+      }
+    )
+    .addHeader('X-Karma-Signature', signature)
+    .addHeader('X-Karma-Database', dbName)
+    .addHeader('X-Karma-Codec', 'json')
+    .expectStatus(200)
+    .expectJSON({
+        "struct": {
+          "myFloat": {
+            "float": {}
+          },
+          "myInt": {
+            "int": {}
+          },
+          "myNewBool": {
+            "bool": {}
+          },
+          "myNewFloat": {
+            "float": {}
+          },
+          "myNewInt": {
+            "int": {}
+          },
+          "myNewString": {
+            "string": {}
+          },
+          "myRenamedString": {
+            "string": {}
+          },
+          "myStruct": {
+            "struct": {
+              "myKeyA": {
+                "string": {}
+              },
+              "myKeyB": {
+                "int": {}
+              }
+            }
+          },
+          "myUnion": {
+            "union": {
+              "caseA": {
+                "string": {}
+              }
+            }
+          }
+        }
+      }
+    )
     .inspectBody()
     .toss();
 }
