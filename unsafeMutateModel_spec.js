@@ -193,14 +193,14 @@ function createEntries (signature) {
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
     .afterJSON(function (json) {
-      getAll(signature)
+      makeMigration(signature)
     })
     .toss();
 }
 
 
 function makeMigration (signature) {
-  frisby.create('function create entries')
+  frisby.create('function unsafeMutateModel')
     .post(KARMA_ENDPOINT, null,
       {
         json: false,
@@ -208,7 +208,7 @@ function makeMigration (signature) {
           {
             "unsafeMutateModel": {
               "model": {
-                "tag": 'testModel'
+                "tag": "testModel"
               },
               "expression": {
                 "newStruct": {
