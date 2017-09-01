@@ -95,6 +95,11 @@ function createTestModel (signature) {
                     "testModel": {
                       "contextual": {
                         "struct": {
+                          "myOptional": {
+                            "optional": {
+                              "string": {}
+                            }
+                          },
                           "myString": {
                             "string": {}
                           },
@@ -203,6 +208,7 @@ function createEntries (signature) {
               "values": {
                 "a": {
                   "newStruct": {
+                    "myOptional": "optional string",
                     "myString": {
                       "newString": "foo"
                     },
