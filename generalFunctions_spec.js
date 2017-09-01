@@ -563,6 +563,35 @@ function execQueries (signature) {
     .toss();
 
 
+  frisby.create('function assertPresent')
+    .post(KARMA_ENDPOINT, null,
+      {
+        json: false,
+        body: JSON.stringify({
+          "assertPresent": {
+            "key": {
+              "name": "notFoo",
+              "value": {
+                "newMap": {"foo": "bar"}
+              }
+            }
+          }
+        })
+      }
+    )
+    .addHeader('X-Karma-Signature', signature)
+    .addHeader('X-Karma-Database', dbName)
+    .addHeader('X-Karma-Codec', 'json')
+    .expectStatus(400)
+    .expectJSON({
+      "message": "assertPresent: value was absent",
+      "program": {"assertPresent": {"key": {"name": "notFoo", "value": {"newMap": {"foo": "bar"}}}}},
+      "type": "execution"
+    })
+    .inspectBody()
+    .toss();
+
+
   frisby.create('function assertCase')
     .post(KARMA_ENDPOINT, null,
       {
@@ -616,5 +645,68 @@ function execQueries (signature) {
         "type": "compilation"
       }
     )
+    .toss();
+
+
+  frisby.create('function with. function field with string as argument (uses id)')
+    .post(KARMA_ENDPOINT, null,
+      {
+        json: false,
+        body: JSON.stringify({
+          "with": {
+            "value": {
+              "newStruct": {
+                "valA": 4,
+                "valB": -6
+              }
+            },
+            "return": {
+              "add": [
+                {
+                  "field": "valA"
+                },
+                {
+                  "field": "valB"
+                }
+              ]
+            }
+          }
+        })
+      }
+    )
+    .addHeader('X-Karma-Signature', signature)
+    .addHeader('X-Karma-Database', dbName)
+    .addHeader('X-Karma-Codec', 'json')
+    .expectStatus(200)
+    .afterJSON(function (json) {
+      expect(json).toBe(-2);
+    })
+    .toss();
+
+
+  frisby.create('function isPresent')
+    .post(KARMA_ENDPOINT, null,
+      {
+        json: false,
+        body: JSON.stringify({
+          "isPresent": {
+            "key": {
+              "name": "notFoo",
+              "value": {
+                "newMap": {"foo": "bar"}
+              }
+            }
+          }
+        })
+      }
+    )
+    .addHeader('X-Karma-Signature', signature)
+    .addHeader('X-Karma-Database', dbName)
+    .addHeader('X-Karma-Codec', 'json')
+    .expectStatus(200)
+    .afterJSON(function (json) {
+      expect(json).toBe(false);
+    })
+    .inspectBody()
     .toss();
 }
