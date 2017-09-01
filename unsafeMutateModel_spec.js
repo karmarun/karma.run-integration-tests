@@ -117,6 +117,18 @@ function createTestModel (signature) {
                                 "string": {}
                               }
                             }
+                          },
+                          "myRef": {
+                            "ref": "refTestModel"
+                          }
+                        }
+                      }
+                    },
+                    "refTestModel": {
+                      "contextual": {
+                        "struct": {
+                          "myString": {
+                            "string": {}
                           }
                         }
                       }
@@ -190,28 +202,80 @@ function createEntries (signature) {
               },
               "values": {
                 "a": {
-                  "contextual": {
-                    "myString": "foo",
-                    "myInt": 555,
-                    "myFloat": 5.55,
+                  "newStruct": {
+                    "myString": {
+                      "newString": "foo"
+                    },
+                    "myInt": {
+                      "newInt": 555
+                    },
+                    "myFloat": {
+                      "newFloat": 5.55
+                    },
                     "myUnion": {
-                      "caseA": "myCaseAString"
+                      "newUnion": {
+                        "caseA": "myCaseAString"
+                      }
                     },
                     "myStruct": {
-                      "myKeyA": "myStructKeyA"
+                      "newStruct": {
+                        "myKeyA": {
+                          "newString": "myStructKeyA"
+                        }
+                      }
+                    },
+                    "myRef": {
+                      "create": {
+                        "in": {
+                          "tag": "refTestModel"
+                        },
+                        "value": {
+                          "newStruct": {
+                            "myString": {
+                              "newString": "test reference"
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 },
                 "b": {
-                  "contextual": {
-                    "myString": "bar",
-                    "myInt": 999,
-                    "myFloat": 5.55,
+                  "newStruct": {
+                    "myString": {
+                      "newString": "bar"
+                    },
+                    "myInt": {
+                      "newInt": 555
+                    },
+                    "myFloat": {
+                      "newFloat": 5.55
+                    },
                     "myUnion": {
-                      "caseA": "myCaseAString"
+                      "newUnion": {
+                        "caseA": "myCaseAString"
+                      }
                     },
                     "myStruct": {
-                      "myKeyA": "myStructKeyA"
+                      "newStruct": {
+                        "myKeyA": {
+                          "newString": "myStructKeyA"
+                        }
+                      }
+                    },
+                    "myRef": {
+                      "create": {
+                        "in": {
+                          "tag": "refTestModel"
+                        },
+                        "value": {
+                          "newStruct": {
+                            "myString": {
+                              "newString": "test reference"
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -245,6 +309,9 @@ function makeMigration (signature) {
               },
               "expression": {
                 "newStruct": {
+                  "myString": {
+                    "field": "myString"
+                  },
                   "myRenamedString": {
                     "field": "myString"
                   },
@@ -298,6 +365,9 @@ function makeMigration (signature) {
                       }
                     }
                   },
+                  "myRef": {
+                    "field": "myRef"
+                  },
                   "myNewBool": {
                     "newBool": true
                   },
@@ -316,14 +386,14 @@ function makeMigration (signature) {
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
     .afterJSON(function (json) {
-      getModelEntries(signature)
+      getTestModelRecords(signature)
     })
     .inspectBody()
     .toss();
 }
 
 
-function getModelEntries (signature) {
+function getTestModelRecords (signature) {
   frisby.create('get model entires')
     .post(KARMA_ENDPOINT, null,
       {
@@ -341,7 +411,7 @@ function getModelEntries (signature) {
                   "equal": [
                     "foo",
                     {
-                      "field": "myRenamedString"
+                      "field": "myString"
                     }
                   ]
                 }
@@ -355,7 +425,8 @@ function getModelEntries (signature) {
     .addHeader('X-Karma-Database', dbName)
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
-    .expectJSON({
+    .expectJSON(
+      {
         "myFloat": 5.55,
         "myInt": 555,
         "myNewBool": true,
@@ -363,19 +434,40 @@ function getModelEntries (signature) {
         "myNewInt": 5,
         "myNewString": "Lorem ipsum",
         "myRenamedString": "foo",
-        "myStruct": {
-          "myKeyA": "myStructKeyA",
-          "myKeyB": 888
-        },
-        "myUnion": {
-          "caseA": "myCaseAString"
-        }
+        "myString": "foo",
+        "myStruct": {"myKeyA": "myStructKeyA", "myKeyB": 888},
+        "myUnion": {"caseA": "myCaseAString"}
       }
     )
+    .expectJSONTypes({
+      myRef: String
+    })
     .inspectBody()
     .afterJSON(function (json) {
       getTestModel(signature)
     })
+    .toss();
+}
+
+function getRefModelRecords (signature) {
+  frisby.create('get model entires')
+    .post(KARMA_ENDPOINT, null,
+      {
+        json: false,
+        body: JSON.stringify(
+          {
+            "all": {
+              "tag": "refTestModel"
+            }
+          }
+        )
+      }
+    )
+    .addHeader('X-Karma-Signature', signature)
+    .addHeader('X-Karma-Database', dbName)
+    .addHeader('X-Karma-Codec', 'json')
+    .expectStatus(200)
+    .inspectBody()
     .toss();
 }
 
@@ -415,7 +507,8 @@ function getTestModel (signature) {
     .addHeader('X-Karma-Database', dbName)
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
-    .expectJSON({
+    .expectJSON(
+      {
         "struct": {
           "myFloat": {
             "float": {}
@@ -436,6 +529,9 @@ function getTestModel (signature) {
             "string": {}
           },
           "myRenamedString": {
+            "string": {}
+          },
+          "myString": {
             "string": {}
           },
           "myStruct": {
