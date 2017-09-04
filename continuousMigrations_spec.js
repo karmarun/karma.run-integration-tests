@@ -160,6 +160,21 @@ function createTestModel (signature) {
                           },
                           "myRef": {
                             "ref": "refTestModel"
+                          },
+                          "myNewBool": {
+                            "bool": {}
+                          },
+                          "myNewInt": {
+                            "int": {}
+                          },
+                          "myNewFloat": {
+                            "float": {}
+                          },
+                          "myRenamedString": {
+                            "string": {}
+                          },
+                          "myNewString": {
+                            "string": {}
                           }
                         }
                       }
@@ -390,12 +405,41 @@ function makeMigration (signature) {
                                   "newInt": 888
                                 },
                                 "invalidKey": {
-                                  "newString": "invalid"
+                                  "newString": "this struct key should not fit in the new model"
                                 }
                               }
                             },
                             "myRef": {
                               "field": "myRef"
+                            },
+                            "myNewBool": {
+                              "newBool": true
+                            },
+                            "myNewInt": {
+                              "floatToInt": {
+                                "field": "myFloat"
+                              }
+                            },
+                            "myNewFloat": {
+                              "add": [
+                                {
+                                  "intToFloat": {
+                                    "field": "myInt"
+                                  }
+                                },
+                                {
+                                  "field": "myFloat"
+                                }
+                              ]
+                            },
+                            "myRenamedString": {
+                              "field": "myString"
+                            },
+                            "myNewString": {
+                              "newString": "Lorem ipsum"
+                            },
+                            "invalidKey": {
+                              "newString": "this struct key should not fit in the new model"
                             }
                           }
                         }
@@ -412,42 +456,14 @@ function makeMigration (signature) {
     .addHeader('X-Karma-Signature', signature)
     .addHeader('X-Karma-Database', dbName)
     .addHeader('X-Karma-Codec', 'json')
-    .expectStatus(400)
-    .afterJSON(function (json) {
-      getTestModelRecords(signature)
-    })
-    .inspectBody()
-    .toss();
-}
-
-
-function getTestModelRecords (signature) {
-  frisby.create('get model entires')
-    .post(KARMA_ENDPOINT, null,
-      {
-        json: false,
-        body: JSON.stringify(
-          {
-            "all": {
-              "tag": "testModelMigrated"
-            }
-          }
-        )
-      }
-    )
-    .addHeader('X-Karma-Signature', signature)
-    .addHeader('X-Karma-Database', dbName)
-    .addHeader('X-Karma-Codec', 'json')
-    .waits(10 * 1000)
     .expectStatus(200)
-    .inspectBody()
     .afterJSON(function (json) {
-      getTestModel(signature)
+      getTestModelDefinition(signature)
     })
     .toss();
 }
 
-function getTestModel (signature) {
+function getTestModelDefinition (signature) {
   frisby.create('get model entires')
     .post(KARMA_ENDPOINT, null,
       {
@@ -482,54 +498,177 @@ function getTestModel (signature) {
     .addHeader('X-Karma-Signature', signature)
     .addHeader('X-Karma-Database', dbName)
     .addHeader('X-Karma-Codec', 'json')
+    .waits(10 * 1000)
     .expectStatus(200)
-    // .expectJSON(
-    //   {
-    //     "struct": {
-    //       "myFloat": {
-    //         "float": {}
-    //       },
-    //       "myInt": {
-    //         "int": {}
-    //       },
-    //       "myNewBool": {
-    //         "bool": {}
-    //       },
-    //       "myNewFloat": {
-    //         "float": {}
-    //       },
-    //       "myNewInt": {
-    //         "int": {}
-    //       },
-    //       "myNewString": {
-    //         "string": {}
-    //       },
-    //       "myRenamedString": {
-    //         "string": {}
-    //       },
-    //       "myString": {
-    //         "string": {}
-    //       },
-    //       "myStruct": {
-    //         "struct": {
-    //           "myKeyA": {
-    //             "string": {}
-    //           },
-    //           "myKeyB": {
-    //             "int": {}
-    //           }
-    //         }
-    //       },
-    //       "myUnion": {
-    //         "union": {
-    //           "caseA": {
-    //             "string": {}
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-    // )
-    .inspectBody()
+    .expectJSON(
+      {
+        "struct": {
+          "myString": {
+            "string": {}
+          },
+          "myInt": {
+            "int": {}
+          },
+          "myFloat": {
+            "float": {}
+          },
+          "myUnion": {
+            "union": {
+              "caseA": {
+                "string": {}
+              }
+            }
+          },
+          "myStruct": {
+            "struct": {
+              "myKeyA": {
+                "string": {}
+              },
+              "myKeyB": {
+                "int": {}
+              }
+            }
+          },
+          "myNewBool": {
+            "bool": {}
+          },
+          "myNewInt": {
+            "int": {}
+          },
+          "myNewFloat": {
+            "float": {}
+          },
+          "myRenamedString": {
+            "string": {}
+          },
+          "myNewString": {
+            "string": {}
+          }
+        }
+      }
+    )
+    .expectJSONTypes({
+      struct: {
+        myRef: {
+          ref: String
+        }
+      }
+    })
+    .afterJSON(function () {
+      getTestModelMigratedFooRecord(signature)
+      getTestModelMigratedBarRecord(signature)
+    })
+    .toss();
+}
+
+function getTestModelMigratedFooRecord (signature) {
+  frisby.create('getTestModelMigratedFooRecord')
+    .post(KARMA_ENDPOINT, null,
+      {
+        json: false,
+        body: JSON.stringify(
+          {
+            "first": {
+              "filter": {
+                "value": {
+                  "all": {
+                    "tag": "testModelMigrated"
+                  }
+                },
+                "expression": {
+                  "equal": [
+                    "foo",
+                    {
+                      "field": "myString"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        )
+      }
+    )
+    .addHeader('X-Karma-Signature', signature)
+    .addHeader('X-Karma-Database', dbName)
+    .addHeader('X-Karma-Codec', 'json')
+    .expectStatus(200)
+    .expectJSON({
+        "myFloat": 5.55,
+        "myInt": 555,
+        "myNewBool": true,
+        "myNewFloat": 560.55,
+        "myNewInt": 5,
+        "myNewString": "Lorem ipsum",
+        "myRenamedString": "foo",
+        "myString": "foo",
+        "myStruct": {
+          "myKeyA": "myStructKeyA",
+          "myKeyB": 888
+        },
+        "myUnion": {
+          "caseA": "myCaseAString"
+        }
+      }
+    )
+    .expectJSONTypes({
+      myRef: String
+    })
+    .toss();
+}
+
+function getTestModelMigratedBarRecord (signature) {
+  frisby.create('getTestModelMigratedBarRecord')
+    .post(KARMA_ENDPOINT, null,
+      {
+        json: false,
+        body: JSON.stringify(
+          {
+            "first": {
+              "filter": {
+                "value": {
+                  "all": {
+                    "tag": "testModelMigrated"
+                  }
+                },
+                "expression": {
+                  "equal": [
+                    "bar",
+                    {
+                      "field": "myString"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        )
+      }
+    )
+    .addHeader('X-Karma-Signature', signature)
+    .addHeader('X-Karma-Database', dbName)
+    .addHeader('X-Karma-Codec', 'json')
+    .expectStatus(200)
+    .expectJSON({
+        "myFloat": 5.55,
+        "myInt": 555,
+        "myNewBool": true,
+        "myNewFloat": 560.55,
+        "myNewInt": 5,
+        "myNewString": "Lorem ipsum",
+        "myRenamedString": "bar",
+        "myString": "bar",
+        "myStruct": {
+          "myKeyA": "myStructKeyA",
+          "myKeyB": 888
+        },
+        "myUnion": {
+          "caseA": "myCaseAString"
+        }
+      }
+    )
+    .expectJSONTypes({
+      myRef: String
+    })
     .toss();
 }
