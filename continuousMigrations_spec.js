@@ -11,6 +11,7 @@ const dbName = 'db-api-test-continuous-migrations'
 const dbNameBody = '"' + dbName + '"'
 
 let signature = null;
+let modelIds = null;
 
 deleteDb();
 
@@ -238,6 +239,34 @@ function createTestModel (signature) {
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
     .afterJSON(function (json) {
+      getModelIDs(signature)
+    })
+    .toss();
+}
+
+function getModelIDs (signature) {
+  frisby.create('function create model')
+    .post(KARMA_ENDPOINT, null,
+      {
+        json: false,
+        body: JSON.stringify(
+          {
+            "all": {
+              "tag": "_tag"
+            }
+          }
+        )
+      }
+    )
+    .addHeader('X-Karma-Signature', signature)
+    .addHeader('X-Karma-Database', dbName)
+    .addHeader('X-Karma-Codec', 'json')
+    .expectStatus(200)
+    .afterJSON(function (json) {
+      modelIds = json.reduce(function (obj1, obj2) {
+        obj1[obj2.tag] = obj2.model
+        return obj1
+      }, {})
       createEntries(signature)
     })
     .toss();
@@ -463,6 +492,7 @@ function makeMigration (signature) {
     .toss();
 }
 
+
 function getTestModelDefinition (signature) {
   frisby.create('get model entires')
     .post(KARMA_ENDPOINT, null,
@@ -543,17 +573,13 @@ function getTestModelDefinition (signature) {
           },
           "myNewString": {
             "string": {}
+          },
+          "myRef": {
+            "ref": modelIds.refTestModel
           }
         }
       }
     )
-    .expectJSONTypes({
-      struct: {
-        myRef: {
-          ref: String
-        }
-      }
-    })
     .afterJSON(function () {
       getTestModelMigratedFooRecord(signature)
       getTestModelMigratedBarRecord(signature)
