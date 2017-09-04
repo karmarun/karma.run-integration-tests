@@ -103,6 +103,28 @@ function createTestModel (signature) {
                           },
                           "myFloat": {
                             "float": {}
+                          },
+                          "myUnion": {
+                            "union": {
+                              "caseA": {
+                                "string": {}
+                              }
+                            }
+                          },
+                          "myStruct": {
+                            "struct": {
+                              "myKeyA": {
+                                "string": {}
+                              }
+                            }
+                          },
+                          "myOptional": {
+                            "optional": {
+                              "string": {}
+                            }
+                          },
+                          "myRef": {
+                            "ref": "refTestModel"
                           }
                         }
                       }
@@ -118,6 +140,28 @@ function createTestModel (signature) {
                           },
                           "myFloat": {
                             "float": {}
+                          },
+                          "myUnion": {
+                            "union": {
+                              "caseA": {
+                                "string": {}
+                              }
+                            }
+                          },
+                          "myStruct": {
+                            "struct": {
+                              "myKeyA": {
+                                "string": {}
+                              }
+                            }
+                          },
+                          "myOptional": {
+                            "optional": {
+                              "string": {}
+                            }
+                          },
+                          "myRef": {
+                            "ref": "refTestModel"
                           }
                         }
                       }
@@ -209,9 +253,75 @@ function createEntries (signature) {
                     },
                     "myFloat": {
                       "newFloat": 5.55
+                    },
+                    "myUnion": {
+                      "newUnion": {
+                        "caseA": "myCaseAString"
+                      }
+                    },
+                    "myStruct": {
+                      "newStruct": {
+                        "myKeyA": {
+                          "newString": "myStructKeyA"
+                        }
+                      }
+                    },
+                    "myOptional": "optional string",
+                    "myRef": {
+                      "create": {
+                        "in": {
+                          "tag": "refTestModel"
+                        },
+                        "value": {
+                          "newStruct": {
+                            "myString": {
+                              "newString": "test reference"
+                            }
+                          }
+                        }
+                      }
                     }
                   }
-                }
+                },
+                "b": {
+                  "newStruct": {
+                    "myString": {
+                      "newString": "bar"
+                    },
+                    "myInt": {
+                      "newInt": 555
+                    },
+                    "myFloat": {
+                      "newFloat": 5.55
+                    },
+                    "myUnion": {
+                      "newUnion": {
+                        "caseA": "myCaseAString"
+                      }
+                    },
+                    "myStruct": {
+                      "newStruct": {
+                        "myKeyA": {
+                          "newString": "myStructKeyA"
+                        }
+                      }
+                    },
+                    "myRef": {
+                      "create": {
+                        "in": {
+                          "tag": "refTestModel"
+                        },
+                        "value": {
+                          "newStruct": {
+                            "myString": {
+                              "newString": "test reference"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
               }
             }
           }
@@ -264,6 +374,18 @@ function makeMigration (signature) {
                             },
                             "myFloat": {
                               "field": "myFloat"
+                            },
+                            "myUnion": {
+                              "field": "myUnion"
+                            },
+                            "myStruct": {
+                              "field": "myStruct"
+                            },
+                            "myOptional": {
+                              "field": "myOptional"
+                            },
+                            "myRef": {
+                              "field": "myRef"
                             }
                           }
                         }
@@ -282,9 +404,35 @@ function makeMigration (signature) {
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
     .afterJSON(function (json) {
-      //getTestModelRecord(signature)
+      getTestModelRecords(signature)
     })
     .inspectBody()
     .toss();
 }
 
+
+function getTestModelRecords (signature) {
+  frisby.create('get model entires')
+    .post(KARMA_ENDPOINT, null,
+      {
+        json: false,
+        body: JSON.stringify(
+          {
+            "all": {
+              "tag": "testModelMigrated"
+            }
+          }
+        )
+      }
+    )
+    .addHeader('X-Karma-Signature', signature)
+    .addHeader('X-Karma-Database', dbName)
+    .addHeader('X-Karma-Codec', 'json')
+    .waits(10 * 1000)
+    .expectStatus(200)
+    .inspectBody()
+    .afterJSON(function (json) {
+
+    })
+    .toss();
+}
