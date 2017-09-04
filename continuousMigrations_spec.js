@@ -12,6 +12,7 @@ const dbNameBody = '"' + dbName + '"'
 
 let signature = null;
 let modelIds = null;
+let refTestModelEntries = null;
 
 deleteDb();
 
@@ -244,6 +245,7 @@ function createTestModel (signature) {
     .toss();
 }
 
+
 function getModelIDs (signature) {
   frisby.create('function create model')
     .post(KARMA_ENDPOINT, null,
@@ -267,13 +269,57 @@ function getModelIDs (signature) {
         obj1[obj2.tag] = obj2.model
         return obj1
       }, {})
-      createEntries(signature)
+      createRefTestModelEntries(signature)
     })
     .toss();
 }
 
 
-function createEntries (signature) {
+function createRefTestModelEntries (signature) {
+  frisby.create('function create entries')
+    .post(KARMA_ENDPOINT, null,
+      {
+        json: false,
+        body: JSON.stringify(
+          {
+            "createMultiple": {
+              "in": {
+                "tag": "refTestModel"
+              },
+              "values": {
+                "foo": {
+                  "newStruct": {
+                    "myString": {
+                      "newString": "foo"
+                    }
+                  }
+                },
+                "bar": {
+                  "newStruct": {
+                    "myString": {
+                      "newString": "bar"
+                    }
+                  }
+                },
+              }
+            }
+          }
+        )
+      }
+    )
+    .addHeader('X-Karma-Signature', signature)
+    .addHeader('X-Karma-Database', dbName)
+    .addHeader('X-Karma-Codec', 'json')
+    .expectStatus(200)
+    .afterJSON(function (json) {
+      refTestModelEntries = json
+      createTestModelEntries(signature)
+    })
+    .toss();
+}
+
+
+function createTestModelEntries (signature) {
   frisby.create('function create entries')
     .post(KARMA_ENDPOINT, null,
       {
@@ -285,7 +331,7 @@ function createEntries (signature) {
                 "tag": "testModel"
               },
               "values": {
-                "a": {
+                "foo": {
                   "newStruct": {
                     "myString": {
                       "newString": "foo"
@@ -310,22 +356,16 @@ function createEntries (signature) {
                     },
                     "myOptional": "optional string",
                     "myRef": {
-                      "create": {
-                        "in": {
+                      "newRef": {
+                        "model": {
                           "tag": "refTestModel"
                         },
-                        "value": {
-                          "newStruct": {
-                            "myString": {
-                              "newString": "test reference"
-                            }
-                          }
-                        }
+                        "id": refTestModelEntries.foo
                       }
                     }
                   }
                 },
-                "b": {
+                "bar": {
                   "newStruct": {
                     "myString": {
                       "newString": "bar"
@@ -349,17 +389,11 @@ function createEntries (signature) {
                       }
                     },
                     "myRef": {
-                      "create": {
-                        "in": {
+                      "newRef": {
+                        "model": {
                           "tag": "refTestModel"
                         },
-                        "value": {
-                          "newStruct": {
-                            "myString": {
-                              "newString": "test reference"
-                            }
-                          }
-                        }
+                        "id": refTestModelEntries.bar
                       }
                     }
                   }
@@ -587,6 +621,7 @@ function getTestModelDefinition (signature) {
     .toss();
 }
 
+
 function getTestModelMigratedFooRecord (signature) {
   frisby.create('getTestModelMigratedFooRecord')
     .post(KARMA_ENDPOINT, null,
@@ -619,29 +654,30 @@ function getTestModelMigratedFooRecord (signature) {
     .addHeader('X-Karma-Database', dbName)
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
-    .expectJSON({
-        "myFloat": 5.55,
-        "myInt": 555,
-        "myNewBool": true,
-        "myNewFloat": 560.55,
-        "myNewInt": 5,
-        "myNewString": "Lorem ipsum",
-        "myRenamedString": "foo",
-        "myString": "foo",
-        "myStruct": {
-          "myKeyA": "myStructKeyA",
-          "myKeyB": 888
-        },
-        "myUnion": {
-          "caseA": "myCaseAString"
+    .afterJSON(function (json) {
+      expect(json).toEqual(
+        {
+          myFloat: 5.55,
+          myInt: 555,
+          myNewBool: true,
+          myNewFloat: 560.55,
+          myNewInt: 5,
+          myNewString: 'Lorem ipsum',
+          myRef: refTestModelEntries.foo,
+          myRenamedString: 'foo',
+          myString: 'foo',
+          myStruct:
+            {
+              myKeyA: 'myStructKeyA',
+              myKeyB: 888
+            },
+          myUnion: {caseA: 'myCaseAString'}
         }
-      }
-    )
-    .expectJSONTypes({
-      myRef: String
+      );
     })
     .toss();
 }
+
 
 function getTestModelMigratedBarRecord (signature) {
   frisby.create('getTestModelMigratedBarRecord')
@@ -675,26 +711,26 @@ function getTestModelMigratedBarRecord (signature) {
     .addHeader('X-Karma-Database', dbName)
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
-    .expectJSON({
-        "myFloat": 5.55,
-        "myInt": 555,
-        "myNewBool": true,
-        "myNewFloat": 560.55,
-        "myNewInt": 5,
-        "myNewString": "Lorem ipsum",
-        "myRenamedString": "bar",
-        "myString": "bar",
-        "myStruct": {
-          "myKeyA": "myStructKeyA",
-          "myKeyB": 888
-        },
-        "myUnion": {
-          "caseA": "myCaseAString"
+    .afterJSON(function (json) {
+      expect(json).toEqual(
+        {
+          myFloat: 5.55,
+          myInt: 555,
+          myNewBool: true,
+          myNewFloat: 560.55,
+          myNewInt: 5,
+          myNewString: 'Lorem ipsum',
+          myRef: refTestModelEntries.bar,
+          myRenamedString: 'bar',
+          myString: 'bar',
+          myStruct:
+            {
+              myKeyA: 'myStructKeyA',
+              myKeyB: 888
+            },
+          myUnion: {caseA: 'myCaseAString'}
         }
-      }
-    )
-    .expectJSONTypes({
-      myRef: String
+      );
     })
     .toss();
 }
