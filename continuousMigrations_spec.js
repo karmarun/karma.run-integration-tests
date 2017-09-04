@@ -152,12 +152,10 @@ function createTestModel (signature) {
                             "struct": {
                               "myKeyA": {
                                 "string": {}
+                              },
+                              "myKeyB": {
+                                "int": {}
                               }
-                            }
-                          },
-                          "myOptional": {
-                            "optional": {
-                              "string": {}
                             }
                           },
                           "myRef": {
@@ -340,7 +338,7 @@ function createEntries (signature) {
 
 
 function makeMigration (signature) {
-  frisby.create('function create _migration')
+  frisby.create('function create _migration with invalidKey')
     .post(KARMA_ENDPOINT, null,
       {
         json: false,
@@ -379,10 +377,22 @@ function makeMigration (signature) {
                               "field": "myUnion"
                             },
                             "myStruct": {
-                              "field": "myStruct"
-                            },
-                            "myOptional": {
-                              "field": "myOptional"
+                              "newStruct": {
+                                "myKeyA": {
+                                  "field": {
+                                    "name": "myKeyA",
+                                    "value": {
+                                      "field": "myStruct"
+                                    }
+                                  }
+                                },
+                                "myKeyB": {
+                                  "newInt": 888
+                                },
+                                "invalidKey": {
+                                  "newString": "invalid"
+                                }
+                              }
                             },
                             "myRef": {
                               "field": "myRef"
@@ -402,7 +412,7 @@ function makeMigration (signature) {
     .addHeader('X-Karma-Signature', signature)
     .addHeader('X-Karma-Database', dbName)
     .addHeader('X-Karma-Codec', 'json')
-    .expectStatus(200)
+    .expectStatus(400)
     .afterJSON(function (json) {
       getTestModelRecords(signature)
     })
@@ -432,7 +442,94 @@ function getTestModelRecords (signature) {
     .expectStatus(200)
     .inspectBody()
     .afterJSON(function (json) {
-
+      getTestModel(signature)
     })
+    .toss();
+}
+
+function getTestModel (signature) {
+  frisby.create('get model entires')
+    .post(KARMA_ENDPOINT, null,
+      {
+        json: false,
+        body: JSON.stringify(
+          {
+            "first": {
+              "filter": {
+                "value": {
+                  "all": {
+                    "tag": "_model"
+                  }
+                },
+                "expression": {
+                  "equal": [
+                    {
+                      "refTo": {
+                        "id": {}
+                      }
+                    },
+                    {
+                      "tag": "testModelMigrated"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        )
+      }
+    )
+    .addHeader('X-Karma-Signature', signature)
+    .addHeader('X-Karma-Database', dbName)
+    .addHeader('X-Karma-Codec', 'json')
+    .expectStatus(200)
+    // .expectJSON(
+    //   {
+    //     "struct": {
+    //       "myFloat": {
+    //         "float": {}
+    //       },
+    //       "myInt": {
+    //         "int": {}
+    //       },
+    //       "myNewBool": {
+    //         "bool": {}
+    //       },
+    //       "myNewFloat": {
+    //         "float": {}
+    //       },
+    //       "myNewInt": {
+    //         "int": {}
+    //       },
+    //       "myNewString": {
+    //         "string": {}
+    //       },
+    //       "myRenamedString": {
+    //         "string": {}
+    //       },
+    //       "myString": {
+    //         "string": {}
+    //       },
+    //       "myStruct": {
+    //         "struct": {
+    //           "myKeyA": {
+    //             "string": {}
+    //           },
+    //           "myKeyB": {
+    //             "int": {}
+    //           }
+    //         }
+    //       },
+    //       "myUnion": {
+    //         "union": {
+    //           "caseA": {
+    //             "string": {}
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // )
+    .inspectBody()
     .toss();
 }
