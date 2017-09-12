@@ -72,8 +72,7 @@ function loginWithInstanceSecret () {
       expect(json).toMatch(/^[\S]{40,}$/);
       signature = json
       all();
-      first();
-      refTo();
+      // refTo();
       createModel();
     })
     .toss();
@@ -93,11 +92,93 @@ function createModel () {
               "value": {
                 "contextual": {
                   "struct": {
-                    "foo": {
+                    "checkbox": {
+                      "bool": {}
+                    },
+                    "number": {
+                      "int": {}
+                    },
+                    "decimalNumber": {
+                      "float": {}
+                    },
+                    "text": {
                       "string": {}
                     },
-                    "bar": {
-                      "int": {}
+                    "dateAndTime": {
+                      "dateTime": {}
+                    },
+                    "list": {
+                      "list": {
+                        "struct": {
+                          "fieldA": {
+                            "string": {}
+                          },
+                          "filedB": {
+                            "string": {}
+                          }
+                        }
+                      }
+                    },
+                    "map": {
+                      "map": {
+                        "string": {}
+                      }
+                    },
+                    "struct": {
+                      "struct": {
+                        "fieldA": {
+                          "string": {}
+                        },
+                        "filedB": {
+                          "string": {}
+                        }
+                      }
+                    },
+                    "union": {
+                      "union": {
+                        "variantA": {
+                          "struct": {
+                            "stringA": {
+                              "string": {}
+                            },
+                            "intA": {
+                              "int": {}
+                            }
+                          }
+                        },
+                        "variantB": {
+                          "struct": {
+                            "stringB": {
+                              "string": {}
+                            },
+                            "intB": {
+                              "int": {}
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "tuple": {
+                      "tuple": [
+                        {
+                          "int": {}
+                        },
+                        {
+                          "string": {}
+                        }
+                      ]
+                    },
+                    "selectBox": {
+                      "enum": [
+                        "foo",
+                        "bar",
+                        "pop"
+                      ]
+                    },
+                    "set": {
+                      "set": {
+                        "int": {}
+                      }
                     }
                   }
                 }
@@ -132,8 +213,41 @@ function createEntry (modelId) {
               },
               "value": {
                 "contextual": {
-                  "foo": "data",
-                  "bar": 333
+                  "checkbox": true,
+                  "dateAndTime": "2017-08-02T00:00:00Z",
+                  "decimalNumber": 0.5,
+                  "list": [
+                    {
+                      "fieldA": "a",
+                      "filedB": "b"
+                    }
+                  ],
+                  "map": {
+                    "a": "a",
+                    "b": "b"
+                  },
+                  "number": 1,
+                  "struct": {
+                    "fieldA": "a",
+                    "filedB": "b"
+                  },
+                  "text": "example text",
+                  "tuple": [
+                    5,
+                    "example tuple"
+                  ],
+                  "selectBox": "bar",
+                  "set": [
+                    1,
+                    2,
+                    3
+                  ],
+                  "union": {
+                    "variantA": {
+                      "intA": 1,
+                      "stringA": "asdf"
+                    }
+                  }
                 }
               }
             }
@@ -170,8 +284,41 @@ function update (modelId, objectId) {
               },
               "value": {
                 "contextual": {
-                  "foo": "dada",
-                  "bar": 333
+                  "checkbox": false,
+                  "dateAndTime": "2018-08-02T00:00:00Z",
+                  "decimalNumber": 0.5,
+                  "list": [
+                    {
+                      "fieldA": "a",
+                      "filedB": "b"
+                    }
+                  ],
+                  "map": {
+                    "a": "a",
+                    "b": "b"
+                  },
+                  "number": 1,
+                  "struct": {
+                    "fieldA": "a",
+                    "filedB": "b"
+                  },
+                  "text": "example text changed",
+                  "tuple": [
+                    5,
+                    "example tuple"
+                  ],
+                  "selectBox": "bar",
+                  "set": [
+                    1,
+                    2,
+                    3
+                  ],
+                  "union": {
+                    "variantA": {
+                      "intA": 1,
+                      "stringA": "asdf"
+                    }
+                  }
                 }
               }
             }
@@ -185,7 +332,6 @@ function update (modelId, objectId) {
     .expectStatus(200)
     .inspectBody()
     .afterJSON(function (json) {
-      // expect(json).toMatch(/^[\S]{10,}$/);
       functionGet(modelId, objectId)
     })
     .toss();
@@ -214,9 +360,6 @@ function functionDelete (modelId, objectId) {
     .addHeader('X-Karma-Database', dbName)
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
-    .afterJSON(function (json) {
-
-    })
     .toss();
 }
 
@@ -243,29 +386,45 @@ function functionGet (modelId, objectId) {
     .addHeader('X-Karma-Database', dbName)
     .addHeader('X-Karma-Codec', 'json')
     .expectStatus(200)
-    .expectJSON({"bar": 333, "foo": "dada"})
+    .expectJSON({
+      "checkbox": false,
+      "dateAndTime": "2018-08-02T00:00:00Z",
+      "decimalNumber": 0.5,
+      "list": [
+        {
+          "fieldA": "a",
+          "filedB": "b"
+        }
+      ],
+      "map": {
+        "a": "a",
+        "b": "b"
+      },
+      "number": 1,
+      "struct": {
+        "fieldA": "a",
+        "filedB": "b"
+      },
+      "text": "example text changed",
+      "tuple": [
+        5,
+        "example tuple"
+      ],
+      "selectBox": "bar",
+      "set": [
+        1,
+        2,
+        3
+      ],
+      "union": {
+        "variantA": {
+          "intA": 1,
+          "stringA": "asdf"
+        }
+      }
+    })
     .afterJSON(function (json) {
       functionDelete(modelId, objectId)
-    })
-    .toss();
-}
-
-function tag () {
-  frisby.create('function tag')
-    .post(KARMA_ENDPOINT, null,
-      {
-        json: false,
-        body: JSON.stringify({
-          "tag": "_tag"
-        })
-      }
-    )
-    .addHeader('X-Karma-Signature', signature)
-    .addHeader('X-Karma-Database', dbName)
-    .addHeader('X-Karma-Codec', 'json')
-    .expectStatus(200)
-    .afterJSON(function (json) {
-      expect(json).toMatch(/^[a-zA-Z]{10,40}$/);
     })
     .toss();
 }
@@ -288,32 +447,6 @@ function all () {
     .expectStatus(200)
     .inspectJSON()
     .expectJSONTypes('?', {
-      model: String,
-      tag: String
-    })
-    .toss();
-}
-
-function first () {
-  frisby.create('function first')
-    .post(KARMA_ENDPOINT, null,
-      {
-        json: false,
-        body: JSON.stringify({
-          "first": {
-            "all": {
-              "tag": "_tag"
-            }
-          }
-        })
-      }
-    )
-    .addHeader('X-Karma-Signature', signature)
-    .addHeader('X-Karma-Database', dbName)
-    .addHeader('X-Karma-Codec', 'json')
-    .expectStatus(200)
-    .inspectJSON()
-    .expectJSONTypes({
       model: String,
       tag: String
     })
