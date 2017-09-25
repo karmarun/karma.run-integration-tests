@@ -1,20 +1,20 @@
 {
-  "name": "karma-api-test",
+  "name": "karma-integration-tests",
   "version": "1.0.0",
-  "description": "api tests",
+  "description": "karma integration tests",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine-node ."
+    "test": "ava --verbose",
+    "nyan": "ava --tap | tap-nyan"
   },
   "keywords": [
     "karma"
   ],
-  "author": "karma",
+  "author": "denis",
   "license": "ISC",
-  "devDependencies": {
-    "frisby": "0.8.5"
-  },
   "dependencies": {
-    "dotenv": "4.0.0"
+    "chai": "4.1.2",
+    "dotenv": "4.0.0",
+    "karma-tools-1-3": "git+https://github.com/dudagroup/karma-tools-1-3.git"
   }
 }
