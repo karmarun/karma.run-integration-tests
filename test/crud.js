@@ -48,6 +48,42 @@ let record = {
   "set": [1, 2, 3],
   "unique": "unique",
   "any": "any",
+  "recursion": {
+    "payload": 1,
+    "next": {
+      "payload": 2,
+      "next": {
+        "payload": 3,
+        "next": {
+          "payload": 4,
+          "next": {
+            "payload": 5,
+            "next": {
+              "payload": 6
+            }
+          }
+        }
+      }
+    }
+  },
+  "recursive": {
+    "foo": {
+      "bar": 1,
+      "zap": {
+        "foo": {
+          "bar": 2,
+          "zap": {
+            "foo": {
+              "bar": 3
+            },
+            "bar": 3
+          }
+        },
+        "bar": 2
+      }
+    },
+    "bar": 1
+  }
 }
 
 async function query (t, query) {
@@ -80,6 +116,8 @@ function compareResponse (t, response, expected) {
     t.falsy(response.body.optional)
   }
   t.is(response.body.any, expected.any)
+  t.deepEqual(response.body.recursion, expected.recursion)
+  t.deepEqual(response.body.recursive, expected.recursive)
 }
 
 
@@ -223,6 +261,55 @@ test.serial('create model', async t => {
             "any": {
               "any": {}
             },
+            "recursion": {
+              "recursion": {
+                "label": "self",
+                "model": {
+                  "struct": {
+                    "payload": {
+                      "int": {}
+                    },
+                    "next": {
+                      "optional": {
+                        "recurse": "self"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "recursive": {
+              "recursive": {
+                "top": "S",
+                "models": {
+                  "S": {
+                    "struct": {
+                      "foo": {
+                        "recurse": "T"
+                      },
+                      "bar": {
+                        "recurse": "U"
+                      }
+                    }
+                  },
+                  "T": {
+                    "struct": {
+                      "bar": {
+                        "recurse": "U"
+                      },
+                      "zap": {
+                        "optional": {
+                          "recurse": "S"
+                        }
+                      }
+                    }
+                  },
+                  "U": {
+                    "int": {}
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -366,7 +453,7 @@ test.serial('check record', async t => {
 })
 
 
-test.serial('create models with circular dependencies', async t => {
+test.serial('create multiple with some cyclic references', async t => {
   const response = await query(t, {
     "do": {
       "createModels": {
@@ -377,17 +464,38 @@ test.serial('create models with circular dependencies', async t => {
           "values": {
             "a": {
               "contextual": {
-                "ref": "b"
+                "struct": {
+                  "string": {
+                    "string": {}
+                  },
+                  "ref": {
+                    "ref": "b"
+                  }
+                }
               }
             },
             "b": {
               "contextual": {
-                "ref": "c"
+                "struct": {
+                  "int": {
+                    "int": {}
+                  },
+                  "ref": {
+                    "ref": "c"
+                  }
+                }
               }
             },
             "c": {
               "contextual": {
-                "ref": "a"
+                "struct": {
+                  "float": {
+                    "float": {}
+                  },
+                  "ref": {
+                    "ref": "a"
+                  }
+                }
               }
             }
           }
@@ -401,20 +509,10 @@ test.serial('create models with circular dependencies', async t => {
           "value": {
             "newStruct": {
               "tag": {
-                "field": {
-                  "name": "key",
-                  "value": {
-                    "id": {}
-                  }
-                }
+                "field": "key"
               },
               "model": {
-                "field": {
-                  "name": "value",
-                  "value": {
-                    "id": {}
-                  }
-                }
+                "field": "value"
               }
             }
           }
