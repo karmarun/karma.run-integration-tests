@@ -13,12 +13,16 @@ const {
 const recordIdRegex = /^[\S]{10,}$/
 const karmaApi = new KarmaTools(KARMA_ENDPOINT)
 let recordId = null
-let entry = {
-  "bool": true,
+let record = {
+  "string": "example text",
   "int": 1,
   "float": 0.5,
-  "string": "example text",
   "dateTime": "2017-08-02T00:00:00Z",
+  "bool": true,
+  "tuple": [
+    5,
+    "example tuple"
+  ],
   "list": [
     {
       "fieldA": "a",
@@ -33,19 +37,17 @@ let entry = {
     "fieldA": "a",
     "filedB": "b"
   },
-  "tuple": [
-    5,
-    "example tuple"
-  ],
-  "enum": "bar",
-  "set": [1, 2, 3],
   "union": {
     "variantA": {
       "intA": 1,
       "stringA": "a"
     }
   },
-  "any": "asdfasdf"
+  "or": 222,
+  "unique": "unique",
+  "any": "any",
+  "enum": "bar",
+  "set": [1, 2, 3],
 }
 
 test.before(async t => {
@@ -56,7 +58,7 @@ test.before(async t => {
 
 test.after(async t => {
   const response = await karmaApi.instanceAdministratorRequest('/root/delete_db', 'POST', KARMA_INSTANCE_SECRET, DB_NAME)
-  t.is(response.status, 200)
+  t.is(response.status, 200, JSON.stringify(response.body))
 })
 
 test.serial('create model', async t => {
@@ -68,8 +70,8 @@ test.serial('create model', async t => {
       "value": {
         "contextual": {
           "struct": {
-            "bool": {
-              "bool": {}
+            "string": {
+              "string": {}
             },
             "int": {
               "int": {}
@@ -77,11 +79,21 @@ test.serial('create model', async t => {
             "float": {
               "float": {}
             },
-            "string": {
-              "string": {}
-            },
             "dateTime": {
               "dateTime": {}
+            },
+            "bool": {
+              "bool": {}
+            },
+            "tuple": {
+              "tuple": [
+                {
+                  "int": {}
+                },
+                {
+                  "string": {}
+                }
+              ]
             },
             "list": {
               "list": {
@@ -134,8 +146,8 @@ test.serial('create model', async t => {
                 }
               }
             },
-            "tuple": {
-              "tuple": [
+            "or": {
+              "or": [
                 {
                   "int": {}
                 },
@@ -143,6 +155,19 @@ test.serial('create model', async t => {
                   "string": {}
                 }
               ]
+            },
+            "optional": {
+              "optional": {
+                "string": {}
+              }
+            },
+            "unique": {
+              "unique": {
+                "string": {}
+              }
+            },
+            "any": {
+              "any": {}
             },
             "enum": {
               "enum": [
@@ -155,16 +180,13 @@ test.serial('create model', async t => {
               "set": {
                 "int": {}
               }
-            },
-            "any": {
-              "any": {}
             }
           }
         }
       }
     }
   })
-  t.is(response.status, 200)
+  t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body, recordIdRegex)
   const recordId = response.body
   response = await karmaApi.query({
@@ -180,7 +202,7 @@ test.serial('create model', async t => {
       }
     }
   })
-  t.is(response.status, 200)
+  t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body, recordIdRegex)
 })
 
@@ -191,17 +213,45 @@ test.serial('create record', async t => {
         "tag": "tagTest"
       },
       "value": {
-        "contextual": entry
+        "contextual": record
       }
     }
   })
-  t.is(response.status, 200)
+  t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body, recordIdRegex)
   recordId = response.body
 })
 
-test.serial('update record', async t => {
-  entry.string += "updated"
+test.serial('create same record again', async t => {
+  const response = await karmaApi.query({
+    "create": {
+      "in": {
+        "tag": "tagTest"
+      },
+      "value": {
+        "contextual": record
+      }
+    }
+  })
+  t.is(response.status, 400, 'should fail because of unique object')
+})
+
+test.serial('check record', async t => {
+  const response = await karmaApi.query({
+    "get": {
+      "newRef": {
+        "model": {
+          "tag": "tagTest"
+        },
+        "id": recordId
+      }
+    }
+  })
+  compareResponse(t, response, record)
+})
+
+test.serial('update record but without any changes', async t => {
+  // useful to check if it's possible to update unique objects
   const response = await karmaApi.query({
     "update": {
       "ref": {
@@ -213,15 +263,15 @@ test.serial('update record', async t => {
         }
       },
       "value": {
-        "contextual": entry
+        "contextual": record
       }
     }
   })
-  t.is(response.status, 200)
+  t.is(response.status, 200, JSON.stringify(response.body))
   t.is(response.body, recordId)
 })
 
-test.serial('get record', async t => {
+test.serial('check record', async t => {
   const response = await karmaApi.query({
     "get": {
       "newRef": {
@@ -232,21 +282,71 @@ test.serial('get record', async t => {
       }
     }
   })
-  t.is(response.status, 200)
-  t.is(response.body.bool, entry.bool)
-  t.is(response.body.float, entry.float)
-  t.is(response.body.string, entry.string)
-  t.is(response.body.dateTime, entry.dateTime)
-  t.deepEqual(response.body.list, entry.list)
-  t.deepEqual(response.body.map, entry.map)
-  t.deepEqual(response.body.struct, entry.struct)
-  t.deepEqual(response.body.tuple, entry.tuple)
-  t.is(response.body.enum, entry.enum)
-  // t.is(response.body.set, entry.set) // TODO
-  t.deepEqual(response.body.union, entry.union)
-  t.is(response.body.any, entry.any)
-
+  compareResponse(t, response, record)
 })
+
+test.serial('update record with changes', async t => {
+  record.string += "updated"
+  record.or = "string"
+  record.optional = "optional"
+  record.unique += "updated"
+  const response = await karmaApi.query({
+    "update": {
+      "ref": {
+        "newRef": {
+          "model": {
+            "tag": "tagTest"
+          },
+          "id": recordId
+        }
+      },
+      "value": {
+        "contextual": record
+      }
+    }
+  })
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.body, recordId)
+})
+
+test.serial('check record', async t => {
+  const response = await karmaApi.query({
+    "get": {
+      "newRef": {
+        "model": {
+          "tag": "tagTest"
+        },
+        "id": recordId
+      }
+    }
+  })
+  compareResponse(t, response, record)
+})
+
+function compareResponse (t, response, expected) {
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.body.string, expected.string)
+  t.is(response.body.int, expected.int)
+  t.is(response.body.float, expected.float)
+  t.is(response.body.dateTime, expected.dateTime)
+  t.is(response.body.bool, expected.bool)
+  t.deepEqual(response.body.tuple, expected.tuple)
+  t.deepEqual(response.body.list, expected.list)
+  t.deepEqual(response.body.map, expected.map)
+  t.deepEqual(response.body.struct, expected.struct)
+  t.deepEqual(response.body.union, expected.union)
+  t.deepEqual(response.body.or, expected.or)
+  if (expected.optional) {
+    t.is(response.body.optional, expected.optional)
+  }
+  else {
+    t.falsy(response.body.optional)
+  }
+  t.is(response.body.any, expected.any)
+  t.is(response.body.enum, expected.enum)
+  // t.is(response.body.set, entry.set) // TODO
+}
+
 
 test.serial('create models with circular dependencies', async t => {
   const response = await karmaApi.query({
@@ -314,7 +414,7 @@ test.serial('create models with circular dependencies', async t => {
       }
     }
   })
-  t.is(response.status, 200)
+  t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body.a, recordIdRegex)
   t.regex(response.body.b, recordIdRegex)
   t.regex(response.body.c, recordIdRegex)
