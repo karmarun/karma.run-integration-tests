@@ -307,7 +307,6 @@ test('assertPresent', async t => {
   t.is(response.status, 400)
   expect(response.body).to.have.own.property('message')
   expect(response.body).to.have.own.property('type')
-  expect(response.body).to.have.own.property('program')
 })
 
 test('assertCase', async t => {

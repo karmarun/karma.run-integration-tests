@@ -328,7 +328,7 @@ function compareResponse (t, response, expected) {
   t.is(response.body.string, expected.string)
   t.is(response.body.int, expected.int)
   t.is(response.body.float, expected.float)
-  t.is(response.body.dateTime, expected.dateTime)
+  t.is(new Date(response.body.dateTime).getTime(), new Date(expected.dateTime).getTime())
   t.is(response.body.bool, expected.bool)
   t.deepEqual(response.body.tuple, expected.tuple)
   t.deepEqual(response.body.list, expected.list)
