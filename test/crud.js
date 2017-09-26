@@ -19,6 +19,7 @@ let record = {
   "float": 0.5,
   "dateTime": "2017-08-02T00:00:00Z",
   "bool": true,
+  "enum": "bar",
   "tuple": [
     5,
     "example tuple"
@@ -44,11 +45,47 @@ let record = {
     }
   },
   "or": 222,
+  "set": [1, 2, 3],
   "unique": "unique",
   "any": "any",
-  "enum": "bar",
-  "set": [1, 2, 3],
 }
+
+async function query (t, query) {
+  try {
+    return await karmaApi.query(query)
+  } catch (e) {
+    t.fail(e.message)
+  }
+}
+
+function compareResponse (t, response, expected) {
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.body.string, expected.string)
+  t.is(response.body.int, expected.int)
+  t.is(response.body.float, expected.float)
+  t.is(new Date(response.body.dateTime).getTime(), new Date(expected.dateTime).getTime())
+  t.is(response.body.bool, expected.bool)
+  t.is(response.body.enum, expected.enum)
+  t.deepEqual(response.body.tuple, expected.tuple)
+  t.deepEqual(response.body.list, expected.list)
+  t.deepEqual(response.body.map, expected.map)
+  t.deepEqual(response.body.struct, expected.struct)
+  t.deepEqual(response.body.union, expected.union)
+  t.deepEqual(response.body.or, expected.or)
+  t.deepEqual(response.body.set.sort(), expected.set.sort())
+  if (expected.optional) {
+    t.is(response.body.optional, expected.optional)
+  }
+  else {
+    t.falsy(response.body.optional)
+  }
+  t.is(response.body.any, expected.any)
+}
+
+
+//**********************************************************************************************************************
+// Init Tests
+//**********************************************************************************************************************
 
 test.before(async t => {
   await karmaApi.instanceAdministratorRequest('/root/delete_db', 'POST', KARMA_INSTANCE_SECRET, DB_NAME)
@@ -61,8 +98,13 @@ test.after(async t => {
   t.is(response.status, 200, JSON.stringify(response.body))
 })
 
+
+//**********************************************************************************************************************
+// Start Tests
+//**********************************************************************************************************************
+
 test.serial('create model', async t => {
-  let response = await karmaApi.query({
+  let response = await query(t, {
     "create": {
       "in": {
         "tag": "_model"
@@ -84,6 +126,13 @@ test.serial('create model', async t => {
             },
             "bool": {
               "bool": {}
+            },
+            "enum": {
+              "enum": [
+                "foo",
+                "bar",
+                "pop"
+              ]
             },
             "tuple": {
               "tuple": [
@@ -156,6 +205,11 @@ test.serial('create model', async t => {
                 }
               ]
             },
+            "set": {
+              "set": {
+                "int": {}
+              }
+            },
             "optional": {
               "optional": {
                 "string": {}
@@ -169,18 +223,6 @@ test.serial('create model', async t => {
             "any": {
               "any": {}
             },
-            "enum": {
-              "enum": [
-                "foo",
-                "bar",
-                "pop"
-              ]
-            },
-            "set": {
-              "set": {
-                "int": {}
-              }
-            }
           }
         }
       }
@@ -189,7 +231,7 @@ test.serial('create model', async t => {
   t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body, recordIdRegex)
   const recordId = response.body
-  response = await karmaApi.query({
+  response = await query(t, {
     "create": {
       "in": {
         "tag": "_tag"
@@ -207,7 +249,7 @@ test.serial('create model', async t => {
 })
 
 test.serial('create record', async t => {
-  const response = await karmaApi.query({
+  const response = await query(t, {
     "create": {
       "in": {
         "tag": "tagTest"
@@ -223,7 +265,7 @@ test.serial('create record', async t => {
 })
 
 test.serial('create same record again', async t => {
-  const response = await karmaApi.query({
+  const response = await query(t, {
     "create": {
       "in": {
         "tag": "tagTest"
@@ -237,7 +279,7 @@ test.serial('create same record again', async t => {
 })
 
 test.serial('check record', async t => {
-  const response = await karmaApi.query({
+  const response = await query(t, {
     "get": {
       "newRef": {
         "model": {
@@ -252,7 +294,7 @@ test.serial('check record', async t => {
 
 test.serial('update record but without any changes', async t => {
   // useful to check if it's possible to update unique objects
-  const response = await karmaApi.query({
+  const response = await query(t, {
     "update": {
       "ref": {
         "newRef": {
@@ -272,7 +314,7 @@ test.serial('update record but without any changes', async t => {
 })
 
 test.serial('check record', async t => {
-  const response = await karmaApi.query({
+  const response = await query(t, {
     "get": {
       "newRef": {
         "model": {
@@ -290,7 +332,7 @@ test.serial('update record with changes', async t => {
   record.or = "string"
   record.optional = "optional"
   record.unique += "updated"
-  const response = await karmaApi.query({
+  const response = await query(t, {
     "update": {
       "ref": {
         "newRef": {
@@ -310,7 +352,7 @@ test.serial('update record with changes', async t => {
 })
 
 test.serial('check record', async t => {
-  const response = await karmaApi.query({
+  const response = await query(t, {
     "get": {
       "newRef": {
         "model": {
@@ -323,33 +365,9 @@ test.serial('check record', async t => {
   compareResponse(t, response, record)
 })
 
-function compareResponse (t, response, expected) {
-  t.is(response.status, 200, JSON.stringify(response.body))
-  t.is(response.body.string, expected.string)
-  t.is(response.body.int, expected.int)
-  t.is(response.body.float, expected.float)
-  t.is(new Date(response.body.dateTime).getTime(), new Date(expected.dateTime).getTime())
-  t.is(response.body.bool, expected.bool)
-  t.deepEqual(response.body.tuple, expected.tuple)
-  t.deepEqual(response.body.list, expected.list)
-  t.deepEqual(response.body.map, expected.map)
-  t.deepEqual(response.body.struct, expected.struct)
-  t.deepEqual(response.body.union, expected.union)
-  t.deepEqual(response.body.or, expected.or)
-  if (expected.optional) {
-    t.is(response.body.optional, expected.optional)
-  }
-  else {
-    t.falsy(response.body.optional)
-  }
-  t.is(response.body.any, expected.any)
-  t.is(response.body.enum, expected.enum)
-  // t.is(response.body.set, entry.set) // TODO
-}
-
 
 test.serial('create models with circular dependencies', async t => {
-  const response = await karmaApi.query({
+  const response = await query(t, {
     "do": {
       "createModels": {
         "createMultiple": {
