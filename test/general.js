@@ -388,3 +388,24 @@ test('matchRegex', async t => {
   t.is(response.status, 200)
   t.is(response.body, false)
 })
+
+test('if', async t => {
+  const response = await karmaApi.tQuery(t, {
+    "if": {
+      "condition": {
+        "greater": [
+          2.2,
+          2.1
+        ]
+      },
+      "then": {
+        "add": [2, 4]
+      },
+      "else": {
+        "subtract": [2, 4]
+      }
+    }
+  })
+  t.is(response.status, 200)
+  t.is(response.body, 6)
+})
