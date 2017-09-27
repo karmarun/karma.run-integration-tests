@@ -262,8 +262,17 @@ test.after(async t => {
 
 test.serial('create model', async t => {
   let response = await karmaApi.tQuery(t, {
-    "all": {
-      "tag": "_tag"
+    "resolveRefs": {
+      "value": {
+        "first": {
+          "all": {
+            "tag": "modelA"
+          }
+        }
+      },
+      "models": [
+        {"tag": "modelB"}
+      ]
     }
   })
   t.is(response.status, 200, JSON.stringify(response.body))
