@@ -20,7 +20,7 @@ test.before(async t => {
   await karmaApi.instanceAdministratorRequest('/root/delete_db', 'POST', KARMA_INSTANCE_SECRET, DB_NAME)
   await karmaApi.instanceAdministratorRequest('/root/create_db', 'POST', KARMA_INSTANCE_SECRET, DB_NAME)
   await karmaApi.signIn(DB_NAME, 'admin', KARMA_INSTANCE_SECRET)
-  await karmaApi.tQuery(t, {
+  let result = await karmaApi.tQuery(t, {
     "do": {
       "createModels": {
         "createMultiple": {
@@ -70,16 +70,20 @@ test.before(async t => {
                     "ref": "modelG"
                   },
                   "mapH": {
-                    "ref": "modelH"
-                  },
-                  "tupleI": [
-                    {
-                      "ref": "modelI"
-                    },
-                    {
-                      "string": {}
+                    "map": {
+                      "ref": "modelH"
                     }
-                  ]
+                  },
+                  "tupleI": {
+                    "tuple": [
+                      {
+                        "ref": "modelI"
+                      },
+                      {
+                        "string": {}
+                      }
+                    ]
+                  }
                 }
               }
             },
@@ -188,6 +192,7 @@ test.before(async t => {
       }
     }
   })
+  console.log(result)
 })
 
 test.after(async t => {
