@@ -363,3 +363,28 @@ test('isPresent', async t => {
   t.is(response.status, 200)
   t.is(response.body, false)
 })
+
+test('matchRegex', async t => {
+  const regex = "^(?:(http[s]?|ftp[s])://)?([^:/\\s]+)(:[0-9]+)?((?:/\\w+)*/)([\\w\\-\\.]+[^#?\\s]+)([^#\\s]*)?(#[\\w\\-]+)?$"
+  let response = await karmaApi.query({
+    "matchRegex": {
+      "value": "https://www.google.com:80/dir/1/2/search.html?arg=0-a&arg1=1-b&arg3-c#hash",
+      "regex": regex,
+      "caseInsensitive": true,
+      "multiLine": false
+    }
+  })
+  t.is(response.status, 200)
+  t.is(response.body, true)
+
+  response = await karmaApi.query({
+    "matchRegex": {
+      "value": "https://www.google:com:80/dir/1/2/search.html?arg=0-a&arg1=1-b&arg3-c#hash",
+      "regex": regex,
+      "caseInsensitive": true,
+      "multiLine": false
+    }
+  })
+  t.is(response.status, 200)
+  t.is(response.body, false)
+})
