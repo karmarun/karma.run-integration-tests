@@ -323,6 +323,84 @@ test.serial('resolveAllRefs', async t => {
   })
 })
 
+test.serial('graphFlow', async t => {
+  let response = await karmaApi.tQuery(t, {
+    "metarialize": {
+      "first": {
+        "all": {
+          "tag": "modelB"
+        }
+      }
+    }
+  })
+  response = await karmaApi.tQuery(t, {
+    "graphFlow": {
+      "start": {
+        "newRef": {
+          "model": {
+            "tag": "modelB"
+          },
+          "id": response.body.id
+        }
+      },
+      "flow": [
+        {
+          "from": {
+            "tag": "modelB"
+          },
+          "backward": [
+            {
+              "tag": "modelA"
+            }
+          ],
+          "forward": [
+            {
+              "tag": "modelC"
+            },
+            {
+              "tag": "modelD"
+            },
+            {
+              "tag": "modelE"
+            },
+            {
+              "tag": "modelF"
+            },
+            {
+              "tag": "modelG"
+            },
+            {
+              "tag": "modelH"
+            },
+            {
+              "tag": "modelI"
+            }
+          ]
+        }
+      ]
+    }
+  })
+  const check = Object.entries(response.body).reduce((pref, model) => {
+    const [modelId, resultList] = model
+    t.regex(modelId, recordIdRegex)
+    const [recordId, recordObject] = Object.entries(resultList)[0]
+    t.regex(recordId, recordIdRegex)
+    pref[recordObject.name] = true
+    return pref
+  }, {})
+  t.deepEqual(check, {
+      modelA: true,
+      modelB: true,
+      modelC: true,
+      modelD: true,
+      modelE: true,
+      modelG: true,
+      modelH: true,
+      modelI: true,
+    }
+  )
+})
+
 //**********************************************************************************************************************
 // Util Methods
 //**********************************************************************************************************************
