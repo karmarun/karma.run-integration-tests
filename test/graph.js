@@ -34,7 +34,7 @@ test.before(async t => {
                   "name": {
                     "string": {}
                   },
-                  "myRef": {
+                  "refB": {
                     "ref": "modelB"
                   }
                 }
@@ -192,8 +192,63 @@ test.before(async t => {
       }
     }
   })
-  console.log(result)
+  const I = await createRecord(t, 'modelI', {
+    "name": "modelI"
+  })
+  const H = await createRecord(t, 'modelH', {
+    "name": "modelH"
+  })
+  const G = await createRecord(t, 'modelG', {
+    "name": "modelG"
+  })
+  const F = await createRecord(t, 'modelF', {
+    "name": "modelF"
+  })
+  const E = await createRecord(t, 'modelE', {
+    "name": "modelE"
+  })
+  const D = await createRecord(t, 'modelD', {
+    "name": "modelD"
+  })
+  const C = await createRecord(t, 'modelC', {
+    "name": "modelC"
+  })
+  const B = await createRecord(t, 'modelB', {
+    "name": "modelB",
+    "listC": [C],
+    "setD": [D],
+    "unionEF": {
+      "modelE": E
+    },
+    "optionalG": G,
+    "mapH": {
+      "mapKey": H
+    },
+    "tupleI": [
+      I,
+      "test"
+    ]
+  })
+  const A = await createRecord(t, 'modelA', {
+    "name": "modelA",
+    "refB": B
+  })
 })
+
+async function createRecord (t, tag, contextual) {
+  const response = await karmaApi.tQuery(t, {
+    "create": {
+      "in": {
+        "tag": tag
+      },
+      "value": {
+        "contextual": contextual
+      }
+    }
+  })
+  t.is(response.status, 200, JSON.stringify(response.body))
+  return response.body
+}
 
 test.after(async t => {
   const response = await karmaApi.instanceAdministratorRequest('/root/delete_db', 'POST', KARMA_INSTANCE_SECRET, DB_NAME)
