@@ -211,12 +211,18 @@ test.before(async t => {
   const D = await createRecord(t, 'modelD', {
     "name": "modelD"
   })
-  const C = await createRecord(t, 'modelC', {
-    "name": "modelC"
+  const C1 = await createRecord(t, 'modelC', {
+    "name": "modelC1"
+  })
+  const C2 = await createRecord(t, 'modelC', {
+    "name": "modelC2"
+  })
+  const C3 = await createRecord(t, 'modelC', {
+    "name": "modelC3"
   })
   const B = await createRecord(t, 'modelB', {
     "name": "modelB",
-    "listC": [C],
+    "listC": [C1, C2, C3],
     "setD": [D],
     "unionEF": {
       "modelE": E
@@ -310,17 +316,18 @@ test.serial('resolveAllRefs', async t => {
   })
   t.is(response.status, 200, JSON.stringify(response.body))
   t.deepEqual(response.body, {
-    "name": "modelA",
-    "refB": {
-      "listC": [{"name": "modelC"}],
-      "mapH": {"mapKey": {"name": "modelH"}},
-      "name": "modelB",
-      "optionalG": {"name": "modelG"},
-      "setD": [{"name": "modelD"}],
-      "tupleI": [{"name": "modelI"}, "test"],
-      "unionEF": {"modelE": {"name": "modelE"}}
+      "name": "modelA",
+      "refB": {
+        "listC": [{"name": "modelC1"}, {"name": "modelC2"}, {"name": "modelC3"}],
+        "mapH": {"mapKey": {"name": "modelH"}},
+        "name": "modelB",
+        "optionalG": {"name": "modelG"},
+        "setD": [{"name": "modelD"}],
+        "tupleI": [{"name": "modelI"}, "test"],
+        "unionEF": {"modelE": {"name": "modelE"}}
+      }
     }
-  })
+  )
 })
 
 test.serial('graphFlow', async t => {
@@ -383,15 +390,20 @@ test.serial('graphFlow', async t => {
   const check = Object.entries(response.body).reduce((pref, model) => {
     const [modelId, resultList] = model
     t.regex(modelId, recordIdRegex)
-    const [recordId, recordObject] = Object.entries(resultList)[0]
-    t.regex(recordId, recordIdRegex)
-    pref[recordObject.name] = true
-    return pref
+
+    return Object.entries(resultList).reduce((_pref, entry) => {
+      const [recordId, resultObject] = entry
+      t.regex(recordId, recordIdRegex)
+      _pref[resultObject.name] = true
+      return _pref
+    }, pref)
   }, {})
   t.deepEqual(check, {
       modelA: true,
       modelB: true,
-      modelC: true,
+      modelC1: true,
+      modelC2: true,
+      modelC3: true,
       modelD: true,
       modelE: true,
       modelG: true,
@@ -399,6 +411,50 @@ test.serial('graphFlow', async t => {
       modelI: true,
     }
   )
+})
+
+test.serial('referrers', async t => {
+  let response = await karmaApi.tQuery(t, {
+    "referrers": {
+      "of": {
+        "refTo": {
+          "first": {
+            "all": {
+              "tag": "modelB"
+            }
+          }
+        }
+      },
+      "in": {
+        "tag": "modelA"
+      }
+    }
+  })
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+})
+
+test.serial('referred', async t => {
+  let response = await karmaApi.tQuery(t, {
+    "referred": {
+      "from": {
+        "refTo": {
+          "first": {
+            "all": {
+              "tag": "modelB"
+            }
+          }
+        }
+      },
+      "in": {
+        "tag": "modelC"
+      }
+    }
+  })
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+  t.regex(response.body[2], recordIdRegex)
 })
 
 //**********************************************************************************************************************
