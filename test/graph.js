@@ -4,6 +4,7 @@ import {should, expect} from 'chai'
 require('dotenv').config()
 const {KarmaApi} = require('./tools/_karmaApi.js')
 
+const recordIdRegex = /^[\S]{10,}$/
 const DB_NAME = 'db-api-test-graph'
 const {
   KARMA_ENDPOINT,
@@ -20,7 +21,7 @@ test.before(async t => {
   await karmaApi.instanceAdministratorRequest('/root/delete_db', 'POST', KARMA_INSTANCE_SECRET, DB_NAME)
   await karmaApi.instanceAdministratorRequest('/root/create_db', 'POST', KARMA_INSTANCE_SECRET, DB_NAME)
   await karmaApi.signIn(DB_NAME, 'admin', KARMA_INSTANCE_SECRET)
-  let result = await karmaApi.tQuery(t, {
+  const result = await karmaApi.tQuery(t, {
     "do": {
       "createModels": {
         "createMultiple": {
@@ -235,6 +236,97 @@ test.before(async t => {
   })
 })
 
+test.after(async t => {
+  const response = await karmaApi.instanceAdministratorRequest('/root/delete_db', 'POST', KARMA_INSTANCE_SECRET, DB_NAME)
+  t.is(response.status, 200, JSON.stringify(response.body))
+})
+
+
+//**********************************************************************************************************************
+// Start Tests
+//**********************************************************************************************************************
+
+test.serial('resolveRefs', async t => {
+  let response = await karmaApi.tQuery(t, {
+    "resolveRefs": {
+      "value": {
+        "resolveRefs": {
+          "value": {
+            "first": {
+              "all": {
+                "tag": "modelA"
+              }
+            }
+          },
+          "models": [
+            {
+              "tag": "modelB"
+            }
+          ]
+        }
+      },
+      "models": [
+        {
+          "tag": "modelH"
+        },
+        {
+          "tag": "modelD"
+        },
+        {
+          "tag": "modelE"
+        },
+        {
+          "tag": "modelI"
+        }
+      ]
+    }
+  })
+
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.truthy(response.body)
+  t.is(response.body.name, 'modelA')
+  t.truthy(response.body.refB)
+  const refB = response.body.refB
+  t.regex(refB.listC[0], recordIdRegex)
+  t.deepEqual(refB.mapH, {"mapKey": {"name": "modelH"}})
+  t.is(refB.name, 'modelB')
+  t.regex(refB.optionalG, recordIdRegex)
+  t.deepEqual(refB.setD, [{"name": "modelD"}])
+  t.deepEqual(refB.tupleI, [{"name": "modelI"}, "test"])
+  t.deepEqual(refB.unionEF, {"modelE": {"name": "modelE"}})
+})
+
+test.serial('resolveAllRefs', async t => {
+  let response = await karmaApi.tQuery(t, {
+    "resolveAllRefs": {
+      "resolveAllRefs": {
+        "first": {
+          "all": {
+            "tag": "modelA"
+          }
+        }
+      }
+    }
+  })
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.deepEqual(response.body, {
+    "name": "modelA",
+    "refB": {
+      "listC": [{"name": "modelC"}],
+      "mapH": {"mapKey": {"name": "modelH"}},
+      "name": "modelB",
+      "optionalG": {"name": "modelG"},
+      "setD": [{"name": "modelD"}],
+      "tupleI": [{"name": "modelI"}, "test"],
+      "unionEF": {"modelE": {"name": "modelE"}}
+    }
+  })
+})
+
+//**********************************************************************************************************************
+// Util Methods
+//**********************************************************************************************************************
+
 async function createRecord (t, tag, contextual) {
   const response = await karmaApi.tQuery(t, {
     "create": {
@@ -249,32 +341,3 @@ async function createRecord (t, tag, contextual) {
   t.is(response.status, 200, JSON.stringify(response.body))
   return response.body
 }
-
-test.after(async t => {
-  const response = await karmaApi.instanceAdministratorRequest('/root/delete_db', 'POST', KARMA_INSTANCE_SECRET, DB_NAME)
-  t.is(response.status, 200, JSON.stringify(response.body))
-})
-
-
-//**********************************************************************************************************************
-// Start Tests
-//**********************************************************************************************************************
-
-test.serial('create model', async t => {
-  let response = await karmaApi.tQuery(t, {
-    "resolveRefs": {
-      "value": {
-        "first": {
-          "all": {
-            "tag": "modelA"
-          }
-        }
-      },
-      "models": [
-        {"tag": "modelB"}
-      ]
-    }
-  })
-  t.is(response.status, 200, JSON.stringify(response.body))
-})
-
