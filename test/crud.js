@@ -2,7 +2,7 @@ import test from 'ava'
 import {should, expect} from 'chai'
 
 require('dotenv').config()
-const {KarmaTools} = require('karma-tools-1-3')
+const {KarmaApi} = require('./tools/_karmaApi.js')
 
 const DB_NAME = 'db-api-test-crud'
 const {
@@ -11,7 +11,7 @@ const {
 } = process.env
 
 const recordIdRegex = /^[\S]{10,}$/
-const karmaApi = new KarmaTools(KARMA_ENDPOINT)
+const karmaApi = new KarmaApi(KARMA_ENDPOINT)
 let recordId = null
 let record = {
   "string": "example text",
@@ -86,14 +86,6 @@ let record = {
   }
 }
 
-async function query (t, query) {
-  try {
-    return await karmaApi.query(query)
-  } catch (e) {
-    t.fail(e.message)
-  }
-}
-
 function compareResponse (t, response, expected) {
   t.is(response.status, 200, JSON.stringify(response.body))
   t.is(response.body.string, expected.string)
@@ -142,7 +134,7 @@ test.after(async t => {
 //**********************************************************************************************************************
 
 test.serial('create model', async t => {
-  let response = await query(t, {
+  let response = await karmaApi.tQuery(t, {
     "create": {
       "in": {
         "tag": "_model"
@@ -318,7 +310,7 @@ test.serial('create model', async t => {
   t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body, recordIdRegex)
   const recordId = response.body
-  response = await query(t, {
+  response = await karmaApi.tQuery(t, {
     "create": {
       "in": {
         "tag": "_tag"
@@ -336,7 +328,7 @@ test.serial('create model', async t => {
 })
 
 test.serial('create record', async t => {
-  const response = await query(t, {
+  const response = await karmaApi.tQuery(t, {
     "create": {
       "in": {
         "tag": "tagTest"
@@ -352,7 +344,7 @@ test.serial('create record', async t => {
 })
 
 test.serial('create same record again', async t => {
-  const response = await query(t, {
+  const response = await karmaApi.tQuery(t, {
     "create": {
       "in": {
         "tag": "tagTest"
@@ -366,7 +358,7 @@ test.serial('create same record again', async t => {
 })
 
 test.serial('check record', async t => {
-  const response = await query(t, {
+  const response = await karmaApi.tQuery(t, {
     "get": {
       "newRef": {
         "model": {
@@ -381,7 +373,7 @@ test.serial('check record', async t => {
 
 test.serial('update record but without any changes', async t => {
   // useful to check if it's possible to update unique objects
-  const response = await query(t, {
+  const response = await karmaApi.tQuery(t, {
     "update": {
       "ref": {
         "newRef": {
@@ -401,7 +393,7 @@ test.serial('update record but without any changes', async t => {
 })
 
 test.serial('check record', async t => {
-  const response = await query(t, {
+  const response = await karmaApi.tQuery(t, {
     "get": {
       "newRef": {
         "model": {
@@ -419,7 +411,7 @@ test.serial('update record with changes', async t => {
   record.or = "string"
   record.optional = "optional"
   record.unique += "updated"
-  const response = await query(t, {
+  const response = await karmaApi.tQuery(t, {
     "update": {
       "ref": {
         "newRef": {
@@ -439,7 +431,7 @@ test.serial('update record with changes', async t => {
 })
 
 test.serial('check record', async t => {
-  const response = await query(t, {
+  const response = await karmaApi.tQuery(t, {
     "get": {
       "newRef": {
         "model": {
@@ -454,7 +446,7 @@ test.serial('check record', async t => {
 
 
 test.serial('create multiple with some cyclic references', async t => {
-  const response = await query(t, {
+  const response = await karmaApi.tQuery(t, {
     "do": {
       "createModels": {
         "createMultiple": {

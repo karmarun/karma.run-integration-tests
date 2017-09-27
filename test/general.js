@@ -2,7 +2,7 @@ import test from 'ava'
 import {should, expect} from 'chai'
 
 require('dotenv').config()
-const {KarmaTools} = require('karma-tools-1-3')
+const {KarmaApi} = require('./tools/_karmaApi.js')
 
 const DB_NAME = 'db-api-test-functions'
 const {
@@ -10,14 +10,14 @@ const {
   KARMA_INSTANCE_SECRET,
 } = process.env
 
-const karmaApi = new KarmaTools(KARMA_ENDPOINT)
+const karmaApi = new KarmaApi(KARMA_ENDPOINT)
 
 
 test.before(async t => {
   await karmaApi.instanceAdministratorRequest('/root/delete_db', 'POST', KARMA_INSTANCE_SECRET, DB_NAME)
   await karmaApi.instanceAdministratorRequest('/root/create_db', 'POST', KARMA_INSTANCE_SECRET, DB_NAME)
   await karmaApi.signIn(DB_NAME, 'admin', KARMA_INSTANCE_SECRET)
-  await karmaApi.query({
+  await karmaApi.tQuery(t, {
     "do": {
       "createModels": {
         "createMultiple": {
@@ -96,7 +96,7 @@ test.after(async t => {
 })
 
 test('after', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "after": [
       {
         "newDateTime": "2018-01-01T00:00:00Z"
@@ -111,7 +111,7 @@ test('after', async t => {
 })
 
 test('before', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "before": [
       {
         "newDateTime": "2017-01-01T00:00:00Z"
@@ -127,7 +127,7 @@ test('before', async t => {
 
 
 test('greater', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "greater": [
       2.2,
       2.1
@@ -138,7 +138,7 @@ test('greater', async t => {
 })
 
 test('less', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "less": [
       1,
       2
@@ -149,7 +149,7 @@ test('less', async t => {
 })
 
 test('equal', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "equal": [
       "foo",
       "foo"
@@ -160,7 +160,7 @@ test('equal', async t => {
 })
 
 test('and', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "and": [
       {
         "equal": [4, 4]
@@ -173,7 +173,7 @@ test('and', async t => {
 })
 
 test('equal', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "or": [
       {
         "equal": [4, 4]
@@ -186,7 +186,7 @@ test('equal', async t => {
 })
 
 test('field', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "field": {
       "name": "foo",
       "value": {
@@ -201,7 +201,7 @@ test('field', async t => {
 })
 
 test('key', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "key": {
       "name": "foo",
       "value": {
@@ -214,7 +214,7 @@ test('key', async t => {
 })
 
 test('not', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "not": false
   })
   t.is(response.status, 200)
@@ -222,7 +222,7 @@ test('not', async t => {
 })
 
 test('add', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "add": [2, 4]
   })
   t.is(response.status, 200)
@@ -230,7 +230,7 @@ test('add', async t => {
 })
 
 test('subtract', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "subtract": [2, 4]
   })
   t.is(response.status, 200)
@@ -238,7 +238,7 @@ test('subtract', async t => {
 })
 
 test('multiply', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "multiply": [2.2, {"newFloat": 4}]
   })
   t.is(response.status, 200)
@@ -246,7 +246,7 @@ test('multiply', async t => {
 })
 
 test('divide', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "divide": [{"newFloat": 2}, {"newFloat": -4}]
   })
   t.is(response.status, 200)
@@ -254,7 +254,7 @@ test('divide', async t => {
 })
 
 test('zero', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "get": {
       "create": {
         "in": {
@@ -278,7 +278,7 @@ test('zero', async t => {
 })
 
 test('intToFloat', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "divide": [{"newFloat": 2}, {"intToFloat": {"newInt": -4}}]
   })
   t.is(response.status, 200)
@@ -286,7 +286,7 @@ test('intToFloat', async t => {
 })
 
 test('floatToInt', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "add": [{"newInt": 2}, {"floatToInt": {"newFloat": -4}}]
   })
   t.is(response.status, 200)
@@ -294,7 +294,7 @@ test('floatToInt', async t => {
 })
 
 test('assertPresent', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "assertPresent": {
       "key": {
         "name": "notFoo",
@@ -310,7 +310,7 @@ test('assertPresent', async t => {
 })
 
 test('assertCase', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "assertCase": {
       "case": "foo",
       "value": {
@@ -325,7 +325,7 @@ test('assertCase', async t => {
 })
 
 test('with', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "with": {
       "value": {
         "newStruct": {
@@ -350,7 +350,7 @@ test('with', async t => {
 })
 
 test('isPresent', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t, {
     "isPresent": {
       "key": {
         "name": "notFoo",
@@ -366,7 +366,7 @@ test('isPresent', async t => {
 
 test('matchRegex', async t => {
   const regex = "^(?:(http[s]?|ftp[s])://)?([^:/\\s]+)(:[0-9]+)?((?:/\\w+)*/)([\\w\\-\\.]+[^#?\\s]+)([^#\\s]*)?(#[\\w\\-]+)?$"
-  let response = await karmaApi.query({
+  let response = await karmaApi.tQuery(t, {
     "matchRegex": {
       "value": "https://www.google.com:80/dir/1/2/search.html?arg=0-a&arg1=1-b&arg3-c#hash",
       "regex": regex,
@@ -377,7 +377,7 @@ test('matchRegex', async t => {
   t.is(response.status, 200)
   t.is(response.body, true)
 
-  response = await karmaApi.query({
+  response = await karmaApi.tQuery(t, {
     "matchRegex": {
       "value": "https://www.google:com:80/dir/1/2/search.html?arg=0-a&arg1=1-b&arg3-c#hash",
       "regex": regex,

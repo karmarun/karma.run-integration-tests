@@ -2,7 +2,7 @@ import test from 'ava'
 import {should, expect} from 'chai'
 
 require('dotenv').config()
-const {KarmaTools} = require('karma-tools-1-3')
+const {KarmaApi} = require('./tools/_karmaApi.js')
 
 const DB_NAME = 'db-api-test-unsafe-migrations'
 const {
@@ -11,7 +11,7 @@ const {
 } = process.env
 
 const recordIdRegex = /^[\S]{10,}$/
-const karmaApi = new KarmaTools(KARMA_ENDPOINT)
+const karmaApi = new KarmaApi(KARMA_ENDPOINT)
 
 
 test.before(async t => {
@@ -26,7 +26,7 @@ test.after(async t => {
 })
 
 test.serial('create multiple models', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t,{
     "do": {
       "createModels": {
         "createMultiple": {
@@ -128,7 +128,7 @@ test.serial('create multiple models', async t => {
 })
 
 test.serial('create entries', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t,{
     "createMultiple": {
       "in": {
         "tag": "testModel"
@@ -222,7 +222,7 @@ test.serial('create entries', async t => {
 })
 
 test.serial('create unsafe migration', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t,{
     "unsafeMutateModel": {
       "model": {
         "tag": "testModel"
@@ -302,7 +302,7 @@ test.serial('create unsafe migration', async t => {
 })
 
 test.serial('create unsafe migration', async t => {
-  const response = await karmaApi.query({
+  const response = await karmaApi.tQuery(t,{
     "first": {
       "filter": {
         "value": {
