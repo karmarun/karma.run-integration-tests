@@ -125,6 +125,15 @@ test('before', async t => {
   t.is(response.body, true)
 })
 
+test('length', async t => {
+  const response = await karmaApi.tQuery(t, {
+    "length": {
+      "newList": [1, 2, 3, 4, 5]
+    }
+  })
+  t.is(response.status, 200)
+  t.is(response.body, 5)
+})
 
 test('greater', async t => {
   const response = await karmaApi.tQuery(t, {
