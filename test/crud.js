@@ -83,7 +83,8 @@ let record = {
       }
     },
     "bar": 1
-  }
+  },
+  "annotation": "annotated"
 }
 
 function compareResponse (t, response, expected) {
@@ -299,6 +300,14 @@ test.serial('create model', async t => {
                   "U": {
                     "int": {}
                   }
+                }
+              }
+            },
+            "annotation": {
+              "annotation": {
+                "value": "ui:slider(-103,205)",
+                "model": {
+                  "string": {}
                 }
               }
             }
