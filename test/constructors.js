@@ -61,7 +61,7 @@ test('newDateTime', async t => {
     "newDateTime": "2017-01-01T00:00:00Z"
   })
   t.is(response.status, 200)
-  t.is(new Date(response.body).getTime(), new Date('2017-01-01T00:00:00Z').getTime())
+  t.is(response.body, '2017-01-01T00:00:00Z')
 })
 
 test('newString', async t => {

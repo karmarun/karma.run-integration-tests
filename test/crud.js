@@ -17,7 +17,7 @@ let record = {
   "string": "example text",
   "int": 1,
   "float": 0.5,
-  "dateTime": "2017-08-02T00:00:00Z",
+  "dateTime": "2017-08-02T00:00:00+03:00",
   "bool": true,
   "enum": "bar",
   "tuple": [
@@ -91,7 +91,7 @@ function compareResponse (t, response, expected) {
   t.is(response.body.string, expected.string)
   t.is(response.body.int, expected.int)
   t.is(response.body.float, expected.float)
-  t.is(new Date(response.body.dateTime).getTime(), new Date(expected.dateTime).getTime())
+  t.is(response.body.dateTime, expected.dateTime)
   t.is(response.body.bool, expected.bool)
   t.is(response.body.enum, expected.enum)
   t.deepEqual(response.body.tuple, expected.tuple)
