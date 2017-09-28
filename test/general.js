@@ -276,14 +276,11 @@ test('zero', async t => {
     },
   })
   t.is(response.status, 200)
-  t.deepEqual(response.body, {
-      myBool: false,
-      myDateTime: '1754-08-30T22:43:41Z',
-      myFloat: 0,
-      myInt: 0,
-      myString: ''
-    }
-  )
+  t.is(response.body.myBool, false)
+  t.is(new Date(response.body.myDateTime).getTime(), new Date('1754-08-30T22:43:41Z').getTime())
+  t.is(response.body.myFloat, 0)
+  t.is(response.body.myInt, 0)
+  t.is(response.body.myString, '')
 })
 
 test('intToFloat', async t => {

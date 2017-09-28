@@ -5,7 +5,7 @@ require('dotenv').config()
 const {KarmaApi} = require('./tools/_karmaApi.js')
 
 const recordIdRegex = /^[\S]{10,}$/
-const DB_NAME = 'db-api-test-graph'
+const DB_NAME = 'db-api-test-permission'
 const {
   KARMA_ENDPOINT,
   KARMA_INSTANCE_SECRET,
@@ -206,6 +206,11 @@ test.serial('get all modelA records', async t => {
     }
   })
   t.is(response.status, 200)
+  t.truthy(response.body[0])
+  t.falsy(response.body[1])
+  t.is(response.body[0].name, 'modelA1')
+  t.regex(response.body[0].refB, recordIdRegex)
+  t.regex(response.body[0].refRole, recordIdRegex)
 })
 
 
