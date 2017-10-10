@@ -13,7 +13,7 @@ exports.KarmaApi = class extends KarmaTools {
     try {
       return await this.query(query)
     } catch (e) {
-      t.fail(e.message)
+      t.fail(e)
     }
   }
 
