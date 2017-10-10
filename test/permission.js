@@ -117,6 +117,12 @@ test.before(async t => {
       "cases": [
         {
           "match": {
+            "tag": "_role"
+          },
+          "return": true
+        },
+        {
+          "match": {
             "tag": "modelA"
           },
           "return": {
@@ -205,7 +211,7 @@ test.serial('get all modelA records', async t => {
       "tag": "modelA"
     }
   })
-  t.is(response.status, 200)
+  t.is(response.status, 200, JSON.stringify(response.body))
   t.truthy(response.body[0])
   t.falsy(response.body[1])
   t.is(response.body[0].name, 'modelA1')
@@ -218,7 +224,7 @@ test.serial('get all modelA records', async t => {
 // Util Methods
 //**********************************************************************************************************************
 
-async function create (t, tag, contextual) {
+async function create(t, tag, contextual) {
   const response = await karmaApi.tQuery(t, {
     "create": {
       "in": {
