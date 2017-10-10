@@ -87,7 +87,7 @@ let record = {
   "annotation": "annotated"
 }
 
-function compareResponse (t, response, expected) {
+function compareResponse(t, response, expected) {
   t.is(response.status, 200, JSON.stringify(response.body))
   t.is(response.body.string, expected.string)
   t.is(response.body.int, expected.int)
@@ -135,199 +135,195 @@ test.after(async t => {
 //**********************************************************************************************************************
 
 test.serial('create model', async t => {
-  let response = await karmaApi.tQuery(t, {
-    "create": {
-      "in": {
-        "tag": "_model"
-      },
-      "value": {
-        "contextual": {
-          "struct": {
-            "string": {
-              "string": {}
-            },
-            "int": {
-              "int": {}
-            },
-            "float": {
-              "float": {}
-            },
-            "dateTime": {
-              "dateTime": {}
-            },
-            "bool": {
-              "bool": {}
-            },
-            "enum": {
-              "enum": [
-                "foo",
-                "bar",
-                "pop"
-              ]
-            },
-            "tuple": {
-              "tuple": [
-                {
-                  "int": {}
-                },
-                {
-                  "string": {}
-                }
-              ]
-            },
-            "list": {
-              "list": {
-                "struct": {
-                  "fieldA": {
-                    "string": {}
-                  },
-                  "filedB": {
-                    "string": {}
-                  }
-                }
-              }
-            },
-            "map": {
-              "map": {
-                "string": {}
-              }
-            },
-            "struct": {
-              "struct": {
-                "fieldA": {
-                  "string": {}
-                },
-                "filedB": {
-                  "string": {}
-                }
-              }
-            },
-            "union": {
-              "union": {
-                "variantA": {
-                  "struct": {
-                    "stringA": {
-                      "string": {}
-                    },
-                    "intA": {
-                      "int": {}
-                    }
-                  }
-                },
-                "variantB": {
-                  "struct": {
-                    "stringB": {
-                      "string": {}
-                    },
-                    "intB": {
-                      "int": {}
-                    }
-                  }
-                }
-              }
-            },
-            "or": {
-              "or": [
-                {
-                  "int": {}
-                },
-                {
-                  "string": {}
-                }
-              ]
-            },
-            "set": {
-              "set": {
-                "int": {}
-              }
-            },
-            "optional": {
-              "optional": {
-                "string": {}
-              }
-            },
-            "unique": {
-              "unique": {
-                "string": {}
-              }
-            },
-            "any": {
-              "any": {}
-            },
-            "recursion": {
-              "recursion": {
-                "label": "self",
-                "model": {
-                  "struct": {
-                    "payload": {
-                      "int": {}
-                    },
-                    "next": {
-                      "optional": {
-                        "recurse": "self"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "recursive": {
-              "recursive": {
-                "top": "S",
-                "models": {
-                  "S": {
-                    "struct": {
-                      "foo": {
-                        "recurse": "T"
-                      },
-                      "bar": {
-                        "recurse": "U"
-                      }
-                    }
-                  },
-                  "T": {
-                    "struct": {
-                      "bar": {
-                        "recurse": "U"
-                      },
-                      "zap": {
-                        "optional": {
-                          "recurse": "S"
-                        }
-                      }
-                    }
-                  },
-                  "U": {
-                    "int": {}
-                  }
-                }
-              }
-            },
-            "annotation": {
-              "annotation": {
-                "value": "ui:slider(-103,205)",
-                "model": {
-                  "string": {}
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  })
-  t.is(response.status, 200, JSON.stringify(response.body))
-  t.regex(response.body, recordIdRegex)
-  const recordId = response.body
-  response = await karmaApi.tQuery(t, {
+  const response = await karmaApi.tQuery(t, {
     "create": {
       "in": {
         "tag": "_tag"
       },
       "value": {
-        "contextual": {
+        "newStruct": {
           "tag": "tagTest",
-          "model": recordId
+          "model": {
+            "create": {
+              "in": {
+                "tag": "_model"
+              },
+              "value": {
+                "contextual": {
+                  "struct": {
+                    "string": {
+                      "string": {}
+                    },
+                    "int": {
+                      "int": {}
+                    },
+                    "float": {
+                      "float": {}
+                    },
+                    "dateTime": {
+                      "dateTime": {}
+                    },
+                    "bool": {
+                      "bool": {}
+                    },
+                    "enum": {
+                      "enum": [
+                        "foo",
+                        "bar",
+                        "pop"
+                      ]
+                    },
+                    "tuple": {
+                      "tuple": [
+                        {
+                          "int": {}
+                        },
+                        {
+                          "string": {}
+                        }
+                      ]
+                    },
+                    "list": {
+                      "list": {
+                        "struct": {
+                          "fieldA": {
+                            "string": {}
+                          },
+                          "filedB": {
+                            "string": {}
+                          }
+                        }
+                      }
+                    },
+                    "map": {
+                      "map": {
+                        "string": {}
+                      }
+                    },
+                    "struct": {
+                      "struct": {
+                        "fieldA": {
+                          "string": {}
+                        },
+                        "filedB": {
+                          "string": {}
+                        }
+                      }
+                    },
+                    "union": {
+                      "union": {
+                        "variantA": {
+                          "struct": {
+                            "stringA": {
+                              "string": {}
+                            },
+                            "intA": {
+                              "int": {}
+                            }
+                          }
+                        },
+                        "variantB": {
+                          "struct": {
+                            "stringB": {
+                              "string": {}
+                            },
+                            "intB": {
+                              "int": {}
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "or": {
+                      "or": [
+                        {
+                          "int": {}
+                        },
+                        {
+                          "string": {}
+                        }
+                      ]
+                    },
+                    "set": {
+                      "set": {
+                        "int": {}
+                      }
+                    },
+                    "optional": {
+                      "optional": {
+                        "string": {}
+                      }
+                    },
+                    "unique": {
+                      "unique": {
+                        "string": {}
+                      }
+                    },
+                    "any": {
+                      "any": {}
+                    },
+                    "recursion": {
+                      "recursion": {
+                        "label": "self",
+                        "model": {
+                          "struct": {
+                            "payload": {
+                              "int": {}
+                            },
+                            "next": {
+                              "optional": {
+                                "recurse": "self"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "recursive": {
+                      "recursive": {
+                        "top": "S",
+                        "models": {
+                          "S": {
+                            "struct": {
+                              "foo": {
+                                "recurse": "T"
+                              },
+                              "bar": {
+                                "recurse": "U"
+                              }
+                            }
+                          },
+                          "T": {
+                            "struct": {
+                              "bar": {
+                                "recurse": "U"
+                              },
+                              "zap": {
+                                "optional": {
+                                  "recurse": "S"
+                                }
+                              }
+                            }
+                          },
+                          "U": {
+                            "int": {}
+                          }
+                        }
+                      }
+                    },
+                    "annotation": {
+                      "annotation": {
+                        "value": "ui:slider(-103,205)",
+                        "model": {
+                          "string": {}
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

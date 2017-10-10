@@ -111,7 +111,7 @@ test.before(async t => {
     }
   })
 
-  const expression = await create(t, "_expression", {
+  const expression = await karmaApi.create(t, "_expression", {
     "switchModelRef": {
       "default": false,
       "cases": [
@@ -148,7 +148,7 @@ test.before(async t => {
       ]
     }
   })
-  const roleA = await create(t, '_role', {
+  const roleA = await karmaApi.create(t, '_role', {
     "name": "roleA",
     "permissions": {
       "create": expression,
@@ -157,7 +157,7 @@ test.before(async t => {
       "update": expression
     }
   })
-  const userA = await create(t, '_user', {
+  const userA = await karmaApi.create(t, '_user', {
     "password": "$2a$04$I/wYipwpWzai1f/7orFrFOudssqCr7/itDcaczlwmTtaCtkeb8QS6",
     "roles": [
       roleA
@@ -165,26 +165,26 @@ test.before(async t => {
     "username": "userA"
   })
 
-  const modelC1 = await create(t, 'modelC', {
+  const modelC1 = await karmaApi.create(t, 'modelC', {
     "name": "modelC1"
   })
-  const modelC2 = await create(t, 'modelC', {
+  const modelC2 = await karmaApi.create(t, 'modelC', {
     "name": "modelC2"
   })
-  const modelB1 = await create(t, 'modelB', {
+  const modelB1 = await karmaApi.create(t, 'modelB', {
     "name": "modelB1",
     "refC": modelC1
   })
-  const modelB2 = await create(t, 'modelB', {
+  const modelB2 = await karmaApi.create(t, 'modelB', {
     "name": "modelB2",
     "refC": modelC2
   })
-  const modelA1 = await create(t, 'modelA', {
+  const modelA1 = await karmaApi.create(t, 'modelA', {
     "name": "modelA1",
     "refB": modelB1,
     "refRole": roleA
   })
-  const modelA2 = await create(t, 'modelA', {
+  const modelA2 = await karmaApi.create(t, 'modelA', {
     "name": "modelA2",
     "refB": modelB2
   })
@@ -218,23 +218,3 @@ test.serial('get all modelA records', async t => {
   t.regex(response.body[0].refB, recordIdRegex)
   t.regex(response.body[0].refRole, recordIdRegex)
 })
-
-
-//**********************************************************************************************************************
-// Util Methods
-//**********************************************************************************************************************
-
-async function create(t, tag, contextual) {
-  const response = await karmaApi.tQuery(t, {
-    "create": {
-      "in": {
-        "tag": tag
-      },
-      "value": {
-        "contextual": contextual
-      }
-    }
-  })
-  t.is(response.status, 200, JSON.stringify(response.body))
-  return response.body
-}
