@@ -4,8 +4,7 @@ import {should, expect} from 'chai'
 require('dotenv').config()
 const {KarmaApi} = require('./tools/_karmaApi.js')
 
-const recordIdRegex = /^[\S]{10,}$/
-const DB_NAME = 'db-api-test-permission'
+const DB_NAME = 'db-api-test-permission-recursive'
 const {
   KARMA_ENDPOINT,
   KARMA_INSTANCE_SECRET,
@@ -35,31 +34,11 @@ test.before(async t => {
                 "struct": {
                   "name": {
                     "string": {}
-                  },
-                  "refB": {
-                    "ref": "modelB"
-                  },
-                  "refRole": {
-                    "optional": {
-                      "ref": tags['_role']
-                    }
                   }
                 }
               }
             },
             "modelB": {
-              "contextual": {
-                "struct": {
-                  "name": {
-                    "string": {}
-                  },
-                  "refC": {
-                    "ref": "modelC"
-                  }
-                }
-              }
-            },
-            "modelC": {
               "contextual": {
                 "struct": {
                   "name": {
@@ -111,16 +90,10 @@ test.before(async t => {
     }
   })
 
-  const expression = await karmaApi.create(t, "_expression", {
+  const expressionRoleA = await karmaApi.create(t, "_expression", {
     "switchModelRef": {
       "default": false,
       "cases": [
-        {
-          "match": {
-            "tag": "_role"
-          },
-          "return": true
-        },
         {
           "match": {
             "tag": "modelA"
@@ -128,20 +101,13 @@ test.before(async t => {
           "return": {
             "equal": [
               {
-                "field": "refRole"
-              },
-              {
-                "first": {
-                  "referred": {
-                    "from": {
-                      "currentUser": {}
-                    },
-                    "in": {
-                      "tag": "_role"
-                    }
+                "length": {
+                  "all": {
+                    "tag": "modelB"
                   }
                 }
-              }
+              },
+              0
             ]
           }
         },
@@ -152,29 +118,9 @@ test.before(async t => {
           "return": {
             "equal": [
               {
-                "field": "name"
-              },
-              "modelB1"
-            ]
-          }
-        },
-        {
-          "match": {
-            "tag": "modelC"
-          },
-          "return": {
-            "greater": [
-              {
                 "length": {
-                  "referrers": {
-                    "of": {
-                      "refTo": {
-                        "id": {}
-                      }
-                    },
-                    "in": {
-                      "tag": "modelB"
-                    }
+                  "all": {
+                    "tag": "modelA"
                   }
                 }
               },
@@ -185,45 +131,75 @@ test.before(async t => {
       ]
     }
   })
+  const expressionRoleB = await karmaApi.create(t, "_expression", {
+    "switchModelRef": {
+      "default": false,
+      "cases": [
+        {
+          "match": {
+            "tag": "modelA"
+          },
+          "return": {
+            "equal": [
+              {
+                "length": {
+                  "all": {
+                    "tag": "modelB"
+                  }
+                }
+              },
+              0
+            ]
+          }
+        },
+        {
+          "match": {
+            "tag": "modelB"
+          },
+          "return": true
+        }
+      ]
+    }
+  })
   const roleA = await karmaApi.create(t, '_role', {
     "name": "roleA",
     "permissions": {
-      "create": expression,
-      "delete": expression,
-      "read": expression,
-      "update": expression
+      "create": expressionRoleA,
+      "delete": expressionRoleA,
+      "read": expressionRoleA,
+      "update": expressionRoleA
     }
   })
-  const userA = await karmaApi.create(t, '_user', {
+  await karmaApi.create(t, '_user', {
     "password": "$2a$04$I/wYipwpWzai1f/7orFrFOudssqCr7/itDcaczlwmTtaCtkeb8QS6",
     "roles": [
       roleA
     ],
     "username": "userA"
   })
+  const roleB = await karmaApi.create(t, '_role', {
+    "name": "roleB",
+    "permissions": {
+      "create": expressionRoleB,
+      "delete": expressionRoleB,
+      "read": expressionRoleB,
+      "update": expressionRoleB
+    }
+  })
+  await karmaApi.create(t, '_user', {
+    "password": "$2a$04$I/wYipwpWzai1f/7orFrFOudssqCr7/itDcaczlwmTtaCtkeb8QS6",
+    "roles": [
+      roleB
+    ],
+    "username": "userB"
+  })
 
-  const modelC1 = await karmaApi.create(t, 'modelC', {
-    "name": "modelC1"
+  await karmaApi.create(t, 'modelA', {
+    "name": "modelA1"
   })
-  const modelC2 = await karmaApi.create(t, 'modelC', {
-    "name": "modelC2"
-  })
-  const modelB1 = await karmaApi.create(t, 'modelB', {
-    "name": "modelB1",
-    "refC": modelC1
-  })
-  const modelB2 = await karmaApi.create(t, 'modelB', {
-    "name": "modelB2",
-    "refC": modelC2
-  })
-  const modelA1 = await karmaApi.create(t, 'modelA', {
-    "name": "modelA1",
-    "refB": modelB1,
-    "refRole": roleA
-  })
-  const modelA2 = await karmaApi.create(t, 'modelA', {
-    "name": "modelA2",
-    "refB": modelB2
+
+  await karmaApi.create(t, 'modelB', {
+    "name": "modelB1"
   })
 })
 
@@ -242,7 +218,7 @@ test.serial('login with userA', async t => {
   t.regex(signature, /.{50,200}/)
 })
 
-test('get all modelA records', async t => {
+test.serial('get all modelA records', async t => {
   const response = await karmaApi.tQuery(t, {
     "all": {
       "tag": "modelA"
@@ -250,33 +226,20 @@ test('get all modelA records', async t => {
   })
   t.is(response.status, 200, JSON.stringify(response.body))
   t.truthy(response.body[0])
-  t.falsy(response.body[1])
   t.is(response.body[0].name, 'modelA1')
-  t.regex(response.body[0].refB, recordIdRegex)
-  t.regex(response.body[0].refRole, recordIdRegex)
 })
 
-test('get all modelB records', async t => {
+test.serial('login with userB', async t => {
+  const signature = await karmaApi.signIn(DB_NAME, 'userB', 'asdf')
+  t.regex(signature, /.{50,200}/)
+})
+
+test.serial('get all modelA records', async t => {
   const response = await karmaApi.tQuery(t, {
     "all": {
-      "tag": "modelB"
+      "tag": "modelA"
     }
   })
   t.is(response.status, 200, JSON.stringify(response.body))
-  t.truthy(response.body[0])
-  t.falsy(response.body[1])
-  t.is(response.body[0].name, 'modelB1')
-  t.regex(response.body[0].refC, recordIdRegex)
-})
-
-test('get all modelC records', async t => {
-  const response = await karmaApi.tQuery(t, {
-    "all": {
-      "tag": "modelC"
-    }
-  })
-  t.is(response.status, 200, JSON.stringify(response.body))
-  t.truthy(response.body[0])
-  t.falsy(response.body[1])
-  t.is(response.body[0].name, 'modelC1')
+  t.falsy(response.body[0])
 })
