@@ -1,4 +1,4 @@
-const {KarmaTools} = require('karma-tools-1-3')
+const {KarmaTools} = require('./_karma_tools')
 
 exports.KarmaApi = class extends KarmaTools {
 
