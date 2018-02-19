@@ -107,13 +107,13 @@ test('float', async t => {
   t.is(response.body, -0.00099999)
 })
 
-// test('dateTime', async t => {
-//   const response = await karmaApi.tQuery(t, [
-//     "dateTime", "2017-01-01T00:00:00Z"
-//   ])
-//   t.is(response.status, 200)
-//   t.is(response.body, '2017-01-01T00:00:00Z')
-// })
+test('dateTime', async t => {
+  const response = await karmaApi.tQuery(t, [
+    "dateTime", "2017-01-01T00:00:00Z"
+  ])
+  t.is(response.status, 200)
+  t.is(response.body, '2017-01-01T00:00:00Z')
+})
 
 test('string', async t => {
   const response = await karmaApi.tQuery(t,
@@ -127,7 +127,8 @@ test('string', async t => {
 test('list', async t => {
   const response = await karmaApi.tQuery(t,
     [
-      "list", [["int8", 1], ["int8", 2], ["int8", 3]]
+      "list",
+      [["int8", 1], ["int8", 2], ["int8", 3]]
     ])
   t.is(response.status, 200)
   t.deepEqual(response.body, [1, 2, 3])

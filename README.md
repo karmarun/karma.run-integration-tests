@@ -15,3 +15,6 @@ KARMA_INSTANCE_SECRET=
 
 # RUN TESTS
 `npm test`
+
+or ava file eg:
+`ava test/general.js -v`

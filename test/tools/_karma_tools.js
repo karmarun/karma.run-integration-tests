@@ -46,6 +46,39 @@ exports.KarmaTools = class {
         options['body'] = `"${dbName}"`
       }
 
+      console.log(this.endpoint.toString() + url)
+      console.log(karmaInstanceSecret)
+
+      fetch(this.endpoint.toString() + url, options)
+        .then(function (response) {
+          return new Promise(function (resolve) {
+            response.json().then(function (result) {
+              resolve({body: result, status: response.status, statusText: response.statusText})
+            })
+          })
+        })
+        .then(function (response) {
+          resolve(response)
+        })
+        .catch(function (ex) {
+          reject(ex)
+        });
+    })
+  }
+
+
+  instanceAdministratorRequestKBullshit (url) {
+    return new Promise((resolve, reject) => {
+
+      const headers = new Headers();
+      headers.append("X-Karma-Codec", "json")
+      headers.append("X-Karma-Signature", this.signature)
+
+      let options = {
+        method: 'POST',
+        headers: headers,
+      }
+
       fetch(this.endpoint.toString() + url, options)
         .then(function (response) {
           return new Promise(function (resolve) {
