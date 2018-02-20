@@ -3,6 +3,8 @@ import {should, expect} from 'chai'
 
 require('dotenv').config()
 const {KarmaApi} = require('./tools/_karmaApi.js')
+const m = require('./tools/_model.js')
+const v = require('./tools/_value.js')
 
 const {
   KARMA_ENDPOINT,
@@ -12,9 +14,106 @@ const {
 const recordIdRegex = /^[\S]{10,}$/
 const karmaApi = new KarmaApi(KARMA_ENDPOINT)
 let recordId = null
+
+let recordResponse = {
+  "string": "example text",
+  "int": 1,
+  "float": 0.5,
+  "dateTime": "2017-08-02T00:00:00+03:00",
+  "bool": true,
+  "enum": "bar",
+  "tuple": [
+    5,
+    "example tuple"
+  ],
+  "list": [
+    {
+      "fieldA": "a",
+      "filedB": "b"
+    }
+  ],
+  "map": {
+    "a": "a",
+    "b": "b"
+  },
+  "struct": {
+    "fieldA": "a",
+    "filedB": "b"
+  },
+  "union": {
+    "variantA": {
+      "intA": 1,
+      "stringA": "a"
+    }
+  },
+  "or": 222,
+  "set": [1, 2, 3],
+  "unique": "unique",
+  "any": "any",
+  "recursion": {
+    "payload": 1,
+    "next": {
+      "payload": 2,
+      "next": {
+        "payload": 3,
+        "next": {
+          "payload": 4,
+          "next": {
+            "payload": 5,
+            "next": {
+              "payload": 6
+            }
+          }
+        }
+      }
+    }
+  },
+  "recursive": {
+    "foo": {
+      "bar": 1,
+      "zap": {
+        "foo": {
+          "bar": 2,
+          "zap": {
+            "foo": {
+              "bar": 3
+            },
+            "bar": 3
+          }
+        },
+        "bar": 2
+      }
+    },
+    "bar": 1
+  },
+  "annotation": "annotated"
+}
+
 let record = [
   "struct", {
     "string": ["string", "example text"],
+    "int": ["int32", 1],
+    "float": ["float", 1],
+    "dateTime": ["dateTime", "2017-08-02T00:00:00+03:00"],
+    "bool": ["bool", true],
+    // "enum": [
+    //   "set", "bar"
+    // ],
+    "tuple": [
+      "tuple", [
+        ["int32", 5],
+        ["string", "example tuple"],
+      ]
+    ],
+    "list": [
+      "list", [
+        ["struct", {
+          "fieldA": ["string", "a"],
+          "filedB": ["string", "b"]
+        }
+        ]
+      ]
+    ]
   }
 ]
 
@@ -68,216 +167,175 @@ test('all', async t => {
   t.is(response.status, 200)
 })
 
+test('all model', async t => {
+  const response = await karmaApi.tQuery(t,
+    [
+      "all", ["tag", ["string", "_model"]]
+    ])
+  t.is(response.status, 200)
+})
+
 test.serial('create model', async t => {
   const qu = {
-    "create": {
-      "in": {
-        "tag": "_tag"
+    "struct": {
+      "map": {
+        "map": {
+          "string": {}
+        }
       },
-      "value": {
-        "newStruct": {
-          "tag": "tagTest",
-          "model": {
-            "create": {
-              "in": {
-                "tag": "_model"
+      "struct": {
+        "struct": {
+          "fieldA": {
+            "string": {}
+          },
+          "filedB": {
+            "string": {}
+          }
+        }
+      },
+      "union": {
+        "union": {
+          "variantA": {
+            "struct": {
+              "stringA": {
+                "string": {}
               },
-              "value": {
-                "contextual": {
-                  "struct": {
-                    "string": {
-                      "string": {}
-                    },
-                    "int": {
-                      "int": {}
-                    },
-                    "float": {
-                      "float": {}
-                    },
-                    "dateTime": {
-                      "dateTime": {}
-                    },
-                    "bool": {
-                      "bool": {}
-                    },
-                    "enum": {
-                      "enum": [
-                        "foo",
-                        "bar",
-                        "pop"
-                      ]
-                    },
-                    "tuple": {
-                      "tuple": [
-                        {
-                          "int": {}
-                        },
-                        {
-                          "string": {}
-                        }
-                      ]
-                    },
-                    "list": {
-                      "list": {
-                        "struct": {
-                          "fieldA": {
-                            "string": {}
-                          },
-                          "filedB": {
-                            "string": {}
-                          }
-                        }
-                      }
-                    },
-                    "map": {
-                      "map": {
-                        "string": {}
-                      }
-                    },
-                    "struct": {
-                      "struct": {
-                        "fieldA": {
-                          "string": {}
-                        },
-                        "filedB": {
-                          "string": {}
-                        }
-                      }
-                    },
-                    "union": {
-                      "union": {
-                        "variantA": {
-                          "struct": {
-                            "stringA": {
-                              "string": {}
-                            },
-                            "intA": {
-                              "int": {}
-                            }
-                          }
-                        },
-                        "variantB": {
-                          "struct": {
-                            "stringB": {
-                              "string": {}
-                            },
-                            "intB": {
-                              "int": {}
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "or": {
-                      "or": [
-                        {
-                          "int": {}
-                        },
-                        {
-                          "string": {}
-                        }
-                      ]
-                    },
-                    "set": {
-                      "set": {
-                        "int": {}
-                      }
-                    },
-                    "optional": {
-                      "optional": {
-                        "string": {}
-                      }
-                    },
-                    "unique": {
-                      "unique": {
-                        "string": {}
-                      }
-                    },
-                    "any": {
-                      "any": {}
-                    },
-                    "recursion": {
-                      "recursion": {
-                        "label": "self",
-                        "model": {
-                          "struct": {
-                            "payload": {
-                              "int": {}
-                            },
-                            "next": {
-                              "optional": {
-                                "recurse": "self"
-                              }
-                            }
-                          }
-                        }
-                      }
-                    },
-                    "recursive": {
-                      "recursive": {
-                        "top": "S",
-                        "models": {
-                          "S": {
-                            "struct": {
-                              "foo": {
-                                "recurse": "T"
-                              },
-                              "bar": {
-                                "recurse": "U"
-                              }
-                            }
-                          },
-                          "T": {
-                            "struct": {
-                              "bar": {
-                                "recurse": "U"
-                              },
-                              "zap": {
-                                "optional": {
-                                  "recurse": "S"
-                                }
-                              }
-                            }
-                          },
-                          "U": {
-                            "int": {}
-                          }
-                        }
-                      }
-                    },
-                    "annotation": {
-                      "annotation": {
-                        "value": "ui:slider(-103,205)",
-                        "model": {
-                          "string": {}
-                        }
-                      }
-                    }
-                  }
+              "intA": {
+                "int": {}
+              }
+            }
+          },
+          "variantB": {
+            "struct": {
+              "stringB": {
+                "string": {}
+              },
+              "intB": {
+                "int": {}
+              }
+            }
+          }
+        }
+      },
+      "or": {
+        "or": [
+          {
+            "int": {}
+          },
+          {
+            "string": {}
+          }
+        ]
+      },
+      "set": {
+        "set": {
+          "int": {}
+        }
+      },
+      "optional": {
+        "optional": {
+          "string": {}
+        }
+      },
+      "unique": {
+        "unique": {
+          "string": {}
+        }
+      },
+      "any": {
+        "any": {}
+      },
+      "recursion": {
+        "recursion": {
+          "label": "self",
+          "model": {
+            "struct": {
+              "payload": {
+                "int": {}
+              },
+              "next": {
+                "optional": {
+                  "recurse": "self"
                 }
               }
             }
           }
         }
+      },
+      "recursive": {
+        "recursive": {
+          "top": "S",
+          "models": {
+            "S": {
+              "struct": {
+                "foo": {
+                  "recurse": "T"
+                },
+                "bar": {
+                  "recurse": "U"
+                }
+              }
+            },
+            "T": {
+              "struct": {
+                "bar": {
+                  "recurse": "U"
+                },
+                "zap": {
+                  "optional": {
+                    "recurse": "S"
+                  }
+                }
+              }
+            },
+            "U": {
+              "int": {}
+            }
+          }
+        }
+      },
+      "annotation": {
+        "annotation": {
+          "value": "ui:slider(-103,205)",
+          "model": {
+            "string": {}
+          }
+        }
       }
     }
   }
+
+
   const createModel = [
     "create", {
       "in": [
-        "tag", ["string", "_model"]
+        "tag", v.string("_model")
       ],
       "value": [
         "union",
         [
           "struct", [
           "map", {
-            "string": [
-              "union", [
-                "string",
-                ["struct", {}],
-              ]
-            ]
+            "string": m.string(),
+            "int": m.int32(),
+            "float": m.float(),
+            "dateTime": m.dateTime(),
+            "bool": m.bool(),
+            // "enum": m.enum([
+            //   ["string", "foo"],
+            //   ["string", "bar"],
+            //   ["string", "pop"],
+            // ]),
+            "tuple": m.tuple([
+              m.int32(),
+              m.string(),
+            ]),
+            "list": m.list(
+              m.struct({
+                "fieldA": m.string(),
+                "filedB": m.string()
+              })
+            ),
           }]
         ]
       ]
@@ -298,6 +356,7 @@ test.serial('create model', async t => {
     }
   ]
   const response = await karmaApi.tQuery(t, createTag)
+  console.log(response.body[1].human)
   t.is(response.status, 200, JSON.stringify(response.body))
   //t.truthy(response.body is A)
 })
@@ -311,7 +370,7 @@ test.serial('create record', async t => {
       "value": record
     }
   ])
-  //console.log(response.body[1].human)
+  console.log(response.body[1].human)
   t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
@@ -343,7 +402,7 @@ test.serial('create record', async t => {
 //       }
 //     }
 //   })
-//   compareResponse(t, response, record)
+//   compareResponse(t, response, recordResponse)
 // })
 //
 // test.serial('update record but without any changes', async t => {
