@@ -26,6 +26,23 @@ exports.list = function (o) {
   ]
 }
 
+exports.map = function (o) {
+  return [
+    "union", [
+      "map", o
+    ]
+  ]
+}
+
+exports.union = function (o) {
+  return [
+    "union", [
+      "union", [
+        "map", o
+      ]
+    ]
+  ]
+}
 
 exports.string = function () {
   return [

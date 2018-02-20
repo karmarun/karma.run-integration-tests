@@ -4,7 +4,6 @@ import {should, expect} from 'chai'
 require('dotenv').config()
 const {KarmaApi} = require('./tools/_karmaApi.js')
 const m = require('./tools/_model.js')
-const v = require('./tools/_value.js')
 
 const {
   KARMA_ENDPOINT,
@@ -46,7 +45,6 @@ let recordResponse = {
       "stringA": "a"
     }
   },
-  "or": 222,
   "set": [1, 2, 3],
   "unique": "unique",
   "any": "any",
@@ -113,7 +111,29 @@ let record = [
         }
         ]
       ]
-    ]
+    ],
+    "map": [
+      "map", {
+        "a": ["string", "a"],
+        "b": ["string", "b"]
+      }
+    ],
+    "struct": [
+      "struct", {
+        "fieldA": ["string", "a"],
+        "filedB": ["string", "b"]
+      }
+    ],
+    "union": [
+      "union", [
+        "variantA", [
+          "struct", {
+            "intA": ["int32", 1],
+            "stringA": ["string", "a"]
+          }
+        ]
+      ]
+    ],
   }
 ]
 
@@ -178,55 +198,6 @@ test('all model', async t => {
 test.serial('create model', async t => {
   const qu = {
     "struct": {
-      "map": {
-        "map": {
-          "string": {}
-        }
-      },
-      "struct": {
-        "struct": {
-          "fieldA": {
-            "string": {}
-          },
-          "filedB": {
-            "string": {}
-          }
-        }
-      },
-      "union": {
-        "union": {
-          "variantA": {
-            "struct": {
-              "stringA": {
-                "string": {}
-              },
-              "intA": {
-                "int": {}
-              }
-            }
-          },
-          "variantB": {
-            "struct": {
-              "stringB": {
-                "string": {}
-              },
-              "intB": {
-                "int": {}
-              }
-            }
-          }
-        }
-      },
-      "or": {
-        "or": [
-          {
-            "int": {}
-          },
-          {
-            "string": {}
-          }
-        ]
-      },
       "set": {
         "set": {
           "int": {}
@@ -309,36 +280,47 @@ test.serial('create model', async t => {
   const createModel = [
     "create", {
       "in": [
-        "tag", v.string("_model")
+        "tag", ["string", "_model"]
       ],
-      "value": [
-        "union",
-        [
-          "struct", [
-          "map", {
-            "string": m.string(),
-            "int": m.int32(),
-            "float": m.float(),
-            "dateTime": m.dateTime(),
-            "bool": m.bool(),
-            // "enum": m.enum([
-            //   ["string", "foo"],
-            //   ["string", "bar"],
-            //   ["string", "pop"],
-            // ]),
-            "tuple": m.tuple([
-              m.int32(),
-              m.string(),
-            ]),
-            "list": m.list(
-              m.struct({
-                "fieldA": m.string(),
-                "filedB": m.string()
-              })
-            ),
-          }]
-        ]
-      ]
+      "value": m.struct({
+        "string": m.string(),
+        "int": m.int32(),
+        "float": m.float(),
+        "dateTime": m.dateTime(),
+        "bool": m.bool(),
+        // "enum": m.enum([
+        //   ["string", "foo"],
+        //   ["string", "bar"],
+        //   ["string", "pop"],
+        // ]),
+        "tuple": m.tuple([
+          m.int32(),
+          m.string(),
+        ]),
+        "list": m.list(
+          m.struct({
+            "fieldA": m.string(),
+            "filedB": m.string()
+          })
+        ),
+        "map": m.map(
+          m.string()
+        ),
+        "struct": m.struct({
+          "fieldA": m.string(),
+          "filedB": m.string()
+        }),
+        "union": m.union({
+          "variantA": m.struct({
+            "stringA": m.string(),
+            "intA": m.int32()
+          }),
+          "variantB": m.struct({
+            "stringB": m.string(),
+            "intB": m.int32()
+          })
+        }),
+      })
     }
   ]
   const createTag = [
