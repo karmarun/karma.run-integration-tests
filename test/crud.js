@@ -4,6 +4,7 @@ import {should, expect} from 'chai'
 require('dotenv').config()
 const {KarmaApi} = require('./tools/_karmaApi.js')
 const m = require('./tools/_model.js')
+const e = require('./tools/_expressions.js')
 
 const {
   KARMA_ENDPOINT,
@@ -12,7 +13,7 @@ const {
 
 const recordIdRegex = /^[\S]{10,}$/
 const karmaApi = new KarmaApi(KARMA_ENDPOINT)
-let recordId = null
+let recordRef = null
 
 let recordResponse = {
   "string": "example text",
@@ -379,36 +380,29 @@ test.serial('create record', async t => {
   t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
-  recordId = response.body
+  recordRef = response.body
 })
-//
-// test.serial('create same record again', async t => {
-//   const response = await karmaApi.tQuery(t, {
-//     "create": {
-//       "in": {
-//         "tag": "tagTest"
-//       },
-//       "value": {
-//         "contextual": record
-//       }
-//     }
-//   })
-//   t.is(response.status, 400, 'should fail because of unique object')
-// })
-//
-// test.serial('check record', async t => {
-//   const response = await karmaApi.tQuery(t, {
-//     "get": {
-//       "newRef": {
-//         "model": {
-//           "tag": "tagTest"
-//         },
-//         "id": recordId
-//       }
-//     }
-//   })
-//   compareResponse(t, response, recordResponse)
-// })
+
+test.serial('create same record again', async t => {
+  const response = await karmaApi.tQuery(t, [
+    "create", {
+      "in": [
+        "tag", ["string", "tagTest"]
+      ],
+      "value": record
+    }
+  ])
+  t.is(response.status, 400, 'should fail because of unique object')
+})
+
+test.serial('check record', async t => {
+  const response = await karmaApi.tQuery(t,
+    //e.metarialize(e.first(e.all(e.tag("tagTest"))))
+    e.all(e.tag("tagTest"))
+  )
+  console.log(JSON.stringify(response, null, 2))
+  //compareResponse(t, response, recordResponse)
+})
 //
 // test.serial('update record but without any changes', async t => {
 //   // useful to check if it's possible to update unique objects

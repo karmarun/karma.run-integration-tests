@@ -102,7 +102,6 @@ exports.KarmaTools = class {
   }
 
   signOut () {
-    this.karmaDbName = null
     this.signature = null
   }
 
@@ -111,10 +110,8 @@ exports.KarmaTools = class {
    * @returns {Promise}
    */
   async signIn (karmaDbName, username, password) {
-    this.karmaDbName = karmaDbName
 
     const headers = new Headers();
-    headers.append("X-Karma-Database", this.karmaDbName)
     headers.append("X-Karma-Codec", "json")
 
     let options = {
@@ -145,7 +142,6 @@ exports.KarmaTools = class {
       throw new Error('no session')
     }
     const headers = new Headers();
-    headers.append("X-Karma-Database", this.karmaDbName)
     headers.append("X-Karma-Codec", "json")
     headers.append("X-Karma-Signature", this.signature)
 
@@ -156,7 +152,18 @@ exports.KarmaTools = class {
     }
 
     const response = await fetch(this.endpoint.toString(), options)
-    const result = await response.json()
+    const bodyString = await response.text()
+    let result = null
+    try {
+      result = JSON.parse(bodyString)
+    } catch (e) {
+      e.jsonString = bodyString
+      console.log("****************************************************************************************************")
+      console.log("Result Body")
+      console.log("****************************************************************************************************")
+      console.log(bodyString)
+      throw e
+    }
     return {body: result, status: response.status, statusText: response.statusText}
   }
 
@@ -188,7 +195,6 @@ exports.KarmaTools = class {
         path: '/admin/export',
         method: 'GET',
         headers: {
-          'X-Karma-Database': this.karmaDbName,
           'X-Karma-Codec': 'json',
           'X-Karma-Signature': this.signature,
         }
@@ -215,7 +221,7 @@ exports.KarmaTools = class {
 
   importDb (dumpFile) {
     return new Promise((resolve, reject) => {
-        const command = 'curl -vvX POST -H "X-Karma-Database: ' + this.karmaDbName + '" -H "X-Karma-Signature: ' + this.signature + '" -H "X-Karma-Codec: json" -H "Expect: "  --data-binary @' + dumpFile + ' ' + this.endpoint.href + 'admin/import';
+        const command = 'curl -vvX POST -H "X-Karma-Signature: ' + this.signature + '" -H "X-Karma-Codec: json" -H "Expect: "  --data-binary @' + dumpFile + ' ' + this.endpoint.href + 'admin/import';
         console.log(command);
         exec(command, function (error, stdout, stderr) {
           if (error !== null) {
@@ -232,72 +238,4 @@ exports.KarmaTools = class {
     )
   }
 
-
-  /**
-   * Uploads all fixtures defined in the given folder
-   * @param {string} sourceDirectory
-   * @returns {Promise}
-   */
-  uploadFixtures (sourceDirectory) {
-    return new Promise((resolve, reject) => {
-        const command = 'DISABLE_HTTP2=1 ' + __dirname + '/binTools/' + getTool('fixtures') + ' --directory "' + sourceDirectory + '" --endpoint "' + this.endpoint.href + '" --database "' + this.karmaDbName + '" --signature "' + this.signature + '"';
-        console.log("****************************************************************************************************");
-        console.log('command:');
-        console.log(command);
-        console.log("****************************************************************************************************");
-        exec(command, function (error, stdout, stderr) {
-          console.log("****************************************************************************************************");
-          console.log('stderr:');
-          console.log(stderr);
-          console.log("****************************************************************************************************");
-          console.log('stdout:');
-          console.log(stdout);
-          if (error !== null) {
-            reject(error)
-          }
-          else {
-            resolve('uploadFixtures success')
-          }
-        })
-      }
-    )
-  }
-}
-
-
-function getTool (tool) {
-  let arch = ''
-  switch (process.arch) {
-    case 'x64':
-      arch = 'amd64'
-      break;
-    case 'ia32':
-      arch = '386'
-      break;
-    case 'arm':
-      throw new Error('not supported')
-      break;
-  }
-
-  let platform = '';
-  switch (process.platform) {
-    case 'darwin':
-      platform = 'darwin'
-      break;
-    case 'freebsd':
-      throw new Error('not supported')
-      break;
-    case 'linux':
-      platform = 'linux'
-      break;
-    case 'sunos':
-      throw new Error('not supported')
-      break;
-    case 'win32':
-      throw new Error('not supported')
-      break;
-  }
-
-
-  return tool + '-' + platform + '-' + arch
 }
