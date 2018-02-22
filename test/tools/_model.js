@@ -26,10 +26,43 @@ exports.list = function (o) {
   ]
 }
 
+exports.set = function (o) {
+  return [
+    "union", [
+      "set", o
+    ]
+  ]
+}
+
 exports.map = function (o) {
   return [
     "union", [
       "map", o
+    ]
+  ]
+}
+
+exports.optional = function (o) {
+  return [
+    "union", [
+      "optional", o
+    ]
+  ]
+}
+
+exports.unique = function (o) {
+  return [
+    "union", [
+      "unique", o
+    ]
+  ]
+}
+
+exports.any = function () {
+  return [
+    "union", [
+      "any",
+      ["struct", {}]
     ]
   ]
 }
