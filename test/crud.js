@@ -170,6 +170,36 @@ let record = [
         ]
       }
     ],
+    "recursive": [
+      "struct", {
+        "foo": [
+          "struct", {
+            "bar": ["int32", 1],
+            "zap": [
+              "struct", {
+                "foo": [
+                  "struct", {
+                    "bar": ["int32", 2],
+                    "zap": [
+                      "struct", {
+                        "foo": [
+                          "struct", {
+                            "bar": ["int32", 3]
+                          }
+                        ],
+                        "bar": ["int32", 3]
+                      }
+                    ]
+                  }
+                ],
+                "bar": ["int32", 2]
+              }
+            ]
+          }
+        ],
+        "bar": ["int32", 1]
+      }
+    ],
     "annotation": ["string", "annotated"],
   }
 ]
@@ -233,43 +263,6 @@ test('all model', async t => {
 })
 
 test.serial('create model', async t => {
-  const qu = {
-    "struct": {
-      "recursive": {
-        "recursive": {
-          "top": "S",
-          "models": {
-            "S": {
-              "struct": {
-                "foo": {
-                  "recurse": "T"
-                },
-                "bar": {
-                  "recurse": "U"
-                }
-              }
-            },
-            "T": {
-              "struct": {
-                "bar": {
-                  "recurse": "U"
-                },
-                "zap": {
-                  "optional": {
-                    "recurse": "S"
-                  }
-                }
-              }
-            },
-            "U": {
-              "int": {}
-            }
-          }
-        }
-      }
-    }
-  }
-
 
   const createModel = [
     "create", {
@@ -332,10 +325,24 @@ test.serial('create model', async t => {
           "self",
           m.struct({
             "payload": m.int32(),
-            "next": m.optional(m.recursion.recurse("self"))
+            "next": m.optional(m.recurse("self"))
           })
         ),
-
+        "recursive": m.recursive("S",
+          {
+            "S": m.struct({
+              "foo": m.recurse("T"),
+              "bar": m.recurse("U")
+            }),
+            "T": m.struct({
+              "bar": m.recurse("U"),
+              "zap": m.optional(
+                m.recurse("S")
+              )
+            }),
+            "U": m.int32()
+          }
+        )
       })
     }
   ]
@@ -354,9 +361,9 @@ test.serial('create model', async t => {
     }
   ]
   const response = await karmaApi.tQuery(t, createTag)
-  console.log(response.body[1].human)
   t.is(response.status, 200, JSON.stringify(response.body))
-  //t.truthy(response.body is A)
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
 })
 
 test.serial('create record', async t => {
@@ -368,7 +375,7 @@ test.serial('create record', async t => {
       "value": record
     }
   ])
-  console.log(response.body[1].human)
+  //console.log(response.body[1].human)
   t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)

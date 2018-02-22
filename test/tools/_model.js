@@ -76,7 +76,7 @@ exports.recursion = function (label, o) {
     "union", [
       "recursion", [
         "struct", {
-          "label": ["string", "self"],
+          "label": ["string", label],
           "model": o
         }
       ]
@@ -84,11 +84,27 @@ exports.recursion = function (label, o) {
   ]
 }
 
-exports.recursion.recurse = function (label) {
+exports.recurse = function (label) {
   return [
     "union", [
       "recurse",
       ["string", label]
+    ]
+  ]
+}
+
+exports.recursive = function (top, modelsMap) {
+
+  return [
+    "union", [
+      "recursive", [
+        "struct", {
+          "top": ["string", top],
+          "models": [
+            "map", modelsMap
+          ]
+        }
+      ]
     ]
   ]
 }
