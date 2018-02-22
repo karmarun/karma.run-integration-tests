@@ -58,6 +58,41 @@ exports.unique = function (o) {
   ]
 }
 
+exports.annotation = function (value, o) {
+  return [
+    "union", [
+      "annotation", [
+        "struct", {
+          "value": ["string", value],
+          "model": o
+        }
+      ]
+    ]
+  ]
+}
+
+exports.recursion = function (label, o) {
+  return [
+    "union", [
+      "recursion", [
+        "struct", {
+          "label": ["string", "self"],
+          "model": o
+        }
+      ]
+    ]
+  ]
+}
+
+exports.recursion.recurse = function (label) {
+  return [
+    "union", [
+      "recurse",
+      ["string", label]
+    ]
+  ]
+}
+
 exports.any = function () {
   return [
     "union", [

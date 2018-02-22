@@ -94,10 +94,10 @@ let record = [
     "float": ["float", 1],
     "dateTime": ["dateTime", "2017-08-02T00:00:00+03:00"],
     "bool": ["bool", true],
-    "enum": [
-      "enum",
-      "bar"
-    ],
+    // "enum": [
+    //   "enum",
+    //   "bar"
+    // ],
     "tuple": [
       "tuple", [
         ["int32", 5],
@@ -140,6 +140,37 @@ let record = [
     ],
     "unique": ["string", "unique"],
     // "any": ["string", "any"],
+    "recursion": [
+      "struct", {
+        "payload": ["int32", 1],
+        "next": [
+          "struct", {
+            "payload": ["int32", 2],
+            "next": [
+              "struct", {
+                "payload": ["int32", 3],
+                "next": [
+                  "struct", {
+                    "payload": ["int32", 4],
+                    "next": [
+                      "struct", {
+                        "payload": ["int32", 5],
+                        "next": [
+                          "struct", {
+                            "payload": ["int32", 6]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "annotation": ["string", "annotated"],
   }
 ]
 
@@ -204,23 +235,6 @@ test('all model', async t => {
 test.serial('create model', async t => {
   const qu = {
     "struct": {
-      "recursion": {
-        "recursion": {
-          "label": "self",
-          "model": {
-            "struct": {
-              "payload": {
-                "int": {}
-              },
-              "next": {
-                "optional": {
-                  "recurse": "self"
-                }
-              }
-            }
-          }
-        }
-      },
       "recursive": {
         "recursive": {
           "top": "S",
@@ -252,14 +266,6 @@ test.serial('create model', async t => {
             }
           }
         }
-      },
-      "annotation": {
-        "annotation": {
-          "value": "ui:slider(-103,205)",
-          "model": {
-            "string": {}
-          }
-        }
       }
     }
   }
@@ -276,11 +282,11 @@ test.serial('create model', async t => {
         "float": m.float(),
         "dateTime": m.dateTime(),
         "bool": m.bool(),
-        "enum": m.enum([
-          ["string", "foo"],
-          ["string", "bar"],
-          ["string", "pop"],
-        ]),
+        // "enum": m.enum([
+        //   ["string", "foo"],
+        //   ["string", "bar"],
+        //   ["string", "pop"],
+        // ]),
         "tuple": m.tuple([
           m.int32(),
           m.string(),
@@ -318,6 +324,18 @@ test.serial('create model', async t => {
           m.string()
         ),
         // "any": m.any(),
+        "annotation": m.annotation(
+          "ui:slider(-103,205)",
+          m.string()
+        ),
+        "recursion": m.recursion(
+          "self",
+          m.struct({
+            "payload": m.int32(),
+            "next": m.optional(m.recursion.recurse("self"))
+          })
+        ),
+
       })
     }
   ]
@@ -341,21 +359,21 @@ test.serial('create model', async t => {
   //t.truthy(response.body is A)
 })
 
-// test.serial('create record', async t => {
-//   const response = await karmaApi.tQuery(t, [
-//     "create", {
-//       "in": [
-//         "tag", ["string", "tagTest"]
-//       ],
-//       "value": record
-//     }
-//   ])
-//   console.log(response.body[1].human)
-//   t.is(response.status, 200, JSON.stringify(response.body))
-//   t.regex(response.body[0], recordIdRegex)
-//   t.regex(response.body[1], recordIdRegex)
-//   recordId = response.body
-// })
+test.serial('create record', async t => {
+  const response = await karmaApi.tQuery(t, [
+    "create", {
+      "in": [
+        "tag", ["string", "tagTest"]
+      ],
+      "value": record
+    }
+  ])
+  console.log(response.body[1].human)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+  recordId = response.body
+})
 //
 // test.serial('create same record again', async t => {
 //   const response = await karmaApi.tQuery(t, {
