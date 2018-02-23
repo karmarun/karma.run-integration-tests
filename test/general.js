@@ -332,119 +332,159 @@ test('divide', async t => {
 //   t.is(response.body, -2)
 // })
 
-// test('assertPresent', async t => {
-//   const response = await karmaApi.tQuery(t, {
-//     "assertPresent": {
-//       "key": {
-//         "name": "notFoo",
-//         "value": {
-//           "newMap": {"foo": "bar"}
-//         }
-//       }
-//     }
-//   })
-//   t.is(response.status, 400)
-//   expect(response.body).to.have.own.property('message')
-//   expect(response.body).to.have.own.property('type')
-// })
+test('assertPresent', async t => {
+  let response = await karmaApi.tQuery(t, [
+    "assertPresent", [
+      "key", {
+        "name": "notFoo",
+        "value": [
+          "map", {
+            "foo": ["string", "bar"]
+          }
+        ]
+      }
+    ]
+  ])
+  t.is(response.status, 400)
+  expect(response.body[1]).to.have.own.property('human')
 
-// test('assertCase', async t => {
-//   const response = await karmaApi.tQuery(t, {
-//     "assertCase": {
-//       "case": "foo",
-//       "value": {
-//         "newUnion": {"bar": 4}
-//       }
-//     }
-//   })
-//   t.is(response.status, 400)
-//   expect(response.body).to.have.own.property('message')
-//   expect(response.body).to.have.own.property('type')
-//   expect(response.body).to.have.own.property('program')
-// })
-//
-// test('with', async t => {
-//   const response = await karmaApi.tQuery(t, {
-//     "with": {
-//       "value": {
-//         "newStruct": {
-//           "valA": 4,
-//           "valB": -6
-//         }
-//       },
-//       "return": {
-//         "add": [
-//           {
-//             "field": "valA"
-//           },
-//           {
-//             "field": "valB"
-//           }
-//         ]
-//       }
-//     }
-//   })
-//   t.is(response.status, 200)
-//   t.is(response.body, -2)
-// })
-//
-// test('isPresent', async t => {
-//   const response = await karmaApi.tQuery(t, {
-//     "isPresent": {
-//       "key": {
-//         "name": "notFoo",
-//         "value": {
-//           "newMap": {"foo": "bar"}
-//         }
-//       }
-//     }
-//   })
-//   t.is(response.status, 200)
-//   t.is(response.body, false)
-// })
-//
-// test('matchRegex', async t => {
-//   const regex = "^(?:(http[s]?|ftp[s])://)?([^:/\\s]+)(:[0-9]+)?((?:/\\w+)*/)([\\w\\-\\.]+[^#?\\s]+)([^#\\s]*)?(#[\\w\\-]+)?$"
-//   let response = await karmaApi.tQuery(t, {
-//     "matchRegex": {
-//       "value": "https://www.google.com:80/dir/1/2/search.html?arg=0-a&arg1=1-b&arg3-c#hash",
-//       "regex": regex,
-//       "caseInsensitive": true,
-//       "multiLine": false
-//     }
-//   })
-//   t.is(response.status, 200)
-//   t.is(response.body, true)
-//
-//   response = await karmaApi.tQuery(t, {
-//     "matchRegex": {
-//       "value": "https://www.google:com:80/dir/1/2/search.html?arg=0-a&arg1=1-b&arg3-c#hash",
-//       "regex": regex,
-//       "caseInsensitive": true,
-//       "multiLine": false
-//     }
-//   })
-//   t.is(response.status, 200)
-//   t.is(response.body, false)
-// })
-//
-// test('if', async t => {
-//   const response = await karmaApi.tQuery(t, {
-//     "if": {
-//       "condition": {
-//         "greater": [
-//           2.2,
-//           2.1
-//         ]
-//       },
-//       "then": {
-//         "add": [2, 4]
-//       },
-//       "else": {
-//         "subtract": [2, 4]
-//       }
-//     }
-//   })
-//   t.is(response.status, 200)
-//   t.is(response.body, 6)
-// })
+  response = await karmaApi.tQuery(t, [
+    "assertPresent", [
+      "key", {
+        "name": "foo",
+        "value": [
+          "map", {
+            "foo": ["string", "bar"]
+          }
+        ]
+      }
+    ]
+  ])
+  t.is(response.status, 200)
+  t.is(response.body, "bar")
+})
+
+test('assertCase', async t => {
+  let response = await karmaApi.tQuery(t, [
+    "assertCase", {
+      "case": "foo",
+      "value": [
+        "union", [
+          "bar", ["int8", 4]
+        ]
+      ]
+    }
+  ])
+  t.is(response.status, 400)
+  expect(response.body[1]).to.have.own.property('human')
+
+  response = await karmaApi.tQuery(t, [
+    "assertCase", {
+      "case": "foo",
+      "value": [
+        "union", [
+          "foo", ["int8", 4]
+        ]
+      ]
+    }
+  ])
+  t.is(response.status, 200)
+  t.is(response.body, 4)
+})
+
+test('with', async t => {
+  const response = await karmaApi.tQuery(t, [
+    "with", {
+      "value": [
+        "struct", {
+          "valA": ["int32", 4],
+          "valB": ["int32", -6]
+        }
+      ],
+      "return": [
+        "add", [
+          [
+            "field",
+            {
+              "name": "valA",
+              "value": ["arg", {}]
+            }
+          ],
+          [
+            "field",
+            {
+              "name": "valB",
+              "value": ["arg", {}]
+            }
+          ]
+        ]
+      ]
+    }
+  ])
+  //console.log(response.body[1].human)
+  t.is(response.status, 200)
+  t.is(response.body, -2)
+})
+
+test('isPresent', async t => {
+  const response = await karmaApi.tQuery(t, [
+    "isPresent", [
+      "key", {
+        "name": "notFoo",
+        "value": [
+          "map", {
+            "foo": ["string", "bar"]
+          }
+        ]
+      }
+    ]
+  ])
+  t.is(response.status, 200)
+  t.is(response.body, false)
+})
+
+test('matchRegex', async t => {
+  const regex = "^(?:(http[s]?|ftp[s])://)?([^:/\\s]+)(:[0-9]+)?((?:/\\w+)*/)([\\w\\-\\.]+[^#?\\s]+)([^#\\s]*)?(#[\\w\\-]+)?$"
+  let response = await karmaApi.tQuery(t, [
+    "matchRegex", {
+      "value": ["string", `https://www.google.com:80/dir/1/2/search.html?arg=0-a&arg1=1-b&arg3-c#hash`],
+      "regex": regex,
+      "caseInsensitive": true,
+      "multiLine": false,
+    }
+  ])
+  t.is(response.status, 200)
+  t.is(response.body, true)
+
+  const severeMistake = ':'
+  response = await karmaApi.tQuery(t, [
+    "matchRegex", {
+      "value": ["string", `https://www.google${severeMistake}com:80/dir/1/2/search.html?arg=0-a&arg1=1-b&arg3-c#hash`],
+      "regex": regex,
+      "caseInsensitive": true,
+      "multiLine": false,
+    }
+  ])
+  t.is(response.status, 200)
+  t.is(response.body, false)
+})
+
+test('if', async t => {
+  const response = await karmaApi.tQuery(t, [
+    "if", {
+      "condition": [
+        "greater", [
+          ["float", 2.2], ["float", 2.1]
+        ]
+      ],
+      "then": [
+        "add", [["int32", 2], ["int32", 4]]
+      ],
+      "else": [
+        "subtract", [["int32", 2], ["int32", 4]]
+      ]
+    }
+  ])
+  t.is(response.status, 200)
+  t.is(response.body, 6)
+})

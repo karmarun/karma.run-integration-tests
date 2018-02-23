@@ -18,3 +18,8 @@ KARMA_INSTANCE_SECRET=
 
 or ava file eg:
 `ava test/general.js -v`
+
+
+# .ENV File
+* KARMA_ENDPOINT=http://localhost:8005
+* KARMA_INSTANCE_SECRET=YOUR_VERY_LONG_SECRET
