@@ -237,9 +237,9 @@ function compareResponse (t, response, expected) {
 //**********************************************************************************************************************
 
 test.before(async t => {
-  await karmaApi.signIn('', 'admin', KARMA_INSTANCE_SECRET)
-  await karmaApi.instanceAdministratorRequestKBullshit('admin/reset')
-  await karmaApi.signIn('', 'admin', KARMA_INSTANCE_SECRET)
+  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
+  await karmaApi.instanceAdministratorRequest('admin/reset')
+  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
 })
 
 

@@ -17,57 +17,12 @@ URL.prototype.getPort = function () {
 exports.KarmaTools = class {
 
   constructor (endpoint) {
-    this.karmaDbName = null
     this.signature = null
     this.endpoint = new URL(endpoint)
   }
 
-  /**
-   * actions which only instance administrators can execute
-   * @param url
-   * @param method
-   * @param karmaInstanceSecret
-   * @param dbName
-   * @returns {Promise}
-   */
-  instanceAdministratorRequest (url, method, karmaInstanceSecret, dbName) {
-    return new Promise((resolve, reject) => {
 
-      const headers = new Headers();
-      headers.append("X-Karma-Secret", karmaInstanceSecret)
-      headers.append("X-Karma-Codec", "json")
-
-      let options = {
-        method: method,
-        headers: headers,
-      };
-
-      if (dbName) {
-        options['body'] = `"${dbName}"`
-      }
-
-      console.log(this.endpoint.toString() + url)
-      console.log(karmaInstanceSecret)
-
-      fetch(this.endpoint.toString() + url, options)
-        .then(function (response) {
-          return new Promise(function (resolve) {
-            response.json().then(function (result) {
-              resolve({body: result, status: response.status, statusText: response.statusText})
-            })
-          })
-        })
-        .then(function (response) {
-          resolve(response)
-        })
-        .catch(function (ex) {
-          reject(ex)
-        });
-    })
-  }
-
-
-  instanceAdministratorRequestKBullshit (url) {
+  instanceAdministratorRequest (url) {
     return new Promise((resolve, reject) => {
 
       const headers = new Headers();
@@ -109,7 +64,7 @@ exports.KarmaTools = class {
    * sign in as instance administrator
    * @returns {Promise}
    */
-  async signIn (karmaDbName, username, password) {
+  async signIn (username, password) {
 
     const headers = new Headers();
     headers.append("X-Karma-Codec", "json")
@@ -124,10 +79,19 @@ exports.KarmaTools = class {
     }
 
     const response = await fetch(this.endpoint.toString() + 'auth', options)
-    const result = await response.json()
-    if (response.status !== 200) {
-      throw new Error(result)
+    const bodyString = await response.text()
+    let result = null
+    try {
+      result = JSON.parse(bodyString)
+    } catch (e) {
+      e.jsonString = bodyString
+      console.log("****************************************************************************************************")
+      console.log("Result Body")
+      console.log("****************************************************************************************************")
+      console.log(bodyString)
+      throw e
     }
+
     this.signature = result
     return this.signature
   }

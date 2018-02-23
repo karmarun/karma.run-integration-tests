@@ -13,8 +13,9 @@ const karmaApi = new KarmaApi(KARMA_ENDPOINT)
 
 
 test.before(async t => {
-  await karmaApi.instanceAdministratorRequest('/admin/reset', 'POST', KARMA_INSTANCE_SECRET, '')
-  await karmaApi.signIn('', 'admin', KARMA_INSTANCE_SECRET)
+  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
+  await karmaApi.instanceAdministratorRequest('admin/reset')
+  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
   // await karmaApi.tQuery(t, {
   //   "do": {
   //     "createModels": {
