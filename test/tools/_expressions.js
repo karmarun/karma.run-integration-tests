@@ -16,27 +16,21 @@ exports.first = function (v) {
   ]
 }
 
-exports.metarialize = function (v) {
+exports.tuple = function (array) {
   return [
-    "metarialize", v
+    "tuple", array
   ]
 }
 
-exports.ref = function (model, id = null) {
-  if (model instanceof Array) {
-    return [
-      "ref", [
-        ["string", model[0]],
-        ["string", model[1]]
-      ]
-    ]
-  }
-
+exports.ref = function (v) {
   return [
-    "ref", [
-      ["string", model],
-      ["string", id]
-    ]
+    "ref", v
+  ]
+}
+
+exports.metarialize = function (v) {
+  return [
+    "metarialize", v
   ]
 }
 

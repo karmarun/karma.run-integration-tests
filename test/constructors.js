@@ -3,19 +3,20 @@ import {should, expect} from 'chai'
 
 require('dotenv').config()
 const {KarmaApi} = require('./tools/_karmaApi.js')
+const recordIdRegex = /^[\S]{10,}$/
 
-const DB_NAME = 'db-api-test-constructors'
 const {
   KARMA_ENDPOINT,
   KARMA_INSTANCE_SECRET,
 } = process.env
 
 const karmaApi = new KarmaApi(KARMA_ENDPOINT)
-
+let testRef = null
 
 test.before(async t => {
-  await karmaApi.instanceAdministratorRequest('/admin/reset', 'POST', KARMA_INSTANCE_SECRET, '')
-  await karmaApi.signIn(DB_NAME, 'admin', KARMA_INSTANCE_SECRET)
+  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
+  await karmaApi.instanceAdministratorRequest('admin/reset')
+  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
 })
 
 test('tag', async t => {
@@ -187,11 +188,44 @@ test('union', async t => {
   t.deepEqual(response.body, ["foo", -127])
 })
 
-// test('ref', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     ["ref", [
-//       4,
-//     ]])
-//   t.is(response.status, 200)
-//   t.deepEqual(response.body, ["foo", -127])
-// })
+test.serial('refTo', async t => {
+  let query = [
+    "refTo", [
+      "first", [
+        "all", [
+          "tag", ["string", "_tag"]],
+      ]
+    ]
+  ]
+  const response = await karmaApi.tQuery(t, query)
+  t.is(response.status, 200)
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+  testRef = response.body
+})
+
+test.serial('ref', async t => {
+  const query = [
+    "ref", [
+      ["tag", ["string", "_tag"]],
+      ["string", testRef[1]]
+    ]
+  ]
+
+  const response = await karmaApi.tQuery(t, query)
+  t.is(response.status, 200)
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+test.serial('model', async t => {
+  const query = [
+    "model",
+    ["string", testRef[0]]
+  ]
+
+  const response = await karmaApi.tQuery(t, query)
+  t.is(response.status, 200)
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})

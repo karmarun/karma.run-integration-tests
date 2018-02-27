@@ -96,10 +96,7 @@ let record = [
     "float": ["float", 0.5],
     "dateTime": ["dateTime", "2017-08-02T00:00:00+03:00"],
     "bool": ["bool", true],
-    // "enum": [
-    //   "enum",
-    //   "bar"
-    // ],
+    "enum": ["symbol", "bar"],
     "tuple": [
       "tuple", [
         ["int32", 5],
@@ -275,11 +272,11 @@ test.serial('create model', async t => {
         "float": m.float(),
         "dateTime": m.dateTime(),
         "bool": m.bool(),
-        // "enum": m.enum([
-        //   ["string", "foo"],
-        //   ["string", "bar"],
-        //   ["string", "pop"],
-        // ]),
+        "enum": m.enum([
+          ["string", "foo"],
+          ["string", "bar"],
+          ["string", "pop"],
+        ]),
         "tuple": m.tuple([
           m.int32(),
           m.string(),
@@ -400,27 +397,24 @@ test.serial('check record', async t => {
   t.is(response.status, 200, JSON.stringify(response.body))
   compareResponse(t, response, recordResponse)
 })
-//
-// test.serial('update record but without any changes', async t => {
-//   // useful to check if it's possible to update unique objects
-//   const response = await karmaApi.tQuery(t, {
-//     "update": {
-//       "ref": {
-//         "newRef": {
-//           "model": {
-//             "tag": "tagTest"
-//           },
-//           "id": recordId
-//         }
-//       },
-//       "value": {
-//         "contextual": record
-//       }
-//     }
-//   })
-//   t.is(response.status, 200, JSON.stringify(response.body))
-//   t.is(response.body, recordId)
-// })
+
+test.serial('update record but without any changes', async t => {
+  // useful to check if it's possible to update unique objects
+  const response = await karmaApi.tQuery(t, [
+    "update", {
+      "ref": e.ref([
+        e.tag("tagTest"),
+        ["string", recordRef[1]]
+      ]),
+      "value": record
+    }
+  ])
+  console.log(response.body[1].human)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.body[1], recordRef[1])
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
 //
 // test.serial('check record', async t => {
 //   const response = await karmaApi.tQuery(t, {
