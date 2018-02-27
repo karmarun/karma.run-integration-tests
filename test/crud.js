@@ -40,15 +40,14 @@ let recordResponse = {
     "fieldA": "a",
     "filedB": "b"
   },
-  "union": {
-    "variantA": {
+  "union": [
+    "variantA", {
       "intA": 1,
       "stringA": "a"
     }
-  },
+  ],
   "set": [1, 2, 3],
   "unique": "unique",
-  "any": "any",
   "recursion": {
     "payload": 1,
     "next": {
@@ -60,7 +59,8 @@ let recordResponse = {
           "next": {
             "payload": 5,
             "next": {
-              "payload": 6
+              "payload": 6,
+              "next": null
             }
           }
         }
@@ -75,7 +75,8 @@ let recordResponse = {
           "bar": 2,
           "zap": {
             "foo": {
-              "bar": 3
+              "bar": 3,
+              "zap": null
             },
             "bar": 3
           }
@@ -92,7 +93,7 @@ let record = [
   "struct", {
     "string": ["string", "example text"],
     "int": ["int32", 1],
-    "float": ["float", 1],
+    "float": ["float", 0.5],
     "dateTime": ["dateTime", "2017-08-02T00:00:00+03:00"],
     "bool": ["bool", true],
     // "enum": [
@@ -140,7 +141,6 @@ let record = [
       "set", [["int32", 1], ["int32", 2], ["int32", 3]]
     ],
     "unique": ["string", "unique"],
-    // "any": ["string", "any"],
     "recursion": [
       "struct", {
         "payload": ["int32", 1],
@@ -212,7 +212,7 @@ function compareResponse (t, response, expected) {
   t.is(response.body.float, expected.float)
   t.is(response.body.dateTime, expected.dateTime)
   t.is(response.body.bool, expected.bool)
-  t.is(response.body.enum, expected.enum)
+  // t.is(response.body.enum, expected.enum)
   t.deepEqual(response.body.tuple, expected.tuple)
   t.deepEqual(response.body.list, expected.list)
   t.deepEqual(response.body.map, expected.map)
@@ -226,7 +226,6 @@ function compareResponse (t, response, expected) {
   else {
     t.falsy(response.body.optional)
   }
-  t.is(response.body.any, expected.any)
   t.deepEqual(response.body.recursion, expected.recursion)
   t.deepEqual(response.body.recursive, expected.recursive)
 }
@@ -317,7 +316,6 @@ test.serial('create model', async t => {
         "unique": m.unique(
           m.string()
         ),
-        // "any": m.any(),
         "annotation": m.annotation(
           "ui:slider(-103,205)",
           m.string()
@@ -397,11 +395,10 @@ test.serial('create same record again', async t => {
 
 test.serial('check record', async t => {
   const response = await karmaApi.tQuery(t,
-    //e.metarialize(e.first(e.all(e.tag("tagTest"))))
-    e.all(e.tag("tagTest"))
+    e.first(e.all(e.tag("tagTest")))
   )
-  console.log(JSON.stringify(response, null, 2))
-  //compareResponse(t, response, recordResponse)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  compareResponse(t, response, recordResponse)
 })
 //
 // test.serial('update record but without any changes', async t => {

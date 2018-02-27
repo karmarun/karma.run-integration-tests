@@ -132,7 +132,7 @@ exports.string = function () {
   return [
     "union", [
       "string",
-      ["struct", {}],
+      ["struct", {}]
     ]
   ]
 }
@@ -141,7 +141,7 @@ exports.int32 = function () {
   return [
     "union", [
       "int32",
-      ["struct", {}],
+      ["struct", {}]
     ]
   ]
 }
@@ -150,7 +150,7 @@ exports.float = function () {
   return [
     "union", [
       "float",
-      ["struct", {}],
+      ["struct", {}]
     ]
   ]
 }
@@ -159,7 +159,7 @@ exports.dateTime = function () {
   return [
     "union", [
       "dateTime",
-      ["struct", {}],
+      ["struct", {}]
     ]
   ]
 }
