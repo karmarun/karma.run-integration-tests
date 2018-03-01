@@ -44,7 +44,6 @@ test('metarialize', async t => {
   t.truthy(response.body.id)
   t.truthy(response.body.model)
   t.truthy(response.body.value)
-  console.log(JSON.stringify(response, null, 2))
 })
 
 test('after', async t => {
@@ -111,7 +110,7 @@ test('less', async t => {
 })
 
 test('equal', async t => {
-  const response = await karmaApi.tQuery(t,
+  let response = await karmaApi.tQuery(t,
     [
       "equal",
       [["string", "foo"], ["string", "foo"]]
@@ -119,6 +118,15 @@ test('equal', async t => {
   )
   t.is(response.status, 200)
   t.is(response.body, true)
+
+  response = await karmaApi.tQuery(t,
+    [
+      "equal",
+      [["int16", 123], ["string", "foo"]]
+    ]
+  )
+  t.is(response.status, 200)
+  t.is(response.body, false)
 })
 
 test('and', async t => {
@@ -436,4 +444,31 @@ test('if', async t => {
   ])
   t.is(response.status, 200)
   t.is(response.body, 6)
+})
+
+test('arg', async t => {
+  const response = await karmaApi.tQuery(t,
+    [
+      "mapList",
+      {
+        "value": [
+          "all", ["tag", ["string", "_tag"]]
+        ],
+        "expression": [
+          "field",
+          {
+            "name": "tag",
+            "value": ["arg", {}]
+          }
+        ],
+      }
+    ]
+  )
+  t.is(response.status, 200)
+  t.truthy(response.body.find(item => item === "_tag"))
+  t.truthy(response.body.find(item => item === "_model"))
+  t.truthy(response.body.find(item => item === "_user"))
+  t.truthy(response.body.find(item => item === "_role"))
+  t.truthy(response.body.find(item => item === "_expression"))
+  t.truthy(response.body.find(item => item === "_migration"))
 })
