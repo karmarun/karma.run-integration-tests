@@ -16,77 +16,6 @@ test.before(async t => {
   await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
   await karmaApi.instanceAdministratorRequest('admin/reset')
   await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
-  // await karmaApi.tQuery(t, {
-  //   "do": {
-  //     "createModels": {
-  //       "createMultiple": {
-  //         "in": {
-  //           "tag": "_model"
-  //         },
-  //         "values": {
-  //           "testModel": {
-  //             "contextual": {
-  //               "struct": {
-  //                 "myString": {
-  //                   "string": {}
-  //                 },
-  //                 "myInt": {
-  //                   "int": {}
-  //                 },
-  //                 "myFloat": {
-  //                   "float": {}
-  //                 },
-  //                 "myDateTime": {
-  //                   "dateTime": {}
-  //                 },
-  //                 "myBool": {
-  //                   "bool": {}
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     },
-  //     "createTag": {
-  //       "create": {
-  //         "in": {
-  //           "tag": "_tag"
-  //         },
-  //         "value": {
-  //           "newStruct": {
-  //             "tag": {
-  //               "field": {
-  //                 "name": "key",
-  //                 "value": {
-  //                   "id": {}
-  //                 }
-  //               }
-  //             },
-  //             "model": {
-  //               "field": {
-  //                 "name": "value",
-  //                 "value": {
-  //                   "id": {}
-  //                 }
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-  //     },
-  //     "return": {
-  //       "mapMap": {
-  //         "value": {
-  //           "bind": "createModels"
-  //         },
-  //         "expression": {
-  //           "bind": "createTag"
-  //         }
-  //       }
-  //     }
-  //   }
-  // })
 })
 
 
@@ -98,36 +27,56 @@ test('all', async t => {
   t.is(response.status, 200)
 })
 
-// test('after', async t => {
-//   const response = await karmaApi.tQuery(t, {
-//     "after": [
-//       {
-//         "newDateTime": "2018-01-01T00:00:00Z"
-//       },
-//       {
-//         "newDateTime": "2017-01-01T00:00:00Z"
-//       }
-//     ]
-//   })
-//   t.is(response.status, 200)
-//   t.is(response.body, true)
-// })
-//
-// test('before', async t => {
-//   const response = await karmaApi.tQuery(t, {
-//     "before": [
-//       {
-//         "newDateTime": "2017-01-01T00:00:00Z"
-//       },
-//       {
-//         "newDateTime": "2018-01-01T00:00:00Z"
-//       }
-//     ]
-//   })
-//   t.is(response.status, 200)
-//   t.is(response.body, true)
-// })
-//
+test('metarialize', async t => {
+  const response = await karmaApi.tQuery(t,
+    [
+      "metarialize",
+      [
+        "first",
+        [
+          "all", ["tag", ["string", "_tag"]]
+        ]
+      ]
+    ])
+  t.is(response.status, 200)
+  t.truthy(response.body.created)
+  t.truthy(response.body.updated)
+  t.truthy(response.body.id)
+  t.truthy(response.body.model)
+  t.truthy(response.body.value)
+  console.log(JSON.stringify(response, null, 2))
+})
+
+test('after', async t => {
+  const response = await karmaApi.tQuery(t, [
+    "after", [
+      [
+        "dateTime", "2018-01-01T00:00:00Z"
+      ],
+      [
+        "dateTime", "2017-01-01T00:00:00Z"
+      ]
+    ]
+  ])
+  t.is(response.status, 200)
+  t.is(response.body, true)
+})
+
+test('before', async t => {
+  const response = await karmaApi.tQuery(t, [
+    "before", [
+      [
+        "dateTime", "2017-01-01T00:00:00Z"
+      ],
+      [
+        "dateTime", "2018-01-01T00:00:00Z"
+      ]
+    ]
+  ])
+  t.is(response.status, 200)
+  t.is(response.body, true)
+})
+
 test('length', async t => {
   const response = await karmaApi.tQuery(t,
     [
