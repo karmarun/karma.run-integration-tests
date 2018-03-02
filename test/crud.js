@@ -268,6 +268,223 @@ test.serial('get', async t => {
   t.truthy(response.body.tag)
 })
 
+
+test.serial('create', async t => {
+
+  const createModel = [
+    "create",
+    {
+      "in": [
+        "tag",
+        [
+          "string",
+          "_model"
+        ]
+      ],
+      "value": [
+        "union",
+        [
+          "struct",
+          [
+            "map",
+            {
+              "myString": [
+                "union",
+                [
+                  "string",
+                  [
+                    "struct",
+                    {}
+                  ]
+                ]
+              ],
+              "myInt": [
+                "union",
+                [
+                  "int32",
+                  [
+                    "struct",
+                    {}
+                  ]
+                ]
+              ],
+              "myBool": [
+                "union",
+                [
+                  "bool",
+                  [
+                    "struct",
+                    {}
+                  ]
+                ]
+              ]
+            }
+          ]
+        ]
+      ]
+    }
+  ]
+  const response = await karmaApi.tQuery(t, createModel)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+test.serial('nested create', async t => {
+
+  const createModel = [
+    "create", {
+      "in": [
+        "tag", ["string", "_tag"]
+      ],
+      "value": [
+        "struct",
+        {
+          "tag": ["string", "myModel"],
+          "model": [
+            "create",
+            {
+              "in": [
+                "tag",
+                [
+                  "string",
+                  "_model"
+                ]
+              ],
+              "value": [
+                "union",
+                [
+                  "struct",
+                  [
+                    "map",
+                    {
+                      "myString": [
+                        "union",
+                        [
+                          "string",
+                          [
+                            "struct",
+                            {}
+                          ]
+                        ]
+                      ],
+                      "myInt": [
+                        "union",
+                        [
+                          "int32",
+                          [
+                            "struct",
+                            {}
+                          ]
+                        ]
+                      ],
+                      "myBool": [
+                        "union",
+                        [
+                          "bool",
+                          [
+                            "struct",
+                            {}
+                          ]
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+
+  const response = await karmaApi.tQuery(t, createModel)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+test.serial('create record', async t => {
+
+  const create = [
+    "create",
+    {
+      "in": [
+        "tag",
+        [
+          "string",
+          "myModel"
+        ]
+      ],
+      "value": [
+        "struct",
+        {
+          "myString": ["string", "my string content"],
+          "myInt": ["int32", 333],
+          "myBool": ["bool", true]
+        }
+      ]
+    }
+  ]
+
+  const response = await karmaApi.tQuery(t, create)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+test.serial('update', async t => {
+  const create = [
+    "update",
+    {
+      "ref": [
+        "refTo", [
+          "first", [
+            "all", [
+              "tag", ["string", "myModel"]
+            ]
+          ]
+        ]
+      ],
+      "value": [
+        "struct",
+        {
+          "myString": ["string", "my updated string content"],
+          "myInt": ["int32", 777],
+          "myBool": ["bool", false]
+        }
+      ]
+    }
+  ]
+  const response = await karmaApi.tQuery(t, create)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+test.serial('delete', async t => {
+  const create = [
+    "delete", [
+      "refTo", [
+        "first", [
+          "all", [
+            "tag", ["string", "myModel"]
+          ]
+        ]
+      ]
+    ]
+  ]
+  const response = await karmaApi.tQuery(t, create)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.deepEqual(response.body, {
+      myBool: false,
+      myInt: 777,
+      myString: 'my updated string content'
+    }
+  )
+})
+
 test.serial('create model', async t => {
 
   const createModel = [
