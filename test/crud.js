@@ -250,12 +250,22 @@ test('all', async t => {
   t.is(response.status, 200)
 })
 
-test('all model', async t => {
+test.serial('get', async t => {
   const response = await karmaApi.tQuery(t,
     [
-      "all", ["tag", ["string", "_model"]]
-    ])
-  t.is(response.status, 200)
+      "get", [
+      "refTo", [
+        "first", [
+          "all", [
+            "tag", ["string", "_tag"]
+          ]
+        ]
+      ]
+    ]
+    ]
+  )
+  t.truthy(response.body.model)
+  t.truthy(response.body.tag)
 })
 
 test.serial('create model', async t => {
@@ -423,12 +433,6 @@ test.serial('check record', async t => {
     ])
     ]
   )
-  console.log(JSON.stringify( [
-      "get", e.ref([
-      e.tag("tagTest"),
-      ["string", recordRef[1]]
-    ])
-    ]))
   compareResponse(t, response, recordResponse)
 })
 
