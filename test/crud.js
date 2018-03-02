@@ -215,7 +215,6 @@ function compareResponse (t, response, expected) {
   t.deepEqual(response.body.map, expected.map)
   t.deepEqual(response.body.struct, expected.struct)
   t.deepEqual(response.body.union, expected.union)
-  t.deepEqual(response.body.or, expected.or)
   t.deepEqual(response.body.set.sort(), expected.set.sort())
   if (expected.optional) {
     t.is(response.body.optional, expected.optional)
@@ -409,66 +408,59 @@ test.serial('update record but without any changes', async t => {
       "value": record
     }
   ])
-  console.log(response.body[1].human)
   t.is(response.status, 200, JSON.stringify(response.body))
   t.is(response.body[1], recordRef[1])
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
 })
-//
-// test.serial('check record', async t => {
-//   const response = await karmaApi.tQuery(t, {
-//     "get": {
-//       "newRef": {
-//         "model": {
-//           "tag": "tagTest"
-//         },
-//         "id": recordId
-//       }
-//     }
-//   })
-//   compareResponse(t, response, record)
-// })
-//
-// test.serial('update record with changes', async t => {
-//   record.string += "updated"
-//   record.or = "string"
-//   record.optional = "optional"
-//   record.unique += "updated"
-//   const response = await karmaApi.tQuery(t, {
-//     "update": {
-//       "ref": {
-//         "newRef": {
-//           "model": {
-//             "tag": "tagTest"
-//           },
-//           "id": recordId
-//         }
-//       },
-//       "value": {
-//         "contextual": record
-//       }
-//     }
-//   })
-//   t.is(response.status, 200, JSON.stringify(response.body))
-//   t.is(response.body, recordId)
-// })
-//
-// test.serial('check record', async t => {
-//   const response = await karmaApi.tQuery(t, {
-//     "get": {
-//       "newRef": {
-//         "model": {
-//           "tag": "tagTest"
-//         },
-//         "id": recordId
-//       }
-//     }
-//   })
-//   compareResponse(t, response, record)
-// })
-//
-//
+
+test.serial('check record', async t => {
+  const response = await karmaApi.tQuery(t,
+    [
+      "get", e.ref([
+      e.tag("tagTest"),
+      ["string", recordRef[1]]
+    ])
+    ]
+  )
+  console.log(JSON.stringify( [
+      "get", e.ref([
+      e.tag("tagTest"),
+      ["string", recordRef[1]]
+    ])
+    ]))
+  compareResponse(t, response, recordResponse)
+})
+
+test.serial('update record with changes', async t => {
+  record.string = ["string", "updated"]
+  record.optional = ["string", "optional"]
+  record.unique = ["string", "updated"]
+  const response = await karmaApi.tQuery(t, [
+    "update", {
+      "ref": e.ref([
+        e.tag("tagTest"),
+        ["string", recordRef[1]]
+      ]),
+      "value": record
+    }
+  ])
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.body[1], recordRef[1])
+})
+
+test.serial('check record', async t => {
+  const response = await karmaApi.tQuery(t,
+    [
+      "get", e.ref([
+      e.tag("tagTest"),
+      ["string", recordRef[1]]
+    ])
+    ]
+  )
+  compareResponse(t, response, recordResponse)
+})
+
 // test.serial('create multiple with some cyclic references', async t => {
 //   const response = await karmaApi.tQuery(t, {
 //     "do": {
