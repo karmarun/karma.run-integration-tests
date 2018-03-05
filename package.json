@@ -4,8 +4,8 @@
   "description": "karma integration tests",
   "main": "index.js",
   "scripts": {
-    "test": "ava --verbose",
-    "nyan": "ava --tap | tap-nyan"
+    "test": "ava --serial --verbose",
+    "nyan": "ava --serial --tap | tap-nyan"
   },
   "keywords": [
     "karma"

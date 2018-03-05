@@ -14,10 +14,10 @@ KARMA_INSTANCE_SECRET=
 ```
 
 # RUN TESTS
-`npm test`
+`ava --serial --verbose`
 
 or ava file eg:
-`ava test/general.js -v`
+`ava test/general.js --verbose`
 
 
 # .ENV File
