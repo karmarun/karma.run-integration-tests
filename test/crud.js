@@ -268,6 +268,25 @@ test.serial('get', async t => {
   t.truthy(response.body.tag)
 })
 
+test('metarialize', async t => {
+  const response = await karmaApi.tQuery(t,
+    [
+      "metarialize",
+      [
+        "first",
+        [
+          "all", ["tag", ["string", "_tag"]]
+        ]
+      ]
+    ])
+  t.is(response.status, 200)
+  t.truthy(response.body.created)
+  t.truthy(response.body.updated)
+  t.truthy(response.body.id)
+  t.truthy(response.body.model)
+  t.truthy(response.body.value)
+})
+
 
 test.serial('create', async t => {
 
@@ -433,6 +452,49 @@ test.serial('create record', async t => {
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
 })
+
+
+test.serial('create multiple record', async t => {
+
+  const create = [
+    "createMultiple",
+    {
+      "in": [
+        "tag",
+        [
+          "string",
+          "myModel"
+        ]
+      ],
+      "values": {
+        "a": [
+          "struct",
+          {
+            "myString": ["string", "a"],
+            "myInt": ["int32", 1],
+            "myBool": ["bool", true]
+          }
+        ],
+        "b": [
+          "struct",
+          {
+            "myString": ["string", "b"],
+            "myInt": ["int32", 2],
+            "myBool": ["bool", false]
+          }
+        ]
+      }
+    }
+  ]
+
+  const response = await karmaApi.tQuery(t, create)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body.a[0], recordIdRegex)
+  t.regex(response.body.a[1], recordIdRegex)
+  t.regex(response.body.b[0], recordIdRegex)
+  t.regex(response.body.b[1], recordIdRegex)
+})
+
 
 test.serial('update', async t => {
   const create = [

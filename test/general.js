@@ -27,25 +27,6 @@ test('all', async t => {
   t.is(response.status, 200)
 })
 
-test('metarialize', async t => {
-  const response = await karmaApi.tQuery(t,
-    [
-      "metarialize",
-      [
-        "first",
-        [
-          "all", ["tag", ["string", "_tag"]]
-        ]
-      ]
-    ])
-  t.is(response.status, 200)
-  t.truthy(response.body.created)
-  t.truthy(response.body.updated)
-  t.truthy(response.body.id)
-  t.truthy(response.body.model)
-  t.truthy(response.body.value)
-})
-
 test('after', async t => {
   const response = await karmaApi.tQuery(t, [
     "after", [
