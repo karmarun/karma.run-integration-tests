@@ -28,54 +28,57 @@ test.before(async t => {
 test('mapList', async t => {
   const response = await karmaApi.tQuery(t,
     [
-      "mapList", {
-      "value": [
-        "all", [
-          "tag", [
-            "string", "_tag"]
-        ]
-      ],
-      "expression": [
-        "field", {
-          "name": "tag",
-          "value": [
-            "arg", {}
+      "mapList",
+      {
+        "value": [
+          "all", [
+            "tag", [
+              "string", "_tag"]
           ]
-        }
-      ]
-    }
+        ],
+        "expression": [
+          "field", {
+            "name": "tag",
+            "value": [
+              "arg", {}
+            ]
+          }
+        ]
+      }
     ]
   )
   t.is(response.status, 200, JSON.stringify(response.body))
   t.deepEqual(response.body.sort(), ['_expression', '_migration', '_model', '_role', '_tag', '_user'].sort())
 })
 
-// test('filter', async t => {
-//   const response = await karmaApi.tQuery(t, [
-//     "filter", {
-//       "value": [
-//         "list",
-//         [["int8", 5], ["int8", 10], ["int8", 15]]
-//       ],
-//       "expression": [
-//         "greater",
-//         [
-//           [
-//             "arg",
-//             {}
-//           ],
-//           [
-//             "int8",
-//             8
-//           ]
-//         ]
-//       ]
-//     }
-//   ])
-//   t.is(response.status, 200, JSON.stringify(response.body))
-//   //console.log(response.body[1].human)
-//   t.deepEqual(response.body.sort(), [10, 15])
-// })
+test('filterList', async t => {
+  const response = await karmaApi.tQuery(t,
+    [
+      "filterList",
+      {
+        "value": [
+          "list",
+          [["int8", 5], ["int8", 10], ["int8", 15]]
+        ],
+        "expression": [
+          "greater",
+          [
+            [
+              "arg",
+              {}
+            ],
+            [
+              "int8",
+              8
+            ]
+          ]
+        ]
+      }
+    ])
+  console.log(response.body[1].human)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.deepEqual(response.body.sort(), [10, 15])
+})
 
 // test('reduceList', async t => {
 //   const response = await karmaApi.tQuery(t, [
