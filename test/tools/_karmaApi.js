@@ -13,19 +13,16 @@ exports.KarmaApi = class extends KarmaTools {
     return await this.query(query)
   }
 
-  async create (t, tag, contextual) {
-    const response = await this.tQuery(t, {
-      "create": {
-        "in": {
-          "tag": tag
-        },
-        "value": {
-          "contextual": contextual
-        }
+  async create (t, tag, value) {
+    const response = await this.tQuery(t, [
+      "create", {
+        "in": [
+          "tag", ["string", tag]
+        ],
+        "value": value
       }
-    })
-    t.is(response.status, 200, JSON.stringify(response.body))
-    return response.body
+    ])
+    return response
   }
 }
 

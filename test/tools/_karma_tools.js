@@ -134,11 +134,11 @@ exports.KarmaTools = class {
 
   async getTags () {
     const tags = await this.query(
-      {
-        "all": {
-          "tag": "_tag"
-        }
-      }
+      [
+        "all", [
+        "tag", ["string", "_tag"]
+      ]
+      ]
     )
     return tags.body.reduce((pref, tagObject) => {
       pref[tagObject.tag] = tagObject.model
