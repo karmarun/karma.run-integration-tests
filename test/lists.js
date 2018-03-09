@@ -2,6 +2,9 @@ import test from 'ava'
 
 require('dotenv').config()
 const {KarmaApi} = require('./tools/_karmaApi.js')
+const m = require('./tools/_model.js')
+const e = require('./tools/_expressions.js')
+const v = require('./tools/_value.js')
 
 const {
   KARMA_ENDPOINT,
@@ -52,29 +55,14 @@ test('mapList', async t => {
 })
 
 test('filterList', async t => {
-  const response = await karmaApi.tQuery(t,
-    [
-      "filterList",
-      {
-        "value": [
-          "list",
-          [["int8", 5], ["int8", 10], ["int8", 15]]
-        ],
-        "expression": [
-          "greater",
-          [
-            [
-              "arg",
-              {}
-            ],
-            [
-              "int8",
-              8
-            ]
-          ]
-        ]
-      }
-    ])
+  const query = e.filterList(
+    e.all([
+      "list",
+      [["int8", 5], ["int8", 10], ["int8", 15]]
+    ]),
+    e.greater(e.arg(), v.int8(8))
+  )
+  const response = await karmaApi.tQuery(t, query)
   console.log(response.body[1].human)
   t.is(response.status, 200, JSON.stringify(response.body))
   t.deepEqual(response.body.sort(), [10, 15])

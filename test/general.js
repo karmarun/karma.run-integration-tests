@@ -3,6 +3,9 @@ import {should, expect} from 'chai'
 
 require('dotenv').config()
 const {KarmaApi} = require('./tools/_karmaApi.js')
+const m = require('./tools/_model.js')
+const e = require('./tools/_expressions.js')
+const v = require('./tools/_value.js')
 
 const {
   KARMA_ENDPOINT,
