@@ -16,7 +16,198 @@ const recordIdRegex = /^[\S]{10,}$/
 const karmaApi = new KarmaApi(KARMA_ENDPOINT)
 let recordRef = null
 
-let recordResponse = {
+
+function compareResponse (t, response, expected) {
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.body.string, expected.string)
+  t.is(response.body.int, expected.int)
+  t.is(response.body.float, expected.float)
+  t.is(response.body.dateTime, expected.dateTime)
+  t.is(response.body.bool, expected.bool)
+  t.is(response.body.enum, expected.enum)
+  t.deepEqual(response.body.tuple, expected.tuple)
+  t.deepEqual(response.body.list, expected.list)
+  t.deepEqual(response.body.map, expected.map)
+  t.deepEqual(response.body.struct, expected.struct)
+  t.deepEqual(response.body.union, expected.union)
+  t.deepEqual(response.body.set.sort(), expected.set.sort())
+  if (expected.optional) {
+    t.is(response.body.optional, expected.optional)
+  }
+  else {
+    t.falsy(response.body.optional)
+  }
+  t.deepEqual(response.body.recursion, expected.recursion)
+  t.deepEqual(response.body.recursive, expected.recursive)
+}
+
+
+//**********************************************************************************************************************
+// init Tests
+//**********************************************************************************************************************
+
+test.before(async t => {
+  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
+  await karmaApi.instanceAdministratorRequest('admin/reset')
+  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
+})
+
+
+//**********************************************************************************************************************
+// start simple tests
+//**********************************************************************************************************************
+
+test.serial('get', async t => {
+  const query = e.get(e.refTo(e.first(e.all(e.tag('_tag')))))
+  const response = await karmaApi.tQuery(t, query)
+  t.truthy(response.body.model)
+  t.truthy(response.body.tag)
+})
+
+
+test('metarialize', async t => {
+  const query = e.metarialize(e.first(e.all(e.tag('_tag'))))
+  const response = await karmaApi.tQuery(t, query)
+
+  t.is(response.status, 200)
+  t.truthy(response.body.created)
+  t.truthy(response.body.updated)
+  t.truthy(response.body.id)
+  t.truthy(response.body.model)
+  t.truthy(response.body.value)
+})
+
+
+test.serial('create', async t => {
+  const query = e.create(e.tag('_model'), m.struct({
+    "myString": m.string(),
+    "myInt": m.int32(),
+    "myBool": m.bool()
+  }))
+  const response = await karmaApi.tQuery(t, query)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+
+test.serial('nested create', async t => {
+  const createModel = e.create(e.tag('_model'), m.struct({
+    "myString": m.string(),
+    "myInt": m.int32(),
+    "myBool": m.bool()
+  }))
+
+  const query = e.create(e.tag('_tag'), v.struct({
+    "tag": v.string('myModel'),
+    "model": createModel
+  }))
+
+  const response = await karmaApi.tQuery(t, query)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+
+test.serial('create record', async t => {
+  const create = e.create(e.tag('myModel'), v.struct({
+    "myString": v.string('my string content'),
+    "myInt": v.int32(333),
+    "myBool": v.bool(true)
+  }))
+
+  const response = await karmaApi.tQuery(t, create)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+
+test.serial('create multiple record', async t => {
+  const create = [
+    "createMultiple",
+    {
+      "in": [
+        "tag",
+        [
+          "string",
+          "myModel"
+        ]
+      ],
+      "values": {
+        "a": [
+          "struct",
+          {
+            "myString": ["string", "a"],
+            "myInt": ["int32", 1],
+            "myBool": ["bool", true]
+          }
+        ],
+        "b": [
+          "struct",
+          {
+            "myString": ["string", "b"],
+            "myInt": ["int32", 2],
+            "myBool": ["bool", false]
+          }
+        ]
+      }
+    }
+  ]
+
+  const response = await karmaApi.tQuery(t, create)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body.a[0], recordIdRegex)
+  t.regex(response.body.a[1], recordIdRegex)
+  t.regex(response.body.b[0], recordIdRegex)
+  t.regex(response.body.b[1], recordIdRegex)
+})
+
+
+test.serial('update', async t => {
+  const query = e.update(e.refTo(e.first(e.all(e.tag('myModel')))),
+    v.struct({
+      "myString": v.string('my updated string content'),
+      "myInt": v.int32(777),
+      "myBool": v.bool(false)
+    }))
+  const response = await karmaApi.tQuery(t, query)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+
+test.serial('delete', async t => {
+  const create = [
+    "delete", [
+      "refTo", [
+        "first", [
+          "all", [
+            "tag", ["string", "myModel"]
+          ]
+        ]
+      ]
+    ]
+  ]
+  const response = await karmaApi.tQuery(t, create)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.deepEqual(response.body, {
+      myBool: false,
+      myInt: 777,
+      myString: 'my updated string content'
+    }
+  )
+})
+
+
+
+//**********************************************************************************************************************
+// some complexer tests
+//**********************************************************************************************************************
+
+let recordUntyped = {
   "string": "example text",
   "int": 1,
   "float": 0.5,
@@ -89,8 +280,7 @@ let recordResponse = {
   },
   "annotation": "annotated"
 }
-
-let record = [
+let recordTyped = [
   "struct", {
     "string": ["string", "example text"],
     "int": ["int32", 1],
@@ -203,196 +393,8 @@ let record = [
   }
 ]
 
-function compareResponse (t, response, expected) {
-  t.is(response.status, 200, JSON.stringify(response.body))
-  t.is(response.body.string, expected.string)
-  t.is(response.body.int, expected.int)
-  t.is(response.body.float, expected.float)
-  t.is(response.body.dateTime, expected.dateTime)
-  t.is(response.body.bool, expected.bool)
-  t.is(response.body.enum, expected.enum)
-  t.deepEqual(response.body.tuple, expected.tuple)
-  t.deepEqual(response.body.list, expected.list)
-  t.deepEqual(response.body.map, expected.map)
-  t.deepEqual(response.body.struct, expected.struct)
-  t.deepEqual(response.body.union, expected.union)
-  t.deepEqual(response.body.set.sort(), expected.set.sort())
-  if (expected.optional) {
-    t.is(response.body.optional, expected.optional)
-  }
-  else {
-    t.falsy(response.body.optional)
-  }
-  t.deepEqual(response.body.recursion, expected.recursion)
-  t.deepEqual(response.body.recursive, expected.recursive)
-}
-
-
-//**********************************************************************************************************************
-// Init Tests
-//**********************************************************************************************************************
-
-test.before(async t => {
-  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
-  await karmaApi.instanceAdministratorRequest('admin/reset')
-  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
-})
-
-
-//**********************************************************************************************************************
-// Start Tests
-//**********************************************************************************************************************
-
-test('all', async t => {
-  const query = e.all(e.tag('_tag'))
-  const response = await karmaApi.tQuery(t, query)
-  t.is(response.status, 200)
-})
-
-test.serial('get', async t => {
-  const query = e.get(e.refTo(e.first(e.all(e.tag('_tag')))))
-  const response = await karmaApi.tQuery(t, query)
-  t.truthy(response.body.model)
-  t.truthy(response.body.tag)
-})
-
-test('metarialize', async t => {
-  const query = e.metarialize(e.first(e.all(e.tag('_tag'))))
-  const response = await karmaApi.tQuery(t, query)
-
-  t.is(response.status, 200)
-  t.truthy(response.body.created)
-  t.truthy(response.body.updated)
-  t.truthy(response.body.id)
-  t.truthy(response.body.model)
-  t.truthy(response.body.value)
-})
-
-
-test.serial('create', async t => {
-  const query = e.create(e.tag('_model'), m.struct({
-    "myString": m.string(),
-    "myInt": m.int32(),
-    "myBool": m.bool()
-  }))
-  const response = await karmaApi.tQuery(t, query)
-  t.is(response.status, 200, JSON.stringify(response.body))
-  t.regex(response.body[0], recordIdRegex)
-  t.regex(response.body[1], recordIdRegex)
-})
-
-test.serial('nested create', async t => {
-
-  const createModel = e.create(e.tag('_model'), m.struct({
-    "myString": m.string(),
-    "myInt": m.int32(),
-    "myBool": m.bool()
-  }))
-
-  const query = e.create(e.tag('_tag'), v.struct({
-    "tag": v.string('myModel'),
-    "model": createModel
-  }))
-
-  const response = await karmaApi.tQuery(t, query)
-  t.is(response.status, 200, JSON.stringify(response.body))
-  t.regex(response.body[0], recordIdRegex)
-  t.regex(response.body[1], recordIdRegex)
-})
-
-test.serial('create record', async t => {
-
-  const create = e.create(e.tag('myModel'), v.struct({
-    "myString": v.string('my string content'),
-    "myInt": v.int32(333),
-    "myBool": v.bool(true)
-  }))
-
-  const response = await karmaApi.tQuery(t, create)
-  t.is(response.status, 200, JSON.stringify(response.body))
-  t.regex(response.body[0], recordIdRegex)
-  t.regex(response.body[1], recordIdRegex)
-})
-
-
-test.serial('create multiple record', async t => {
-
-  const create = [
-    "createMultiple",
-    {
-      "in": [
-        "tag",
-        [
-          "string",
-          "myModel"
-        ]
-      ],
-      "values": {
-        "a": [
-          "struct",
-          {
-            "myString": ["string", "a"],
-            "myInt": ["int32", 1],
-            "myBool": ["bool", true]
-          }
-        ],
-        "b": [
-          "struct",
-          {
-            "myString": ["string", "b"],
-            "myInt": ["int32", 2],
-            "myBool": ["bool", false]
-          }
-        ]
-      }
-    }
-  ]
-
-  const response = await karmaApi.tQuery(t, create)
-  t.is(response.status, 200, JSON.stringify(response.body))
-  t.regex(response.body.a[0], recordIdRegex)
-  t.regex(response.body.a[1], recordIdRegex)
-  t.regex(response.body.b[0], recordIdRegex)
-  t.regex(response.body.b[1], recordIdRegex)
-})
-
-test.serial('update', async t => {
-  const query = e.update(e.refTo(e.first(e.all(e.tag('myModel')))),
-    v.struct({
-      "myString": v.string('my updated string content'),
-      "myInt": v.int32(777),
-      "myBool": v.bool(false)
-    }))
-  const response = await karmaApi.tQuery(t, query)
-  t.is(response.status, 200, JSON.stringify(response.body))
-  t.regex(response.body[0], recordIdRegex)
-  t.regex(response.body[1], recordIdRegex)
-})
-
-test.serial('delete', async t => {
-  const create = [
-    "delete", [
-      "refTo", [
-        "first", [
-          "all", [
-            "tag", ["string", "myModel"]
-          ]
-        ]
-      ]
-    ]
-  ]
-  const response = await karmaApi.tQuery(t, create)
-  t.is(response.status, 200, JSON.stringify(response.body))
-  t.deepEqual(response.body, {
-      myBool: false,
-      myInt: 777,
-      myString: 'my updated string content'
-    }
-  )
-})
 
 test.serial('create model', async t => {
-
   const createModel = e.create(e.tag('_model'), m.struct({
     "string": m.string(),
     "int": m.int32(),
@@ -479,8 +481,9 @@ test.serial('create model', async t => {
   t.regex(response.body[1], recordIdRegex)
 })
 
+
 test.serial('create record', async t => {
-  const query = e.create(e.tag('tagTest'), record)
+  const query = e.create(e.tag('tagTest'), recordTyped)
   const response = await karmaApi.tQuery(t, query)
 
   t.is(response.status, 200, JSON.stringify(response.body))
@@ -489,8 +492,9 @@ test.serial('create record', async t => {
   recordRef = response.body
 })
 
+
 test.serial('create same record again', async t => {
-  const query = e.create(e.tag('tagTest'), record)
+  const query = e.create(e.tag('tagTest'), recordTyped)
   const response = await karmaApi.tQuery(t, query)
   t.is(response.status, 400, 'should fail because of unique object')
 })
@@ -499,14 +503,15 @@ test.serial('check record', async t => {
   const query = e.first(e.all(e.tag("tagTest")))
   const response = await karmaApi.tQuery(t, query)
   t.is(response.status, 200, JSON.stringify(response.body))
-  compareResponse(t, response, recordResponse)
+  compareResponse(t, response, recordUntyped)
 })
+
 
 test.serial('update record but without any changes', async t => {
   const query = e.update(e.ref([
     e.tag("tagTest"),
     v.string(recordRef[1])
-  ]), record)
+  ]), recordTyped)
   const response = await karmaApi.tQuery(t, query)
   t.is(response.status, 200, 'should be possible to update unique objects')
   t.is(response.body[1], recordRef[1])
@@ -514,37 +519,41 @@ test.serial('update record but without any changes', async t => {
   t.regex(response.body[1], recordIdRegex)
 })
 
+
 test.serial('check record', async t => {
   const query = e.get(e.ref([
     e.tag("tagTest"),
     v.string(recordRef[1])
   ]))
   const response = await karmaApi.tQuery(t, query)
-  compareResponse(t, response, recordResponse)
+  compareResponse(t, response, recordUntyped)
 })
 
+
 test.serial('update record with changes', async t => {
-  record.string = v.string('updated')
-  record.optional = v.string('optional')
-  record.unique = v.string('updated')
+  recordTyped.string = v.string('updated')
+  recordTyped.optional = v.string('optional')
+  recordTyped.unique = v.string('updated')
   const query = e.update(e.ref([
     e.tag('tagTest'),
     v.string(recordRef[1])
-  ]), record)
+  ]), recordTyped)
   const response = await karmaApi.tQuery(t, query)
 
   t.is(response.status, 200, JSON.stringify(response.body))
   t.is(response.body[1], recordRef[1])
 })
 
+
 test.serial('check record', async t => {
   const query = e.get(e.ref([
     e.tag("tagTest"),
     v.string(recordRef[1])
   ]))
   const response = await karmaApi.tQuery(t, query)
-  compareResponse(t, response, recordResponse)
+  compareResponse(t, response, recordUntyped)
 })
+
 
 // test.serial('create multiple with some cyclic references', async t => {
 //   const response = await karmaApi.tQuery(t, {

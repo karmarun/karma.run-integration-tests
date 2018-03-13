@@ -4,7 +4,6 @@ import {should, expect} from 'chai'
 require('dotenv').config()
 const {KarmaApi} = require('./tools/_karmaApi.js')
 
-const DB_NAME = 'db-api-test-permission-recursive'
 const {
   KARMA_ENDPOINT,
   KARMA_INSTANCE_SECRET,
