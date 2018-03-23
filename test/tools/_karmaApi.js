@@ -1,4 +1,5 @@
 const {KarmaTools} = require('./_karma_tools')
+const {functionReturn} = require('./_function')
 
 exports.KarmaApi = class extends KarmaTools {
 
@@ -9,12 +10,17 @@ exports.KarmaApi = class extends KarmaTools {
     this.create = this.create.bind(this)
   }
 
-  async tQuery (t, query) {
-    return await this.query(query)
+  async tQuery (t, exampleName, query) {
+    if(arguments.length !== 3){
+      throw new Error("Expecting 3 arguments for tQuery. Did you forgot exampleName?")
+    }
+    return await this.query(
+      functionReturn(query)
+    )
   }
 
   async create (t, tag, value) {
-    const response = await this.tQuery(t, [
+    return await this.tQuery(t, [
       "create", {
         "in": [
           "tag", ["string", tag]
@@ -22,7 +28,6 @@ exports.KarmaApi = class extends KarmaTools {
         "value": value
       }
     ])
-    return response
   }
 }
 

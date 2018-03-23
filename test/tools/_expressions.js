@@ -1,6 +1,24 @@
 exports.tag = function (v) {
   return [
-    "tag", ["string", v]
+    "tag", v
+  ]
+}
+
+exports.after = function (tuple) {
+  return [
+    "after", tuple
+  ]
+}
+
+exports.before = function (tuple) {
+  return [
+    "before", tuple
+  ]
+}
+
+exports.length = function (v) {
+  return [
+    "length", v
   ]
 }
 
@@ -91,6 +109,5 @@ exports.get = function (ref) {
     "get", ref
   ]
 }
-
 
 module.exports = exports
