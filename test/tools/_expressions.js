@@ -108,14 +108,21 @@ exports.divInt8 = function (a, b) {
   }
 }
 
-exports.assertPresent = function (key, value) {
+exports.assertPresent = function (value) {
   return {
-    "assertPresent": {
-      "key": [key, value]
-    }
+    "assertPresent": value
   }
 }
 
+
+exports.assertCase = function (caseKey, value) {
+  return {
+    "assertCase": {
+      "case": caseKey,
+      "value": value
+    }
+  }
+}
 
 exports.arg = function () {
   return [

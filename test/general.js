@@ -138,7 +138,6 @@ test('field', async t => {
 })
 
 test('key', async t => {
-  // TODO why we need d.string("foo")?
   const response = await karmaApi.tQuery(t, 'key_0',
     e.key(
       d.string("foo"),
@@ -197,23 +196,27 @@ test('divInt8', async t => {
 })
 
 test('assertPresent', async t => {
-  // let response = await karmaApi.tQuery(t, 'assertPresent_0',
-  //   e.assertPresent(
-  //     d.string("notFoo"),
-  //     m.map({
-  //       "foo": d.string("bar")
-  //     })
-  //   )
-  // )
-  // t.is(response.status, 400)
-  // expect(response.body).to.have.own.property('humanReadableError')
-
-  let response = await karmaApi.tQuery(t, 'assertPresent_1',
+  let response = await karmaApi.tQuery(t, 'assertPresent_0',
     e.assertPresent(
-      d.string("foo"),
-      d.data(d.map({
-        "foo": d.string("bar")
-      }))
+      e.key(
+        d.string("notFoo"),
+        d.data(d.map({
+          "foo": d.string("bar")
+        }))
+      )
+    )
+  )
+  t.is(response.status, 400)
+  expect(response.body).to.have.own.property('humanReadableError')
+
+  response = await karmaApi.tQuery(t, 'assertPresent_1',
+    e.assertPresent(
+      e.key(
+        d.string("foo"),
+        d.data(d.map({
+          "foo": d.string("bar")
+        }))
+      )
     )
   )
   //console.log(response.body.humanReadableError.human)
@@ -221,34 +224,32 @@ test('assertPresent', async t => {
   t.is(response.body, "bar")
 })
 
-// test('assertCase', async t => {
-//   let response = await karmaApi.tQuery(t, [
-//     "assertCase", {
-//       "case": "foo",
-//       "value": [
-//         "union", [
-//           "bar", ["int8", 4]
-//         ]
-//       ]
-//     }
-//   ])
-//   t.is(response.status, 400)
-//   expect(response.body[1]).to.have.own.property('human')
-//
-//   response = await karmaApi.tQuery(t, [
-//     "assertCase", {
-//       "case": "foo",
-//       "value": [
-//         "union", [
-//           "foo", ["int8", 4]
-//         ]
-//       ]
-//     }
-//   ])
-//   t.is(response.status, 200)
-//   t.is(response.body, 4)
-// })
-//
+test('assertCase', async t => {
+  let response = await karmaApi.tQuery(t, 'assertCase_0',
+    e.assertCase(
+      "foo",
+      d.data(d.union([
+        "bar", d.int8(4),
+      ]))
+    )
+  )
+  t.is(response.status, 400)
+  expect(response.body).to.have.own.property('humanReadableError')
+
+  response = await karmaApi.tQuery(t, 'assertCase_1',
+    e.assertCase(
+      "foo",
+      d.data(d.union([
+        "foo", d.int8(4),
+      ]))
+    )
+  )
+  //console.log(response.body.humanReadableError.human)
+  t.is(response.status, 200)
+  t.is(response.body, 4)
+
+})
+
 // test('with', async t => {
 //   const response = await karmaApi.tQuery(t, [
 //     "with", {
