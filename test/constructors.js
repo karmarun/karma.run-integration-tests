@@ -27,13 +27,13 @@ test('tag', async t => {
     e.tag(d.data(d.string("_tag")))
   )
   t.is(response.status, 200)
-  //t.regex(response.body, /^[a-zA-Z]{10,40}$/)
 })
 
 test('bool', async t => {
   const response = await karmaApi.tQuery(t, 'bool_0',
     d.data(d.bool(true))
   )
+  //console.log(response.body.humanReadableError.human)
   t.is(response.status, 200)
   t.is(response.body, true)
 })
@@ -190,7 +190,7 @@ test('union', async t => {
     ]))
   )
   t.is(response.status, 200)
-  t.deepEqual(response.body, ["foo", -127])
+  t.deepEqual(response.body, {"foo": -127})
 })
 
 test.serial('refTo', async t => {

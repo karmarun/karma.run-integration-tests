@@ -36,7 +36,6 @@ test('after', async t => {
     ])
   )
   t.is(response.status, 200)
-  //console.log(response.body[1].human)
   t.is(response.body, true)
 })
 
@@ -66,196 +65,162 @@ test('length', async t => {
 })
 
 // test('greater', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     [
-//       "greater",
-//       [["float", 2.2], ["float", 2.1]]
-//     ]
+//   const response = await karmaApi.tQuery(t, 'greater_0',
+//     e.greater(
+//       [
+//         d.float(2.2), d.float(2.1)
+//       ]
+//     )
 //   )
+//   console.log(response.body.humanReadableError.human)
 //   t.is(response.status, 200)
 //   t.is(response.body, true)
 // })
 //
 // test('less', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     [
-//       "less",
-//       [["int8", 1], ["int8", 2]]
-//     ]
+//   const response = await karmaApi.tQuery(t, 'less_0',
+//     e.less(
+//       [d.int8(1), d.int8(2)]
+//     )
 //   )
 //   t.is(response.status, 200)
 //   t.is(response.body, true)
 // })
-//
-// test('equal', async t => {
-//   let response = await karmaApi.tQuery(t,
-//     [
-//       "equal",
-//       [["string", "foo"], ["string", "foo"]]
-//     ]
-//   )
-//   t.is(response.status, 200)
-//   t.is(response.body, true)
-//
-//   response = await karmaApi.tQuery(t,
-//     [
-//       "equal",
-//       [["int16", 123], ["string", "foo"]]
-//     ]
-//   )
-//   t.is(response.status, 200)
-//   t.is(response.body, false)
-// })
-//
-// test('and', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     [
-//       "and",
-//       [
-//         ["equal",
-//           [["string", "foo"], ["string", "foo"]]
-//         ],
-//         ["bool", true]
-//       ]
-//     ]
-//   )
-//   t.is(response.status, 200)
-//   t.is(response.body, true)
-// })
-//
-// test('or', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     [
-//       "or",
-//       [
-//         ["equal",
-//           [["string", "foo"], ["string", "foo"]]
-//         ],
-//         ["bool", true]
-//       ]
-//     ]
-//   )
-//   t.is(response.status, 200)
-//   t.is(response.body, true)
-// })
-//
-// test('field', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     [
-//       "field",
-//       {
-//         "name": "foo",
-//         "value": ["struct", {
-//           "foo": ["string", "bar"]
-//         }]
-//       }
-//     ]
-//   )
-//   t.is(response.status, 200)
-//   t.is(response.body, 'bar')
-// })
-//
-// test('key', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     [
-//       "key",
-//       {
-//         "name": "foo",
-//         "value": ["map", {
-//           "foo": ["string", "bar"]
-//         }]
-//       }
-//     ]
-//   )
-//   t.is(response.status, 200)
-//   t.is(response.body, 'bar')
-// })
-//
-// test('not', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     [
-//       "not", ["bool", false]
-//     ]
-//   )
-//   t.is(response.status, 200)
-//   t.is(response.body, true)
-// })
-//
-// test('add', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     [
-//       "add",
-//       [["int8", 2], ["int8", 4]]
-//     ]
-//   )
-//   t.is(response.status, 200)
-//   t.is(response.body, 6)
-// })
-//
-// test('subtract', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     [
-//       "subtract",
-//       [["int8", 2], ["int8", 4]]
-//     ]
-//   )
-//   t.is(response.status, 200)
-//   t.is(response.body, -2)
-// })
-//
-// test('multiply', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     [
-//       "multiply",
-//       [["float", 2.2], ["float", 4.0]]
-//     ])
-//   t.is(response.status, 200)
-//   t.is(response.body, 8.8)
-// })
-//
-// test('divide', async t => {
-//   const response = await karmaApi.tQuery(t,
-//     [
-//       "divide",
-//       [["float", 2.0], ["float", -4.0]]
-//     ]
-//   )
-//   t.is(response.status, 200)
-//   t.is(response.body, -0.5)
-// })
-//
-// test('assertPresent', async t => {
-//   let response = await karmaApi.tQuery(t, [
-//     "assertPresent", [
-//       "key", {
-//         "name": "notFoo",
-//         "value": [
-//           "map", {
-//             "foo": ["string", "bar"]
-//           }
-//         ]
-//       }
-//     ]
-//   ])
-//   t.is(response.status, 400)
-//   expect(response.body[1]).to.have.own.property('human')
-//
-//   response = await karmaApi.tQuery(t, [
-//     "assertPresent", [
-//       "key", {
-//         "name": "foo",
-//         "value": [
-//           "map", {
-//             "foo": ["string", "bar"]
-//           }
-//         ]
-//       }
-//     ]
-//   ])
-//   t.is(response.status, 200)
-//   t.is(response.body, "bar")
-// })
-//
+
+test('equal', async t => {
+  let response = await karmaApi.tQuery(t, 'equal_0',
+    e.equal(d.string("foo"), d.string("foo"))
+  )
+  //console.log(response.body.humanReadableError.human)
+  t.is(response.status, 200)
+  t.is(response.body, true)
+
+  response = await karmaApi.tQuery(t, '',
+    e.equal(d.int16("123"), d.string("foo"))
+  )
+  t.is(response.status, 200)
+  t.is(response.body, false)
+})
+
+test('and', async t => {
+  const response = await karmaApi.tQuery(t, 'and_0',
+    e.and(
+      e.equal(d.string("foo"), d.string("foo")),
+      d.bool(true)
+    )
+  )
+  t.is(response.status, 200)
+  t.is(response.body, true)
+})
+
+test('or', async t => {
+  const response = await karmaApi.tQuery(t, 'or_0',
+    e.or(
+      e.equal(d.string("foo"), d.string("foo")),
+      d.bool(true)
+    )
+  )
+  t.is(response.status, 200)
+  t.is(response.body, true)
+})
+
+test('field', async t => {
+  const response = await karmaApi.tQuery(t, 'field_0',
+    e.field(
+      "foo",
+      d.data(d.struct({
+        "foo": d.string("bar")
+      }))
+    )
+  )
+  t.is(response.status, 200)
+  t.is(response.body, 'bar')
+})
+
+test('key', async t => {
+  // TODO why we need d.string("foo")?
+  const response = await karmaApi.tQuery(t, 'key_0',
+    e.key(
+      d.string("foo"),
+      d.data(d.map({
+        "foo": d.string("bar")
+      }))
+    )
+  )
+  //console.log(response.body.humanReadableError.human)
+  t.is(response.status, 200)
+  t.is(response.body, 'bar')
+})
+
+test('not', async t => {
+  const response = await karmaApi.tQuery(t, 'not_0',
+    e.not(
+      d.bool(false)
+    )
+  )
+  t.is(response.status, 200)
+  t.is(response.body, true)
+})
+
+test('addInt8', async t => {
+  const response = await karmaApi.tQuery(t, 'addInt8_0',
+    e.addInt8(d.int8(2), d.int8(4))
+  )
+  //console.log(response.body.humanReadableError.human)
+  t.is(response.status, 200)
+  t.is(response.body, 6)
+})
+
+test('subInt8', async t => {
+  const response = await karmaApi.tQuery(t, 'subInt8',
+    e.subInt8(d.int8(2), d.int8(4))
+  )
+  t.is(response.status, 200)
+  t.is(response.body, -2)
+})
+
+test('mulInt8', async t => {
+  const response = await karmaApi.tQuery(t, 'mulInt8_0',
+    e.mulInt8(d.int8(2), d.int8(4))
+  )
+  t.is(response.status, 200)
+  t.is(response.body, 8)
+  //console.log(response.body.humanReadableError.human)
+})
+
+test('divInt8', async t => {
+  const response = await karmaApi.tQuery(t, 'divInt8_0',
+    e.divInt8(d.int8(4), d.int8(2))
+  )
+  t.is(response.status, 200)
+  t.is(response.body, 2)
+})
+
+test('assertPresent', async t => {
+  // let response = await karmaApi.tQuery(t, 'assertPresent_0',
+  //   e.assertPresent(
+  //     d.string("notFoo"),
+  //     m.map({
+  //       "foo": d.string("bar")
+  //     })
+  //   )
+  // )
+  // t.is(response.status, 400)
+  // expect(response.body).to.have.own.property('humanReadableError')
+
+  let response = await karmaApi.tQuery(t, 'assertPresent_1',
+    e.assertPresent(
+      d.string("foo"),
+      d.data(d.map({
+        "foo": d.string("bar")
+      }))
+    )
+  )
+  //console.log(response.body.humanReadableError.human)
+  t.is(response.status, 200)
+  t.is(response.body, "bar")
+})
+
 // test('assertCase', async t => {
 //   let response = await karmaApi.tQuery(t, [
 //     "assertCase", {

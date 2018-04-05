@@ -1,10 +1,10 @@
 exports.functionReturn = function (expression) {
-  return [
-    "function", [
+  return {
+    "function": [
       [],
       [expression]
     ]
-  ]
+  }
 }
 
 module.exports = exports
