@@ -86,7 +86,6 @@ test.serial('create', async t => {
       "myBool": m.bool()
     }))
   ))
-
   const response = await karmaApi.tQuery(t, 'create_0', query)
   t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body[0], recordIdRegex)
@@ -95,22 +94,64 @@ test.serial('create', async t => {
 
 
 test.serial('nested create', async t => {
-  const createModel = e.create(e.tag(d.string('_model')), f.karmaFunction(['param'],
-    d.data(m.struct({
-      "myString": m.string(),
-      "myInt": m.int32(),
-      "myBool": m.bool()
-    }))
-  ))
+  const createModel = e.create(
+    e.tag(d.string('_model')),
+    f.karmaFunction(['param'],
+      d.data(m.struct({
+        "myString": m.string(),
+        "myInt": m.int32(),
+        "myBool": m.bool()
+      }))
+    ))
 
-  const createTag = e.create(e.tag(d.string('_tag')), f.karmaFunction(['param'],
+  const createTag = e.create(
+    e.tag(d.string('_tag')),
+    f.karmaFunction(['param'],
+      d.data(d.struct({
+        "tag": d.string('myModel'),
+        "model": e.expr(e.scope('myNewModel'))
+      }))
+    ))
+
+  const query = [
+    e.define('myNewModel', createModel),
+    createTag
+  ]
+
+  const response = await karmaApi.tQuery(t, 'create_1', ...query)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+
+test.serial('create record', async t => {
+  const create = e.create(e.tag(d.string('myModel')),
+    f.karmaFunction(['param'],
+      d.data(d.struct({
+        "myString": d.string('my string content'),
+        "myInt": d.int32(333),
+        "myBool": d.bool(true)
+      }))
+    )
+  )
+  const response = await karmaApi.tQuery(t, 'create_2', create)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+
+test.serial('update', async t => {
+  const query = e.update(
+    e.refTo(e.first(e.all(e.tag(d.string('myModel'))))),
     d.data(d.struct({
-      "tag": d.string('myModel'),
-      "model": f.karmaFunction(createModel, ['param'])
+      "myString": d.string('my updated string content'),
+      "myInt": d.int32(777),
+      "myBool": d.bool(false)
     }))
-  ))
-
-  const response = await karmaApi.tQuery(t, 'create_1', createModel)
+  )
+  const response = await karmaApi.tQuery(t, 'update_0', query)
   //console.log(response.body.humanReadableError.human)
   t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body[0], recordIdRegex)
@@ -118,25 +159,18 @@ test.serial('nested create', async t => {
 })
 
 
-// test.serial('create record', async t => {
-//   const create = e.create(e.tag(d.string('myModel')),
-//     f.karmaFunction(['param'],
-//       d.data(d.struct({
-//         "myString": d.string('my string content'),
-//         "myInt": d.int32(333),
-//         "myBool": d.bool(true)
-//       }))
-//
-//     )
-//   )
-//   const response = await karmaApi.tQuery(t, 'create_2', create)
-//   console.log(response.body.humanReadableError.human)
-//   t.is(response.status, 200, JSON.stringify(response.body))
-//   t.regex(response.body[0], recordIdRegex)
-//   t.regex(response.body[1], recordIdRegex)
-// })
+test.serial('get', async t => {
+  const query = e.get(e.refTo(e.first(e.all(e.tag(d.string('myModel'))))))
+  const response = await karmaApi.tQuery(t, 'get_1', query)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.deepEqual(response.body, {
+    myBool: false,
+    myInt: 777,
+    myString: 'my updated string content'
+  })
+})
 
-//
+
 // test.serial('create multiple record', async t => {
 //   const create = [
 //     "createMultiple",
@@ -176,22 +210,8 @@ test.serial('nested create', async t => {
 //   t.regex(response.body.b[0], recordIdRegex)
 //   t.regex(response.body.b[1], recordIdRegex)
 // })
-//
-//
-// test.serial('update', async t => {
-//   const query = e.update(e.refTo(e.first(e.all(e.tag('myModel')))),
-//     v.struct({
-//       "myString": v.string('my updated string content'),
-//       "myInt": v.int32(777),
-//       "myBool": v.bool(false)
-//     }))
-//   const response = await karmaApi.tQuery(t, '', query)
-//   t.is(response.status, 200, JSON.stringify(response.body))
-//   t.regex(response.body[0], recordIdRegex)
-//   t.regex(response.body[1], recordIdRegex)
-// })
-//
-//
+
+
 // test.serial('delete', async t => {
 //   const create = [
 //     "delete", [
@@ -204,6 +224,14 @@ test.serial('nested create', async t => {
 //       ]
 //     ]
 //   ]
+//   const query3 = e.delete(
+//     e.refTo(e.first(e.all(e.tag(d.string('myModel'))))),
+//     d.data(d.struct({
+//       "myString": d.string('my updated string content'),
+//       "myInt": d.int32(777),
+//       "myBool": d.bool(false)
+//     }))
+//   )
 //   const response = await karmaApi.tQuery(t, '', create)
 //   t.is(response.status, 200, JSON.stringify(response.body))
 //   t.deepEqual(response.body, {
@@ -213,9 +241,8 @@ test.serial('nested create', async t => {
 //     }
 //   )
 // })
-//
-//
-//
+
+
 // //**********************************************************************************************************************
 // // some complexer tests
 // //**********************************************************************************************************************

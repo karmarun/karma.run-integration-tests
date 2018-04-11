@@ -171,6 +171,24 @@ exports.metarialize = function (v) {
   }
 }
 
+exports.scope = function (key) {
+  return {
+    "scope": key
+  }
+}
+
+exports.expr = function (val) {
+  return {
+    "expr": val
+  }
+}
+
+exports.define = function (name, argument) {
+  return {
+    "define": [name, argument]
+  }
+}
+
 exports.create = function (_in, val) {
   return {
     "create": [
@@ -183,6 +201,15 @@ exports.create = function (_in, val) {
 exports.update = function (ref, val) {
   return {
     "update": {
+      "ref": ref,
+      "value": val
+    }
+  }
+}
+
+exports.delete = function (ref, val) {
+  return {
+    "delete": {
       "ref": ref,
       "value": val
     }

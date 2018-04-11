@@ -10,12 +10,12 @@ exports.KarmaApi = class extends KarmaTools {
     this.create = this.create.bind(this)
   }
 
-  async tQuery (t, exampleName, query) {
-    if (arguments.length !== 3) {
-      throw new Error("Expecting 3 arguments for tQuery. Did you forgot exampleName?")
+  async tQuery (t, exampleName, ...queries) {
+    if (arguments.length < 3) {
+      throw new Error("Expecting min 3 arguments for tQuery. Did you forgot exampleName?")
     }
-    query = karmaFunction([], query)
-    return await this.query(query)
+    queries = karmaFunction([], ...queries)
+    return await this.query(queries)
   }
 
   async create (t, tag, value) {

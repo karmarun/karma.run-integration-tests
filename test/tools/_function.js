@@ -2,7 +2,16 @@ exports.karmaFunction = function (params = [], ...expression) {
   return {
     "function": [
       params,
-      [...expression]
+      expression
+    ]
+  }
+}
+
+exports.define = function (key, value) {
+  return {
+    "define": [
+      key,
+      value
     ]
   }
 }
