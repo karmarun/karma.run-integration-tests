@@ -15,6 +15,7 @@ exports.KarmaApi = class extends KarmaTools {
       throw new Error("Expecting min 3 arguments for tQuery. Did you forgot exampleName?")
     }
     queries = karmaFunction([], ...queries)
+    //console.log(JSON.stringify(queries, null, 2))
     return await this.query(queries)
   }
 

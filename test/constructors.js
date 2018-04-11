@@ -200,30 +200,24 @@ test.serial('refTo', async t => {
   testRef = response.body
 })
 
-// test.serial('ref', async t => {
-//   const query = [
-//     "ref", [
-//       ["tag", ["string", "_tag"]],
-//       ["string", testRef[1]]
-//     ]
-//   ]
-//
-//   const q = d.data(e.ref([
-//     testRef[0],
-//     testRef[1]
-//   ]))
-//
-//   const q = d.data(e.ref([
-//     d.expr(e.tag(d.string("_tag"))),
-//     d.string(testRef[1])
-//   ]))
-//
-//   const response = await karmaApi.tQuery(t, 'ref_0', q)
-//   t.is(response.status, 200, karmaApi.printError(response))
-//   console.log(response.body[1].human)
-//   t.regex(response.body[0], recordIdRegex)
-//   t.regex(response.body[1], recordIdRegex)
-// })
+test.serial('ref', async t => {
+  // const query = [
+  //   "ref", [
+  //     ["tag", ["string", "_tag"]],
+  //     ["string", testRef[1]]
+  //   ]
+  // ]
+
+  const query = d.data(e.ref(
+    testRef[0],
+    testRef[1]
+  ))
+
+  const response = await karmaApi.tQuery(t, 'ref_0', query)
+  t.is(response.status, 200, karmaApi.printError(response))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
 
 test.serial('model', async t => {
   const q = d.model(d.data(d.string(testRef[0])))

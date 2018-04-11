@@ -43,7 +43,7 @@ test.serial('get', async t => {
 test('metarialize', async t => {
   const query = e.metarialize(e.first(e.all(e.tag(d.string('_tag')))))
   const response = await karmaApi.tQuery(t, 'metarialize_0', query)
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.truthy(response.body.created)
   t.truthy(response.body.updated)
   t.truthy(response.body.id)
@@ -61,7 +61,7 @@ test.serial('create', async t => {
     }))
   ))
   const response = await karmaApi.tQuery(t, 'create_0', query)
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
 })
@@ -93,14 +93,15 @@ test.serial('nested create', async t => {
   ]
 
   const response = await karmaApi.tQuery(t, 'create_1', ...query)
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
 })
 
 
 test.serial('create record', async t => {
-  const create = e.create(e.tag(d.string('myModel')),
+  const create = e.create(
+    e.tag(d.string('myModel')),
     f.karmaFunction(['param'],
       d.data(d.struct({
         "myString": d.string('my string content'),
@@ -110,7 +111,7 @@ test.serial('create record', async t => {
     )
   )
   const response = await karmaApi.tQuery(t, 'create_2', create)
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
 })
@@ -126,7 +127,7 @@ test.serial('update', async t => {
     }))
   )
   const response = await karmaApi.tQuery(t, 'update_0', query)
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
 })
@@ -135,12 +136,27 @@ test.serial('update', async t => {
 test.serial('get', async t => {
   const query = e.get(e.refTo(e.first(e.all(e.tag(d.string('myModel'))))))
   const response = await karmaApi.tQuery(t, 'get_1', query)
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.deepEqual(response.body, {
     myBool: false,
     myInt: 777,
     myString: 'my updated string content'
   })
+})
+
+
+test.serial('delete', async t => {
+  const query3 = e.delete(
+    e.refTo(e.first(e.all(e.tag(d.string('myModel')))))
+  )
+  const response = await karmaApi.tQuery(t, 'delete_0', query3)
+  t.is(response.status, 200, karmaApi.printError(response))
+  t.deepEqual(response.body, {
+      myBool: false,
+      myInt: 777,
+      myString: 'my updated string content'
+    }
+  )
 })
 
 
@@ -177,28 +193,12 @@ test.serial('get', async t => {
 //   ]
 //
 //   const response = await karmaApi.tQuery(t, '', create)
-//   t.is(response.status, 200)
+//   t.is(response.status, 200, karmaApi.printError(response))
 //   t.regex(response.body.a[0], recordIdRegex)
 //   t.regex(response.body.a[1], recordIdRegex)
 //   t.regex(response.body.b[0], recordIdRegex)
 //   t.regex(response.body.b[1], recordIdRegex)
 // })
-
-
-test.serial('delete', async t => {
-  const query3 = e.delete(
-    e.refTo(e.first(e.all(e.tag(d.string('myModel')))))
-  )
-  const response = await karmaApi.tQuery(t, 'delete_0', query3)
-  //console.log(response.body.humanReadableError.human)
-  t.is(response.status, 200)
-  t.deepEqual(response.body, {
-      myBool: false,
-      myInt: 777,
-      myString: 'my updated string content'
-    }
-  )
-})
 
 
 //**********************************************************************************************************************
@@ -530,7 +530,7 @@ test.serial('update record but without any changes', async t => {
 //   ]), recordTyped)
 //   const response = await karmaApi.tQuery(t, '', query)
 //
-//   t.is(response.status, 200)
+//   t.is(response.status, 200, karmaApi.printError(response))
 //   t.is(response.body[1], recordRef[1])
 // })
 //
@@ -622,7 +622,7 @@ test.serial('update record but without any changes', async t => {
 //       }
 //     }
 //   })
-//   t.is(response.status, 200)
+//   t.is(response.status, 200, karmaApi.printError(response))
 //   t.regex(response.body.a, recordIdRegex)
 //   t.regex(response.body.b, recordIdRegex)
 //   t.regex(response.body.c, recordIdRegex)

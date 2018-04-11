@@ -159,7 +159,10 @@ exports.tuple = function (array) {
   }
 }
 
-exports.ref = function (v) {
+exports.ref = function (...v) {
+  if (arguments.length !== 2) {
+    throw new Error(`Expecting 2 arguments for union but got ${arguments.length}`)
+  }
   return {
     "ref": v
   }
@@ -200,10 +203,10 @@ exports.create = function (_in, val) {
 
 exports.update = function (ref, val) {
   return {
-    "update": [
-      ref,
-      val
-    ]
+    "update": {
+      "ref": ref,
+      "value": val
+    }
   }
 }
 
