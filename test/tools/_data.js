@@ -1,7 +1,6 @@
 /**
  * switches expression to data scope
  * @param val
- * @returns {*[]}
  */
 exports.data = function (val) {
   return {
@@ -12,12 +11,11 @@ exports.data = function (val) {
 /**
  * switches from data to expression scope
  * @param val
- * @returns {*[]}
  */
 exports.expr = function (val) {
-  return [
-    "expr", val
-  ]
+  return {
+    "expr": val
+  }
 }
 
 
@@ -58,9 +56,9 @@ exports.union = function (val) {
 }
 
 exports.refTo = function (val) {
-  return [
-    "refTo", val
-  ]
+  return {
+    "refTo": val
+  }
 }
 
 exports.model = function (val) {

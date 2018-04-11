@@ -1,10 +1,11 @@
 exports.struct = function (o) {
   return {
-    "union": {
-      "struct": {
+    "union": [
+      "struct",
+      {
         "map": o
       }
-    }
+    ]
   }
 }
 
@@ -130,10 +131,10 @@ exports.union = function (o) {
 
 exports.string = function () {
   return {
-    "union": {
-      "string":
-        {"struct": {}}
-    }
+    "union": [
+      "string",
+      {"struct": {}}
+    ]
   }
 }
 

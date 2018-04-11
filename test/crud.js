@@ -3,6 +3,7 @@ import {should, expect} from 'chai'
 
 require('dotenv').config()
 const {KarmaApi} = require('./tools/_karmaApi.js')
+const f = require('./tools/_function.js')
 const m = require('./tools/_model.js')
 const e = require('./tools/_expressions.js')
 const d = require('./tools/_data.js')
@@ -57,34 +58,38 @@ test.before(async t => {
 // start some simple example tests
 //**********************************************************************************************************************
 
-test.serial('get', async t => {
-  const query = e.get(e.refTo(e.first(e.all(e.tag(d.string('_tag'))))))
-  const response = await karmaApi.tQuery(t, 'get_0', query)
-  t.truthy(response.body.model)
-  t.truthy(response.body.tag)
-})
-
-
-test('metarialize', async t => {
-  const query = e.metarialize(e.first(e.all(e.tag(d.string('_tag')))))
-  const response = await karmaApi.tQuery(t, 'metarialize_0', query)
-  t.is(response.status, 200)
-  t.truthy(response.body.created)
-  t.truthy(response.body.updated)
-  t.truthy(response.body.id)
-  t.truthy(response.body.model)
-  t.truthy(response.body.value)
-})
+// test.serial('get', async t => {
+//   const query = e.get(e.refTo(e.first(e.all(e.tag(d.string('_tag'))))))
+//   const response = await karmaApi.tQuery(t, 'get_0', query)
+//   t.truthy(response.body.model)
+//   t.truthy(response.body.tag)
+// })
+//
+//
+// test('metarialize', async t => {
+//   const query = e.metarialize(e.first(e.all(e.tag(d.string('_tag')))))
+//   const response = await karmaApi.tQuery(t, 'metarialize_0', query)
+//   t.is(response.status, 200)
+//   t.truthy(response.body.created)
+//   t.truthy(response.body.updated)
+//   t.truthy(response.body.id)
+//   t.truthy(response.body.model)
+//   t.truthy(response.body.value)
+// })
 
 
 test.serial('create', async t => {
-  const query = e.create(e.tag(d.string('_model')), m.struct({
-    "myString": m.string(),
-    "myInt": m.int32(),
-    "myBool": m.bool()
-  }))
+  const query = e.create(e.tag(d.string('_model')), f.functionReturn(
+    d.data(m.struct({
+      "myString": m.string(),
+      // "myInt": m.int32(),
+      // "myBool": m.bool()
+    })),
+    ['param']
+  ))
+
   const response = await karmaApi.tQuery(t, '', query)
-  console.log(response.body.humanReadableError.human)
+  //console.log(response.body.humanReadableError.human)
   t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)

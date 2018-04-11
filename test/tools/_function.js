@@ -1,7 +1,7 @@
-exports.functionReturn = function (expression) {
+exports.functionReturn = function (expression, params = []) {
   return {
     "function": [
-      [],
+      params,
       [expression]
     ]
   }
