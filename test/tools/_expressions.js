@@ -154,46 +154,45 @@ exports.first = function (v) {
 }
 
 exports.tuple = function (array) {
-  return [
-    "tuple", array
-  ]
+  return {
+    "tuple": array
+  }
 }
 
 exports.ref = function (v) {
-  return [
-    "ref", v
-  ]
+  return {
+    "ref": v
+  }
 }
 
 exports.metarialize = function (v) {
-  return [
-    "metarialize", v
-  ]
+  return {
+    "metarialize": v
+  }
 }
 
 exports.create = function (_in, val) {
-  return [
-    "create",
-    {
-      "in": _in,
-      "value": val
-    }
-  ]
+  return {
+    "create": [
+      _in,
+      val
+    ]
+  }
 }
 
 exports.update = function (ref, val) {
-  return [
-    "update", {
+  return {
+    "update": {
       "ref": ref,
       "value": val
     }
-  ]
+  }
 }
 
 exports.get = function (ref) {
-  return [
-    "get", ref
-  ]
+  return {
+    "get": ref
+  }
 }
 
 module.exports = exports

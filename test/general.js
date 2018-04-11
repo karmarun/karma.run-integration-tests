@@ -219,7 +219,6 @@ test('assertPresent', async t => {
       )
     )
   )
-  //console.log(response.body.humanReadableError.human)
   t.is(response.status, 200)
   t.is(response.body, "bar")
 })
