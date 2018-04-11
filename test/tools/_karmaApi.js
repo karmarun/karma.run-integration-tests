@@ -1,5 +1,5 @@
 const {KarmaTools} = require('./_karma_tools')
-const {functionReturn} = require('./_function')
+const {karmaFunction} = require('./_function')
 
 exports.KarmaApi = class extends KarmaTools {
 
@@ -14,8 +14,7 @@ exports.KarmaApi = class extends KarmaTools {
     if (arguments.length !== 3) {
       throw new Error("Expecting 3 arguments for tQuery. Did you forgot exampleName?")
     }
-    query = functionReturn(query)
-    //console.log(JSON.stringify(query, null, 2))
+    query = karmaFunction([], query)
     return await this.query(query)
   }
 

@@ -79,13 +79,12 @@ test('metarialize', async t => {
 
 
 test.serial('create', async t => {
-  const query = e.create(e.tag(d.string('_model')), f.functionReturn(
+  const query = e.create(e.tag(d.string('_model')), f.karmaFunction(['param'],
     d.data(m.struct({
       "myString": m.string(),
       "myInt": m.int32(),
       "myBool": m.bool()
-    })),
-    ['param']
+    }))
   ))
 
   const response = await karmaApi.tQuery(t, 'create_0', query)
@@ -96,21 +95,19 @@ test.serial('create', async t => {
 
 
 test.serial('nested create', async t => {
-  const createModel = e.create(e.tag(d.string('_model')), f.functionReturn(
+  const createModel = e.create(e.tag(d.string('_model')), f.karmaFunction(['param'],
     d.data(m.struct({
       "myString": m.string(),
       "myInt": m.int32(),
       "myBool": m.bool()
-    })),
-    ['param']
+    }))
   ))
 
-  const createTag = e.create(e.tag(d.string('_tag')), f.functionReturn(
+  const createTag = e.create(e.tag(d.string('_tag')), f.karmaFunction(['param'],
     d.data(d.struct({
       "tag": d.string('myModel'),
-      "model": f.functionReturn(createModel, ['param'])
-    })),
-    ['param']
+      "model": f.karmaFunction(createModel, ['param'])
+    }))
   ))
 
   const response = await karmaApi.tQuery(t, 'create_1', createModel)
@@ -123,13 +120,13 @@ test.serial('nested create', async t => {
 
 // test.serial('create record', async t => {
 //   const create = e.create(e.tag(d.string('myModel')),
-//     f.functionReturn(
+//     f.karmaFunction(['param'],
 //       d.data(d.struct({
 //         "myString": d.string('my string content'),
 //         "myInt": d.int32(333),
 //         "myBool": d.bool(true)
-//       })),
-//       ['param']
+//       }))
+//
 //     )
 //   )
 //   const response = await karmaApi.tQuery(t, 'create_2', create)

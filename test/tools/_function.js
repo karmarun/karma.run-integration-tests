@@ -1,8 +1,8 @@
-exports.functionReturn = function (expression, params = []) {
+exports.karmaFunction = function (params = [], ...expression) {
   return {
     "function": [
       params,
-      [expression]
+      [...expression]
     ]
   }
 }
