@@ -8,123 +8,89 @@ exports.struct = function (o) {
 }
 
 exports.tuple = function (o) {
-  return {
-    "union": {
-      "tuple": {
-        "list": o
-      }
-    }
-  }
+  return d.union(
+    "tuple",
+    d.list(o)
+  )
 }
 
 exports.list = function (o) {
-  return {
-    "union": {
-      "list": o
-    }
-  }
+  return d.union(
+    "list",
+    o
+  )
 }
 
 exports.set = function (o) {
-  return {
-    "union": {
-      "set": o
-    }
-  }
+  return d.union(
+    "set",
+    o
+  )
 }
 
 exports.map = function (o) {
-  return {
-    "union": {
-      "map": o
-    }
-  }
+  return d.union(
+    "map",
+    o
+  )
 }
 
 exports.optional = function (o) {
-  return {
-    "union": {
-      "optional": o
-    }
-  }
+  return d.union(
+    "optional",
+    o
+  )
 }
 
 exports.unique = function (o) {
-  return {
-    "union": {
-      "unique": o
-    }
-  }
+  return d.union(
+    "unique",
+    o
+  )
 }
 
 exports.annotation = function (value, o) {
-  return {
-    "union": {
-      "annotation": {
-        "struct": {
-          "value": {"string": value},
-          "model": o
-        }
-      }
-    }
-  }
+  return d.union(
+    "annotation",
+    d.struct({
+      "value": d.string(value),
+      "model": o
+    })
+  )
 }
 
 exports.recursion = function (label, o) {
-  return {
-    "union": {
-      "recursion": {
-        "struct": {
-          "label": {"string": label},
-          "model": o
-        }
-      }
-    }
-  }
+  return d.union(
+    "recursion",
+    d.struct({
+      "label": d.string(label),
+      "model": o
+    })
+  )
 }
 
 exports.recurse = function (label) {
-  return {
-    "union": {
-      "recurse":
-        {"string": label}
-    }
-  }
+  return d.union(
+    "recurse",
+    d.string(label)
+  )
 }
 
 exports.recursive = function (top, modelsMap) {
-
-  return {
-    "union": {
-      "recursive": {
-        "struct": {
-          "top": {"string": top},
-          "models": {
-            "map": modelsMap
-          }
-        }
-      }
-    }
-  }
-}
-
-exports.any = function () {
-  return {
-    "union": {
-      "any":
-        {"struct": {}}
-    }
-  }
+  return d.union(
+    "recursive",
+    d.struct({
+      "top": d.string(top),
+      "models": d.map(modelsMap)
+    })
+  )
 }
 
 exports.union = function (o) {
-  return {
-    "union": {
-      "union": {
-        "map": o
-      }
-    }
-  }
+  return d.union(
+    "union",
+    d.map(o)
+  )
 }
 
 exports.string = function () {
@@ -142,31 +108,24 @@ exports.int32 = function () {
 }
 
 exports.float = function () {
-  return {
-    "union": {
-      "float":
-        {"struct": {}}
-    }
-  }
+  return d.union(
+    "float",
+    d.struct()
+  )
 }
 
 exports.dateTime = function () {
-  return {
-    "union": {
-      "dateTime":
-        {"struct": {}}
-    }
-  }
+  return d.union(
+    "dateTime",
+    d.struct()
+  )
 }
 
-exports.enum = function (o) {
-  return {
-    "union": {
-      "enum": {
-        "set": o
-      },
-    }
-  }
+exports.enum = function (...o) {
+  return d.union(
+    "enum",
+    d.set(o)
+  )
 }
 
 exports.bool = function () {

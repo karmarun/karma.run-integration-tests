@@ -28,5 +28,13 @@ exports.KarmaApi = class extends KarmaTools {
       }
     ])
   }
+
+  printError (response) {
+    try {
+      return response.body.humanReadableError.human
+    } catch (e) {
+      return ''
+    }
+  }
 }
 

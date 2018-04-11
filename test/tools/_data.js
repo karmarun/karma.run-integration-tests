@@ -25,13 +25,13 @@ exports.string = function (val) {
   }
 }
 
-exports.list = function (val) {
+exports.list = function (...val) {
   return {
     "list": val
   }
 }
 
-exports.tuple = function (val) {
+exports.tuple = function (...val) {
   return {
     "tuple": val
   }
@@ -43,7 +43,7 @@ exports.map = function (val) {
   }
 }
 
-exports.set = function (val) {
+exports.set = function (...val) {
   return {
     "set": val
   }
@@ -73,6 +73,12 @@ exports.model = function (val) {
 exports.bool = function (val) {
   return {
     "bool": val
+  }
+}
+
+exports.symbol = function (val) {
+  return {
+    "symbol": val
   }
 }
 

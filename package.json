@@ -4,7 +4,7 @@
   "description": "karma integration tests",
   "main": "index.js",
   "scripts": {
-    "test": "ava --serial --verbose",
+    "test": "ava --serial --watch",
     "nyan": "ava --serial --tap | tap-nyan"
   },
   "keywords": [

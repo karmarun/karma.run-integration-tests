@@ -17,7 +17,7 @@ KARMA_INSTANCE_SECRET=
 `ava --serial --verbose`
 
 or ava file eg:
-`ava test/general.js --verbose`
+`ava test/general.js --watch`
 
 
 # .ENV File

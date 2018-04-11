@@ -25,7 +25,7 @@ test.before(async t => {
 test('all', async t => {
   const response = await karmaApi.tQuery(t, 'all_0',
     e.all(e.tag(d.data(d.string("_tag")))))
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
 })
 
 test('after', async t => {
@@ -35,7 +35,7 @@ test('after', async t => {
       d.data(d.dateTime("2017-01-01T00:00:00Z"))
     ])
   )
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, true)
 })
 
@@ -46,21 +46,20 @@ test('before', async t => {
       d.data(d.dateTime("2018-01-01T00:00:00Z"))
     ])
   )
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, true)
 })
 
 test('length', async t => {
   const response = await karmaApi.tQuery(t, 'length_0',
-    e.length(d.data(d.list([
-        d.int8(1),
-        d.int8(2),
-        d.int8(3),
-        d.int8(4),
-        d.int8(5)
-      ]
+    e.length(d.data(d.list(
+      d.int8(1),
+      d.int8(2),
+      d.int8(3),
+      d.int8(4),
+      d.int8(5)
     ))))
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, 5)
 })
 
@@ -73,7 +72,7 @@ test('length', async t => {
 //     )
 //   )
 //   console.log(response.body.humanReadableError.human)
-//   t.is(response.status, 200)
+//   t.is(response.status, 200, karmaApi.printError(response))
 //   t.is(response.body, true)
 // })
 //
@@ -83,7 +82,7 @@ test('length', async t => {
 //       [d.int8(1), d.int8(2)]
 //     )
 //   )
-//   t.is(response.status, 200)
+//   t.is(response.status, 200, karmaApi.printError(response))
 //   t.is(response.body, true)
 // })
 
@@ -92,13 +91,13 @@ test('equal', async t => {
     e.equal(d.string("foo"), d.string("foo"))
   )
   //console.log(response.body.humanReadableError.human)
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, true)
 
   response = await karmaApi.tQuery(t, '',
     e.equal(d.int16("123"), d.string("foo"))
   )
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, false)
 })
 
@@ -109,7 +108,7 @@ test('and', async t => {
       d.bool(true)
     )
   )
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, true)
 })
 
@@ -120,7 +119,7 @@ test('or', async t => {
       d.bool(true)
     )
   )
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, true)
 })
 
@@ -133,7 +132,7 @@ test('field', async t => {
       }))
     )
   )
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, 'bar')
 })
 
@@ -147,7 +146,7 @@ test('key', async t => {
     )
   )
   //console.log(response.body.humanReadableError.human)
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, 'bar')
 })
 
@@ -157,7 +156,7 @@ test('not', async t => {
       d.bool(false)
     )
   )
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, true)
 })
 
@@ -166,7 +165,7 @@ test('addInt8', async t => {
     e.addInt8(d.int8(2), d.int8(4))
   )
   //console.log(response.body.humanReadableError.human)
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, 6)
 })
 
@@ -174,7 +173,7 @@ test('subInt8', async t => {
   const response = await karmaApi.tQuery(t, 'subInt8',
     e.subInt8(d.int8(2), d.int8(4))
   )
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, -2)
 })
 
@@ -182,7 +181,7 @@ test('mulInt8', async t => {
   const response = await karmaApi.tQuery(t, 'mulInt8_0',
     e.mulInt8(d.int8(2), d.int8(4))
   )
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, 8)
   //console.log(response.body.humanReadableError.human)
 })
@@ -191,7 +190,7 @@ test('divInt8', async t => {
   const response = await karmaApi.tQuery(t, 'divInt8_0',
     e.divInt8(d.int8(4), d.int8(2))
   )
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, 2)
 })
 
@@ -219,7 +218,7 @@ test('assertPresent', async t => {
       )
     )
   )
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, "bar")
 })
 
@@ -227,9 +226,9 @@ test('assertCase', async t => {
   let response = await karmaApi.tQuery(t, 'assertCase_0',
     e.assertCase(
       "foo",
-      d.data(d.union([
+      d.data(d.union(
         "bar", d.int8(4),
-      ]))
+      ))
     )
   )
   t.is(response.status, 400)
@@ -238,13 +237,12 @@ test('assertCase', async t => {
   response = await karmaApi.tQuery(t, 'assertCase_1',
     e.assertCase(
       "foo",
-      d.data(d.union([
+      d.data(d.union(
         "foo", d.int8(4),
-      ]))
+      ))
     )
   )
-  //console.log(response.body.humanReadableError.human)
-  t.is(response.status, 200)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, 4)
 
 })
@@ -279,7 +277,7 @@ test('assertCase', async t => {
 //     }
 //   ])
 //   //console.log(response.body[1].human)
-//   t.is(response.status, 200)
+//   t.is(response.status, 200, karmaApi.printError(response))
 //   t.is(response.body, -2)
 // })
 //
@@ -296,7 +294,7 @@ test('assertCase', async t => {
 //       }
 //     ]
 //   ])
-//   t.is(response.status, 200)
+//   t.is(response.status, 200, karmaApi.printError(response))
 //   t.is(response.body, false)
 // })
 //
@@ -310,7 +308,7 @@ test('assertCase', async t => {
 //       "multiLine": false,
 //     }
 //   ])
-//   t.is(response.status, 200)
+//   t.is(response.status, 200, karmaApi.printError(response))
 //   t.is(response.body, true)
 //
 //   const severeMistake = ':'
@@ -322,7 +320,7 @@ test('assertCase', async t => {
 //       "multiLine": false,
 //     }
 //   ])
-//   t.is(response.status, 200)
+//   t.is(response.status, 200, karmaApi.printError(response))
 //   t.is(response.body, false)
 // })
 //
@@ -342,7 +340,7 @@ test('assertCase', async t => {
 //       ]
 //     }
 //   ])
-//   t.is(response.status, 200)
+//   t.is(response.status, 200, karmaApi.printError(response))
 //   t.is(response.body, 6)
 // })
 //
@@ -364,7 +362,7 @@ test('assertCase', async t => {
 //       }
 //     ]
 //   )
-//   t.is(response.status, 200)
+//   t.is(response.status, 200, karmaApi.printError(response))
 //   t.truthy(response.body.find(item => item === "_tag"))
 //   t.truthy(response.body.find(item => item === "_model"))
 //   t.truthy(response.body.find(item => item === "_user"))

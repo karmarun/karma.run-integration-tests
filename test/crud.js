@@ -61,7 +61,7 @@ test.serial('create', async t => {
     }))
   ))
   const response = await karmaApi.tQuery(t, 'create_0', query)
-  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.status, 200)
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
 })
@@ -93,7 +93,7 @@ test.serial('nested create', async t => {
   ]
 
   const response = await karmaApi.tQuery(t, 'create_1', ...query)
-  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.status, 200)
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
 })
@@ -110,7 +110,7 @@ test.serial('create record', async t => {
     )
   )
   const response = await karmaApi.tQuery(t, 'create_2', create)
-  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.status, 200)
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
 })
@@ -126,7 +126,7 @@ test.serial('update', async t => {
     }))
   )
   const response = await karmaApi.tQuery(t, 'update_0', query)
-  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.status, 200)
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
 })
@@ -135,7 +135,7 @@ test.serial('update', async t => {
 test.serial('get', async t => {
   const query = e.get(e.refTo(e.first(e.all(e.tag(d.string('myModel'))))))
   const response = await karmaApi.tQuery(t, 'get_1', query)
-  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.status, 200)
   t.deepEqual(response.body, {
     myBool: false,
     myInt: 777,
@@ -177,7 +177,7 @@ test.serial('get', async t => {
 //   ]
 //
 //   const response = await karmaApi.tQuery(t, '', create)
-//   t.is(response.status, 200, JSON.stringify(response.body))
+//   t.is(response.status, 200)
 //   t.regex(response.body.a[0], recordIdRegex)
 //   t.regex(response.body.a[1], recordIdRegex)
 //   t.regex(response.body.b[0], recordIdRegex)
@@ -191,7 +191,7 @@ test.serial('delete', async t => {
   )
   const response = await karmaApi.tQuery(t, 'delete_0', query3)
   //console.log(response.body.humanReadableError.human)
-  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.status, 200)
   t.deepEqual(response.body, {
       myBool: false,
       myInt: 777,
@@ -207,7 +207,7 @@ test.serial('delete', async t => {
 let recordRef = null
 
 function compareResponse (t, response, expected) {
-  t.is(response.status, 200, JSON.stringify(response.body))
+  t.is(response.status, 200)
   t.is(response.body.string, expected.string)
   t.is(response.body.int, expected.int)
   t.is(response.body.float, expected.float)
@@ -304,118 +304,68 @@ let recordUntyped = {
   },
   "annotation": "annotated"
 }
-let recordTyped = [
-  "struct", {
-    "string": ["string", "example text"],
-    "int": ["int32", 1],
-    "float": ["float", 0.5],
-    "dateTime": ["dateTime", "2017-08-02T00:00:00+03:00"],
-    "bool": ["bool", true],
-    "enum": ["symbol", "bar"],
-    "tuple": [
-      "tuple", [
-        ["int32", 5],
-        ["string", "example tuple"],
-      ]
-    ],
-    "list": [
-      "list", [
-        ["struct", {
-          "fieldA": ["string", "a"],
-          "filedB": ["string", "b"]
-        }
-        ]
-      ]
-    ],
-    "map": [
-      "map", {
-        "a": ["string", "a"],
-        "b": ["string", "b"]
-      }
-    ],
-    "struct": [
-      "struct", {
-        "fieldA": ["string", "a"],
-        "filedB": ["string", "b"]
-      }
-    ],
-    "union": [
-      "union", [
-        "variantA", [
-          "struct", {
-            "intA": ["int32", 1],
-            "stringA": ["string", "a"]
-          }
-        ]
-      ]
-    ],
-    "set": [
-      "set", [["int32", 1], ["int32", 2], ["int32", 3]]
-    ],
-    "unique": ["string", "unique"],
-    "recursion": [
-      "struct", {
-        "payload": ["int32", 1],
-        "next": [
-          "struct", {
-            "payload": ["int32", 2],
-            "next": [
-              "struct", {
-                "payload": ["int32", 3],
-                "next": [
-                  "struct", {
-                    "payload": ["int32", 4],
-                    "next": [
-                      "struct", {
-                        "payload": ["int32", 5],
-                        "next": [
-                          "struct", {
-                            "payload": ["int32", 6]
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ],
-    "recursive": [
-      "struct", {
-        "foo": [
-          "struct", {
-            "bar": ["int32", 1],
-            "zap": [
-              "struct", {
-                "foo": [
-                  "struct", {
-                    "bar": ["int32", 2],
-                    "zap": [
-                      "struct", {
-                        "foo": [
-                          "struct", {
-                            "bar": ["int32", 3]
-                          }
-                        ],
-                        "bar": ["int32", 3]
-                      }
-                    ]
-                  }
-                ],
-                "bar": ["int32", 2]
-              }
-            ]
-          }
-        ],
-        "bar": ["int32", 1]
-      }
-    ],
-    "annotation": ["string", "annotated"],
-  }
-]
+let recordTyped = d.struct({
+  "string": d.string("example text"),
+  "int": d.int32(1),
+  "float": d.float(0.5),
+  "dateTime": d.dateTime("2017-08-02T00:00:00+03:00"),
+  "bool": d.bool(true),
+  "enum": d.symbol("bar"),
+  "tuple": d.tuple(
+    d.int32(5),
+    d.string("example tuple")
+  ),
+  "list": d.list(
+    d.struct({
+      "fieldA": d.string("a"),
+      "filedB": d.string("b")
+    })
+  ),
+  "map": d.map({
+    "a": d.string("a"),
+    "b": d.string("b")
+  }),
+  "struct": d.struct({
+    "fieldA": d.string("a"),
+    "filedB": d.string("b")
+  }),
+  "union": d.union(
+    "variantA", d.struct({
+      "intA": d.int32(1),
+      "stringA": d.string("a")
+    })
+  ),
+  "set": d.set(d.int32(1), d.int32(2), d.int32(3)),
+  "unique": d.string("unique"),
+  "recursion": d.struct({
+    "payload": d.int32(1),
+    "next": d.struct({
+      "payload": d.int32(1),
+      "next": d.struct({
+        "payload": d.int32(1)
+      })
+    })
+  }),
+  "recursive": d.struct({
+    "foo": d.struct({
+      "bar": d.int32(1),
+      "zap": d.struct({
+        "foo": d.struct({
+          "bar": d.int32(2),
+          "zap": d.struct({
+            "foo": d.struct({
+              "bar": d.int32(3)
+            }),
+            "bar": d.int32(3)
+          })
+        }),
+        "bar": d.int32(2)
+      })
+    }),
+    "bar": d.int32(1)
+  }),
+  "annotation": d.string("annotated"),
+})
 
 
 test.serial('create model', async t => {
@@ -427,11 +377,11 @@ test.serial('create model', async t => {
         "float": m.float(),
         "dateTime": m.dateTime(),
         "bool": m.bool(),
-        "enum": m.enum([
+        "enum": m.enum(
           d.string('foo'),
           d.string('bar'),
           d.string('pop'),
-        ]),
+        ),
         "tuple": m.tuple([
           m.int32(),
           m.string(),
@@ -498,29 +448,43 @@ test.serial('create model', async t => {
     )
   )
 
-  const query = e.create(e.tag('_tag'), d.struct({
-    "tag": d.string('tagTest'),
-    "model": createModel
-  }))
+  const createTag = e.create(
+    e.tag(d.string('_tag')),
+    f.karmaFunction(['param'],
+      d.data(d.struct({
+        "tag": d.string('tagTest'),
+        "model": e.expr(e.scope('tagTestModel'))
+      }))
+    )
+  )
 
-  const response = await karmaApi.tQuery(t, '', query)
-  t.is(response.status, 200, JSON.stringify(response.body))
+  const query = [
+    e.define('tagTestModel', createModel),
+    createTag
+  ]
+
+  const response = await karmaApi.tQuery(t, '', ...query)
+  t.is(response.status, 200, karmaApi.printError(response))
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
 })
 
 
-// test.serial('create record', async t => {
-//   const query = e.create(e.tag('tagTest'), recordTyped)
-//   const response = await karmaApi.tQuery(t, '', query)
-//
-//   t.is(response.status, 200, JSON.stringify(response.body))
-//   t.regex(response.body[0], recordIdRegex)
-//   t.regex(response.body[1], recordIdRegex)
-//   recordRef = response.body
-// })
-//
-//
+test.serial('create record', async t => {
+  const query = e.create(
+    e.tag(d.string('tagTest')),
+    f.karmaFunction(['param'],
+      d.data(recordTyped)
+    ))
+  const response = await karmaApi.tQuery(t, '', query)
+
+  t.is(response.status, 200, karmaApi.printError(response))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+  recordRef = response.body
+})
+
+
 // test.serial('create same record again', async t => {
 //   const query = e.create(e.tag('tagTest'), recordTyped)
 //   const response = await karmaApi.tQuery(t, '', query)
@@ -530,7 +494,7 @@ test.serial('create model', async t => {
 // test.serial('check record', async t => {
 //   const query = e.first(e.all(e.tag("tagTest")))
 //   const response = await karmaApi.tQuery(t, '', query)
-//   t.is(response.status, 200, JSON.stringify(response.body))
+//   t.is(response.status, 200)
 //   compareResponse(t, response, recordUntyped)
 // })
 //
@@ -568,7 +532,7 @@ test.serial('create model', async t => {
 //   ]), recordTyped)
 //   const response = await karmaApi.tQuery(t, '', query)
 //
-//   t.is(response.status, 200, JSON.stringify(response.body))
+//   t.is(response.status, 200)
 //   t.is(response.body[1], recordRef[1])
 // })
 //
@@ -660,7 +624,7 @@ test.serial('create model', async t => {
 //       }
 //     }
 //   })
-//   t.is(response.status, 200, JSON.stringify(response.body))
+//   t.is(response.status, 200)
 //   t.regex(response.body.a, recordIdRegex)
 //   t.regex(response.body.b, recordIdRegex)
 //   t.regex(response.body.c, recordIdRegex)
