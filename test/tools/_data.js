@@ -18,6 +18,12 @@ exports.expr = function (val) {
   }
 }
 
+exports.zero = function () {
+  return {
+    "zero": {}
+  }
+}
+
 
 exports.string = function (val) {
   return {

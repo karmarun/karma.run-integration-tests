@@ -159,6 +159,18 @@ test.serial('delete', async t => {
   )
 })
 
+test('zero', async t => {
+  const create = e.create(
+    e.tag(d.string('myModel')),
+    f.karmaFunction(['param'],
+      d.zero()
+    )
+  )
+  const response = await karmaApi.tQuery(t, 'create_2', create)
+  t.is(response.status, 200, karmaApi.printError(response))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
 
 // test.serial('create multiple record', async t => {
 //   const create = [
