@@ -1,12 +1,10 @@
+const d = require('./_data.js')
+
 exports.struct = function (o) {
-  return {
-    "union": [
-      "struct",
-      {
-        "map": o
-      }
-    ]
-  }
+  return d.union(
+    "struct",
+    d.map(o)
+  )
 }
 
 exports.tuple = function (o) {
@@ -130,21 +128,17 @@ exports.union = function (o) {
 }
 
 exports.string = function () {
-  return {
-    "union": [
-      "string",
-      {"struct": {}}
-    ]
-  }
+  return d.union(
+    "string",
+    d.struct()
+  )
 }
 
 exports.int32 = function () {
-  return {
-    "union": {
-      "int32":
-        {"struct": {}}
-    }
-  }
+  return d.union(
+    "int32",
+    d.struct()
+  )
 }
 
 exports.float = function () {
@@ -176,13 +170,10 @@ exports.enum = function (o) {
 }
 
 exports.bool = function () {
-  return {
-    "union": {
-      "bool": {
-        "struct": {}
-      },
-    }
-  }
+  return d.union(
+    "bool",
+    d.struct()
+  )
 }
 
 

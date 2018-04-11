@@ -49,7 +49,10 @@ exports.set = function (val) {
   }
 }
 
-exports.union = function (val) {
+exports.union = function (...val) {
+  if (arguments.length !== 2) {
+    throw new Error(`Expecting 2 arguments for union but got ${arguments.length}`)
+  }
   return {
     "union": val
   }
@@ -133,7 +136,7 @@ exports.dateTime = function (val) {
   }
 }
 
-exports.struct = function (val) {
+exports.struct = function (val = {}) {
   return {
     "struct": val
   }

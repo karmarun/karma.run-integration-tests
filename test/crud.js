@@ -58,37 +58,62 @@ test.before(async t => {
 // start some simple example tests
 //**********************************************************************************************************************
 
-// test.serial('get', async t => {
-//   const query = e.get(e.refTo(e.first(e.all(e.tag(d.string('_tag'))))))
-//   const response = await karmaApi.tQuery(t, 'get_0', query)
-//   t.truthy(response.body.model)
-//   t.truthy(response.body.tag)
-// })
-//
-//
-// test('metarialize', async t => {
-//   const query = e.metarialize(e.first(e.all(e.tag(d.string('_tag')))))
-//   const response = await karmaApi.tQuery(t, 'metarialize_0', query)
-//   t.is(response.status, 200)
-//   t.truthy(response.body.created)
-//   t.truthy(response.body.updated)
-//   t.truthy(response.body.id)
-//   t.truthy(response.body.model)
-//   t.truthy(response.body.value)
-// })
+test.serial('get', async t => {
+  const query = e.get(e.refTo(e.first(e.all(e.tag(d.string('_tag'))))))
+  const response = await karmaApi.tQuery(t, 'get_0', query)
+  t.truthy(response.body.model)
+  t.truthy(response.body.tag)
+})
+
+
+test('metarialize', async t => {
+  const query = e.metarialize(e.first(e.all(e.tag(d.string('_tag')))))
+  const response = await karmaApi.tQuery(t, 'metarialize_0', query)
+  t.is(response.status, 200)
+  t.truthy(response.body.created)
+  t.truthy(response.body.updated)
+  t.truthy(response.body.id)
+  t.truthy(response.body.model)
+  t.truthy(response.body.value)
+})
 
 
 test.serial('create', async t => {
   const query = e.create(e.tag(d.string('_model')), f.functionReturn(
     d.data(m.struct({
       "myString": m.string(),
-      // "myInt": m.int32(),
-      // "myBool": m.bool()
+      "myInt": m.int32(),
+      "myBool": m.bool()
     })),
     ['param']
   ))
 
-  const response = await karmaApi.tQuery(t, '', query)
+  const response = await karmaApi.tQuery(t, 'create_0', query)
+  t.is(response.status, 200, JSON.stringify(response.body))
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+
+test.serial('nested create', async t => {
+  const createModel = e.create(e.tag(d.string('_model')), f.functionReturn(
+    d.data(m.struct({
+      "myString": m.string(),
+      "myInt": m.int32(),
+      "myBool": m.bool()
+    })),
+    ['param']
+  ))
+
+  const createTag = e.create(e.tag(d.string('_tag')), f.functionReturn(
+    d.data(d.struct({
+      "tag": d.string('myModel'),
+      "model": f.functionReturn(createModel, ['param'])
+    })),
+    ['param']
+  ))
+
+  const response = await karmaApi.tQuery(t, 'create_1', createModel)
   //console.log(response.body.humanReadableError.human)
   t.is(response.status, 200, JSON.stringify(response.body))
   t.regex(response.body[0], recordIdRegex)
@@ -96,38 +121,24 @@ test.serial('create', async t => {
 })
 
 
-// test.serial('nested create', async t => {
-//   const createModel = e.create(e.tag('_model'), m.struct({
-//     "myString": m.string(),
-//     "myInt": m.int32(),
-//     "myBool": m.bool()
-//   }))
-//
-//   const query = e.create(e.tag('_tag'), v.struct({
-//     "tag": v.string('myModel'),
-//     "model": createModel
-//   }))
-//
-//   const response = await karmaApi.tQuery(t, '', query)
-//   t.is(response.status, 200, JSON.stringify(response.body))
-//   t.regex(response.body[0], recordIdRegex)
-//   t.regex(response.body[1], recordIdRegex)
-// })
-//
-//
 // test.serial('create record', async t => {
-//   const create = e.create(e.tag('myModel'), v.struct({
-//     "myString": v.string('my string content'),
-//     "myInt": v.int32(333),
-//     "myBool": v.bool(true)
-//   }))
-//
-//   const response = await karmaApi.tQuery(t, '', create)
+//   const create = e.create(e.tag(d.string('myModel')),
+//     f.functionReturn(
+//       d.data(d.struct({
+//         "myString": d.string('my string content'),
+//         "myInt": d.int32(333),
+//         "myBool": d.bool(true)
+//       })),
+//       ['param']
+//     )
+//   )
+//   const response = await karmaApi.tQuery(t, 'create_2', create)
+//   console.log(response.body.humanReadableError.human)
 //   t.is(response.status, 200, JSON.stringify(response.body))
 //   t.regex(response.body[0], recordIdRegex)
 //   t.regex(response.body[1], recordIdRegex)
 // })
-//
+
 //
 // test.serial('create multiple record', async t => {
 //   const create = [
