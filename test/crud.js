@@ -256,12 +256,12 @@ let recordUntyped = {
     "fieldA": "a",
     "filedB": "b"
   },
-  "union": [
-    "variantA", {
+  "union": {
+    "variantA": {
       "intA": 1,
       "stringA": "a"
     }
-  ],
+  },
   "set": [1, 2, 3],
   "unique": "unique",
   "recursion": {
@@ -270,16 +270,7 @@ let recordUntyped = {
       "payload": 2,
       "next": {
         "payload": 3,
-        "next": {
-          "payload": 4,
-          "next": {
-            "payload": 5,
-            "next": {
-              "payload": 6,
-              "next": null
-            }
-          }
-        }
+        "next": null
       }
     }
   },
@@ -340,9 +331,9 @@ let recordTyped = d.struct({
   "recursion": d.struct({
     "payload": d.int32(1),
     "next": d.struct({
-      "payload": d.int32(1),
+      "payload": d.int32(2),
       "next": d.struct({
-        "payload": d.int32(1)
+        "payload": d.int32(3)
       })
     })
   }),
@@ -382,10 +373,10 @@ test.serial('create model', async t => {
           d.string('bar'),
           d.string('pop'),
         ),
-        "tuple": m.tuple([
+        "tuple": m.tuple(
           m.int32(),
           m.string(),
-        ]),
+        ),
         "list": m.list(
           m.struct({
             "fieldA": m.string(),
@@ -477,7 +468,6 @@ test.serial('create record', async t => {
       d.data(recordTyped)
     ))
   const response = await karmaApi.tQuery(t, '', query)
-
   t.is(response.status, 200, karmaApi.printError(response))
   t.regex(response.body[0], recordIdRegex)
   t.regex(response.body[1], recordIdRegex)
@@ -485,33 +475,41 @@ test.serial('create record', async t => {
 })
 
 
-// test.serial('create same record again', async t => {
-//   const query = e.create(e.tag('tagTest'), recordTyped)
-//   const response = await karmaApi.tQuery(t, '', query)
-//   t.is(response.status, 400, 'should fail because of unique object')
-// })
-//
-// test.serial('check record', async t => {
-//   const query = e.first(e.all(e.tag("tagTest")))
-//   const response = await karmaApi.tQuery(t, '', query)
-//   t.is(response.status, 200)
-//   compareResponse(t, response, recordUntyped)
-// })
-//
-//
-// test.serial('update record but without any changes', async t => {
-//   const query = e.update(e.ref([
-//     e.tag("tagTest"),
-//     v.string(recordRef[1])
-//   ]), recordTyped)
-//   const response = await karmaApi.tQuery(t, '', query)
-//   t.is(response.status, 200, 'should be possible to update unique objects')
-//   t.is(response.body[1], recordRef[1])
-//   t.regex(response.body[0], recordIdRegex)
-//   t.regex(response.body[1], recordIdRegex)
-// })
-//
-//
+test.serial('create same record again', async t => {
+  const query = e.create(
+    e.tag(d.string('tagTest')),
+    f.karmaFunction(['param'],
+      d.data(recordTyped)
+    ))
+  const response = await karmaApi.tQuery(t, '', query)
+  t.is(response.status, 400, 'should fail because of unique object')
+})
+
+
+test.serial('check record', async t => {
+  const query = e.first(e.all(e.tag(d.string("tagTest"))))
+  const response = await karmaApi.tQuery(t, '', query)
+  t.is(response.status, 200, karmaApi.printError(response))
+  compareResponse(t, response, recordUntyped)
+})
+
+
+test.serial('update record but without any changes', async t => {
+  const query = e.update(
+    e.ref(
+      e.tag(d.string("tagTest")),
+      d.string(recordRef[1])
+    ),
+    recordTyped
+  )
+  const response = await karmaApi.tQuery(t, '', query)
+  t.is(response.status, 200, karmaApi.printError(response))
+  t.is(response.body[1], recordRef[1])
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+
 // test.serial('check record', async t => {
 //   const query = e.get(e.ref([
 //     e.tag("tagTest"),

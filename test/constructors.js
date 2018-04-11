@@ -158,10 +158,9 @@ test('map', async t => {
 test('set', async t => {
   const response = await karmaApi.tQuery(t, 'set_0',
     d.data(d.set(
-      [
-        d.int8(4),
-        d.int8(4)
-      ])
+      d.int8(4),
+      d.int8(4)
+      )
     )
   )
   t.is(response.status, 200, karmaApi.printError(response))

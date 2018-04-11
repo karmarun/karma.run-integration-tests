@@ -7,10 +7,10 @@ exports.struct = function (o) {
   )
 }
 
-exports.tuple = function (o) {
+exports.tuple = function (...o) {
   return d.union(
     "tuple",
-    d.list(o)
+    d.list(...o)
   )
 }
 
@@ -124,7 +124,7 @@ exports.dateTime = function () {
 exports.enum = function (...o) {
   return d.union(
     "enum",
-    d.set(o)
+    d.set(...o)
   )
 }
 

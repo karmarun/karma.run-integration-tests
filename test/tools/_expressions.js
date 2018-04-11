@@ -200,10 +200,10 @@ exports.create = function (_in, val) {
 
 exports.update = function (ref, val) {
   return {
-    "update": {
-      "ref": ref,
-      "value": val
-    }
+    "update": [
+      ref,
+      val
+    ]
   }
 }
 
