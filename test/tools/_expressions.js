@@ -207,12 +207,9 @@ exports.update = function (ref, val) {
   }
 }
 
-exports.delete = function (ref, val) {
+exports.delete = function (ref) {
   return {
-    "delete": {
-      "ref": ref,
-      "value": val
-    }
+    "delete": ref
   }
 }
 
