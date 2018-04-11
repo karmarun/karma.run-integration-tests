@@ -496,11 +496,8 @@ test.serial('check record', async t => {
 
 test.serial('update record but without any changes', async t => {
   const query = e.update(
-    e.ref(
-      e.tag(d.string("tagTest")),
-      d.string(recordRef[1])
-    ),
-    recordTyped
+    e.refTo(e.first(e.all(e.tag(d.string('tagTest'))))),
+    d.data(recordTyped)
   )
   const response = await karmaApi.tQuery(t, '', query)
   t.is(response.status, 200, karmaApi.printError(response))
@@ -510,40 +507,42 @@ test.serial('update record but without any changes', async t => {
 })
 
 
-// test.serial('check record', async t => {
-//   const query = e.get(e.ref([
-//     e.tag("tagTest"),
-//     v.string(recordRef[1])
-//   ]))
-//   const response = await karmaApi.tQuery(t, '', query)
-//   compareResponse(t, response, recordUntyped)
-// })
-//
-//
-// test.serial('update record with changes', async t => {
-//   recordTyped.string = v.string('updated')
-//   recordTyped.optional = v.string('optional')
-//   recordTyped.unique = v.string('updated')
-//   const query = e.update(e.ref([
-//     e.tag('tagTest'),
-//     v.string(recordRef[1])
-//   ]), recordTyped)
-//   const response = await karmaApi.tQuery(t, '', query)
-//
-//   t.is(response.status, 200, karmaApi.printError(response))
-//   t.is(response.body[1], recordRef[1])
-// })
-//
-//
-// test.serial('check record', async t => {
-//   const query = e.get(e.ref([
-//     e.tag("tagTest"),
-//     v.string(recordRef[1])
-//   ]))
-//   const response = await karmaApi.tQuery(t, '', query)
-//   compareResponse(t, response, recordUntyped)
-// })
-//
+test.serial('check record', async t => {
+  const query = e.first(e.all(e.tag(d.string("tagTest"))))
+  const response = await karmaApi.tQuery(t, '', query)
+  t.is(response.status, 200, karmaApi.printError(response))
+  compareResponse(t, response, recordUntyped)
+})
+
+
+test.serial('update record with changes', async t => {
+  recordTyped.struct.string = d.string('updated')
+  recordTyped.struct.optional = d.string('optional')
+  recordTyped.struct.unique = d.string('updated')
+
+  recordUntyped.string = "updated"
+  recordUntyped.optional = "optional"
+  recordUntyped.unique = "updated"
+
+  const query = e.update(
+    e.refTo(e.first(e.all(e.tag(d.string('tagTest'))))),
+    d.data(recordTyped)
+  )
+  const response = await karmaApi.tQuery(t, '', query)
+  t.is(response.status, 200, karmaApi.printError(response))
+  t.is(response.body[1], recordRef[1])
+  t.regex(response.body[0], recordIdRegex)
+  t.regex(response.body[1], recordIdRegex)
+})
+
+
+test.serial('check record', async t => {
+  const query = e.first(e.all(e.tag(d.string("tagTest"))))
+  const response = await karmaApi.tQuery(t, '', query)
+  t.is(response.status, 200, karmaApi.printError(response))
+  compareResponse(t, response, recordUntyped)
+})
+
 
 // test.serial('create multiple with some cyclic references', async t => {
 //   const response = await karmaApi.tQuery(t, '', {
