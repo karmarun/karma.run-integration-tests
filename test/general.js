@@ -71,7 +71,6 @@ test('length', async t => {
 //       ]
 //     )
 //   )
-//   console.log(response.body.humanReadableError.human)
 //   t.is(response.status, 200, karmaApi.printError(response))
 //   t.is(response.body, true)
 // })
@@ -90,7 +89,6 @@ test('equal', async t => {
   let response = await karmaApi.tQuery(t, 'equal_0',
     e.equal(d.string("foo"), d.string("foo"))
   )
-  //console.log(response.body.humanReadableError.human)
   t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, true)
 
@@ -145,7 +143,6 @@ test('key', async t => {
       }))
     )
   )
-  //console.log(response.body.humanReadableError.human)
   t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, 'bar')
 })
@@ -164,7 +161,6 @@ test('addInt8', async t => {
   const response = await karmaApi.tQuery(t, 'addInt8_0',
     e.addInt8(d.int8(2), d.int8(4))
   )
-  //console.log(response.body.humanReadableError.human)
   t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, 6)
 })
@@ -183,7 +179,6 @@ test('mulInt8', async t => {
   )
   t.is(response.status, 200, karmaApi.printError(response))
   t.is(response.body, 8)
-  //console.log(response.body.humanReadableError.human)
 })
 
 test('divInt8', async t => {
