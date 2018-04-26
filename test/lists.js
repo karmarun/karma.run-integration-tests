@@ -1,57 +1,31 @@
+import 'dotenv/config'
 import test from 'ava'
 
-require('dotenv').config()
-const {KarmaApi} = require('./tools/_karmaApi.js')
-const m = require('./tools/_model.js')
-const e = require('./tools/_expressions.js')
-const v = require('./tools/_value.js')
+import * as m from './tools/_model'
+import * as e from './tools/_expressions'
+import * as f from './tools/_function'
+import * as d from './tools/_data'
 
-const {
-  KARMA_ENDPOINT,
-  KARMA_INSTANCE_SECRET,
-} = process.env
+import { createBeforeTestFn, createAPI } from './tools/_testHelper'
 
-const karmaApi = new KarmaApi(KARMA_ENDPOINT)
+const karmaApi = createAPI()
+test.before(createBeforeTestFn(karmaApi))
 
-//**********************************************************************************************************************
-// Init Tests
-//**********************************************************************************************************************
-
-test.before(async t => {
-  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
-  await karmaApi.instanceAdministratorRequest('admin/reset')
-  await karmaApi.signIn('admin', KARMA_INSTANCE_SECRET)
-})
-
-
-//**********************************************************************************************************************
-// Start Tests
-//**********************************************************************************************************************
+// mapList
+// =======
 
 test('mapList', async t => {
-  const response = await karmaApi.tQuery(t,
-    [
-      "mapList",
-      {
-        "value": [
-          "all", [
-            "tag", [
-              "string", "_tag"]
-          ]
-        ],
-        "expression": [
-          "field", {
-            "name": "tag",
-            "value": [
-              "arg", {}
-            ]
-          }
-        ]
-      }
-    ]
+  const response = await karmaApi.tQuery(t, 'mapList_0',
+    e.mapList(
+      e.all(e.tag(d.string('_tag'))),
+      f.karmaFunction(['index', 'value'], e.field('tag', e.scope('value')))
+    )
   )
+
   t.is(response.status, 200, JSON.stringify(response.body))
-  t.deepEqual(response.body.sort(), ['_expression', '_migration', '_model', '_role', '_tag', '_user'].sort())
+  t.deepEqual(response.body.sort(), [
+    '_expression', '_migration', '_model', '_role', '_tag', '_user'
+  ].sort())
 })
 
 test('filterList', async t => {
@@ -62,8 +36,9 @@ test('filterList', async t => {
     ]),
     e.greater(e.arg(), v.int8(8))
   )
-  const response = await karmaApi.tQuery(t, query)
-  console.log(response.body[1].human)
+
+  const response = await karmaApi.tQuery(t, '', query)
+  // console.log(response.body[1].human)
   t.is(response.status, 200, JSON.stringify(response.body))
   t.deepEqual(response.body.sort(), [10, 15])
 })

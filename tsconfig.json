@@ -1,0 +1,19 @@
+{
+  "include": ["test/**/*"],
+  "compilerOptions": {
+    "target": "es2017",
+    "strict": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
+    "removeComments": true,
+    "moduleResolution": "node",
+    "declaration": true,
+    "module": "commonjs",
+    "sourceMap": true,
+    "outDir": "dist"
+  }
+}

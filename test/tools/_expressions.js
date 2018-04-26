@@ -1,4 +1,4 @@
-exports.tag = function (v) {
+exports.tag = function tag(v) {
   return {
     "tag": v
   }
@@ -219,6 +219,12 @@ exports.delete = function (ref) {
 exports.get = function (ref) {
   return {
     "get": ref
+  }
+}
+
+exports.mapList = function(value, expression) {
+  return {
+    mapList: [value, expression]
   }
 }
 

@@ -1,4 +1,4 @@
-exports.karmaFunction = function (params = [], ...expression) {
+export function karmaFunction(params = [], ...expression) {
   return {
     "function": [
       params,
@@ -7,7 +7,7 @@ exports.karmaFunction = function (params = [], ...expression) {
   }
 }
 
-exports.define = function (key, value) {
+export function define(key, value) {
   return {
     "define": [
       key,
@@ -16,4 +16,11 @@ exports.define = function (key, value) {
   }
 }
 
-module.exports = exports
+export function func(params = [], ...expression) {
+  return {
+    "function": [
+      params,
+      expression
+    ]
+  }
+}

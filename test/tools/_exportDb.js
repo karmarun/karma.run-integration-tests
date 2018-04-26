@@ -1,5 +1,5 @@
 require('dotenv').config()
-const {KarmaTools} = require('./_karma_tools.js')
+const {KarmaTools} = require('./_karmaTools.js')
 
 const {
   KARMA_ENDPOINT,

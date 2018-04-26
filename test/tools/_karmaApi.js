@@ -1,8 +1,7 @@
-const {KarmaTools} = require('./_karma_tools')
+const {KarmaTools} = require('./_karmaTools')
 const {karmaFunction} = require('./_function')
 
-exports.KarmaApi = class extends KarmaTools {
-
+export class KarmaApi extends KarmaTools {
   constructor (props) {
     super(props)
 
@@ -15,7 +14,8 @@ exports.KarmaApi = class extends KarmaTools {
       throw new Error("Expecting min 3 arguments for tQuery. Did you forgot exampleName?")
     }
     queries = karmaFunction([], ...queries)
-    //console.log(JSON.stringify(queries, null, 2))
+    // console.log(JSON.stringify(queries, null, 2))
+
     return await this.query(queries)
   }
 

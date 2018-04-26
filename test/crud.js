@@ -60,6 +60,7 @@ test.serial('create', async t => {
       "myBool": m.bool()
     }))
   ))
+
   const response = await karmaApi.tQuery(t, 'create_0', query)
   t.is(response.status, 200, karmaApi.printError(response))
   t.regex(response.body[0], recordIdRegex)
