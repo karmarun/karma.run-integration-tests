@@ -1,0 +1,25 @@
+{
+  "name": "karma.run",
+  "version": "0.5.0",
+  "description": "Karma.run SDK",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "prepare": "yarn build"
+  },
+  "keywords": [
+    "karma"
+  ],
+  "private": true,
+  "author": "karma.run",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^10.0.0",
+    "typescript": "^2.8.3"
+  },
+  "dependencies": {
+    "axios": "^0.18.0"
+  }
+}

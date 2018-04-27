@@ -1,7 +1,5 @@
 {
-  "include": ["test/**/*"],
   "compilerOptions": {
-    "target": "es2017",
     "strict": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -13,7 +11,6 @@
     "moduleResolution": "node",
     "declaration": true,
     "module": "commonjs",
-    "sourceMap": true,
-    "outDir": "dist"
+    "sourceMap": true
   }
 }

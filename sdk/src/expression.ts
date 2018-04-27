@@ -1,0 +1,163 @@
+export type Expression = any
+
+export namespace expression {
+  export function tag(expr: Expression) {
+    return {'tag': expr}
+  }
+
+  export function after(tuple: Expression) {
+    return {'after': tuple}
+  }
+
+  export function before(tuple: Expression) {
+    return {'before': tuple}
+  }
+
+  export function length(v: Expression) {
+    return {'length': v}
+  }
+
+  export function all(ref: Expression) {
+    return {'all': ref}
+  }
+
+  export function greater(a: Expression, b: Expression) {
+    return {'greater': [a, b]}
+  }
+
+  export function less(a: Expression, b: Expression) {
+    return {'less': [a, b]}
+  }
+
+  export function equal(a: Expression, b: Expression) {
+    return {'equal': [a, b]}
+  }
+
+  export function and(a: Expression, b: Expression) {
+    return {'and': [a, b]}
+  }
+
+  export function or(a: Expression, b: Expression) {
+    return {'or': [a, b]}
+  }
+
+  export function field(key: Expression, value: Expression) {
+    return {'field': [key, value]}
+  }
+
+  export function key(key: Expression, value: Expression) {
+    return {'key': [key, value]}
+  }
+
+  export function not(val: Expression) {
+    return {'not': val}
+  }
+
+  export function addInt8(a: Expression, b: Expression) {
+    return {'addInt8': [a, b]}
+  }
+
+  export function subInt8(a: Expression, b: Expression) {
+    return {'subInt8': [a, b]}
+  }
+
+  export function mulInt8(a: Expression, b: Expression) {
+    return {'mulInt8': [a, b]}
+  }
+
+  export function divInt8(a: Expression, b: Expression) {
+    return {'divInt8': [a, b]}
+  }
+
+  export function assertPresent(value: Expression) {
+    return {'assertPresent': value}
+  }
+
+  export function assertCase(caseKey: Expression, value: Expression) {
+    return {
+      'assertCase': {
+        'case': caseKey,
+        'value': value
+      }
+    }
+  }
+
+  export function arg() {
+    return ['arg', {}]
+  }
+
+  export function filterList(val: Expression, ex: Expression) {
+    return [
+      'filterList',
+      {
+        'value': val,
+        'expression': ex
+      }
+    ]
+  }
+
+  export function refTo(v: Expression) {
+    return {'refTo': v}
+  }
+
+  export function first(v: Expression) {
+    return {'first': v}
+  }
+
+  export function ref(...v: Expression[]) {
+    if (arguments.length !== 2) {
+      throw new Error(`Expecting 2 arguments for union but got ${arguments.length}`)
+    }
+
+    return {
+      'ref': v
+    }
+  }
+
+  export function metarialize(v: Expression) {
+    return {'metarialize': v}
+  }
+
+  export function scope(key: Expression) {
+    return {'scope': key}
+  }
+
+  /**
+   * switches from data to expression scope
+   * @param val
+   */
+  export function expr(val: Expression) {
+    return {'expr': val}
+  }
+
+  export function define(name: Expression, argument: Expression) {
+    return {'define': [name, argument]}
+  }
+
+  export function create(model: Expression, val: Expression) {
+    return {'create': [model, val]}
+  }
+
+  export function update(ref: Expression, val: Expression) {
+    return {
+      'update': {
+        'ref': ref,
+        'value': val
+      }
+    }
+  }
+
+  export function del(ref: Expression) {
+    return {'delete': ref}
+  }
+
+  export function get(ref: Expression) {
+    return {'get': ref}
+  }
+
+  export function mapList(value: Expression, expression: Expression) {
+    return {
+      mapList: [value, expression]
+    }
+  }
+}
