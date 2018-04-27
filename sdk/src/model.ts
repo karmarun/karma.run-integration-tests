@@ -9,7 +9,7 @@ export namespace model {
     )
   }
 
-  export function tuple(o: Expression) {
+  export function tuple(...o: Expression[]) {
     return d.union(
       'tuple',
       d.list(...o)
@@ -123,7 +123,7 @@ export namespace model {
     )
   }
 
-  export function enumeration(o: Expression) {
+  export function enumeration(...o: Expression[]) {
     return d.union(
       'enum',
       d.set(...o)

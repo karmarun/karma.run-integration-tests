@@ -2,9 +2,12 @@ import 'dotenv/config'
 import baseTest, { TestInterface } from 'ava'
 import { Client, Expression, func as f } from 'karma.run'
 
+export const recordIdRegex = /^[\S]{10,}$/
+
 export interface TestContext {
   client: Client
-  exampleQuery: (title: string, description: string, ...queries: Expression[]) => any
+  exampleQuery: (name: string, ...queries: Expression[]) => Promise<any>
+  query: (...queries: Expression[]) => Promise<any>
 }
 
 export const test = baseTest as TestInterface<TestContext>
@@ -20,8 +23,12 @@ test.before('Create session', async t => {
   await client.authenticate('admin', process.env.KARMA_INSTANCE_SECRET)
 
   t.context.client = client
-  t.context.exampleQuery = (_title: string, _description: string, ...queries: Expression[]) => {
+  t.context.exampleQuery = (_name, ...queries) => {
     // TODO: Extract into JSON
+    return client.query(f.func([], ...queries))
+  }
+
+  t.context.query = (...queries) => {
     return client.query(f.func([], ...queries))
   }
 })

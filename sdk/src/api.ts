@@ -26,12 +26,13 @@ export interface KarmaResponseErrorData {
   }
 }
 
-export class KarmaError {
+export class KarmaError extends Error {
   public readonly type: KarmaErrorType = KarmaErrorType.ConnectionError
-  public readonly message: string = ''
   public readonly data: any
 
   constructor(data?: KarmaResponseErrorData) {
+    super()
+
     if (data) {
       // Currently not all errors are 'humanReadableError'
       if (data.humanReadableError) {
@@ -78,12 +79,50 @@ export function bodyForData(data: any, codec: Codec) {
   }
 }
 
+export async function postUploadRequest(
+  url: string, data: any, session?: Session, codec = Codec.JSON
+): Promise<any> {
+  try {
+    const headers: ObjectMap = headersForSession(session, headersForCodec(codec))
+
+    const result = await axios.post(url, bodyForData(data, codec), {headers})
+    return result.data
+  } catch (e) {
+    const err: AxiosError = e
+
+    if (err.response && err.response.data) {
+      throw new KarmaError(err.response.data)
+    }
+
+    throw new KarmaError()
+  }
+}
+
 export async function postRequest(
   url: string, data: any, session?: Session, codec = Codec.JSON
 ): Promise<any> {
   try {
     const headers: ObjectMap = headersForSession(session, headersForCodec(codec))
     const result = await axios.post(url, bodyForData(data, codec), {headers})
+    return result.data
+  } catch (e) {
+    const err: AxiosError = e
+
+    if (err.response && err.response.data) {
+      throw new KarmaError(err.response.data)
+    }
+
+    throw new KarmaError()
+  }
+}
+
+export async function getBinaryRequest(
+  url: string, session?: Session, codec = Codec.JSON
+): Promise<any> {
+  try {
+    const headers: ObjectMap = headersForSession(session, headersForCodec(codec))
+    const result = await axios.get(url, {headers, responseType: 'arraybuffer'})
+
     return result.data
   } catch (e) {
     const err: AxiosError = e
@@ -117,6 +156,18 @@ export async function authenticate(
   return {username, signature}
 }
 
+export async function exportDB(
+  url: string, session: Session | undefined, codec = Codec.JSON
+): Promise<ArrayBuffer> {
+  return await getBinaryRequest(url + '/admin/export', session, codec)
+}
+
+export async function importDB(
+  url: string, session: Session | undefined, data: ArrayBuffer | Buffer, codec = Codec.JSON
+) {
+  return await postUploadRequest(url + '/admin/import', data, session, codec)
+}
+
 export class Client {
   public session?: Session
   public readonly url: string
@@ -138,5 +189,13 @@ export class Client {
 
   public reset() {
     return reset(this.url, this.session, this.codec)
+  }
+
+  public exportDB() {
+    return exportDB(this.url, this.session, this.codec)
+  }
+
+  public importDB(data: ArrayBuffer | Buffer) {
+    return importDB(this.url, this.session, data, this.codec)
   }
 }

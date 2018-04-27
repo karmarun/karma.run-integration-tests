@@ -21,12 +21,12 @@ export namespace expression {
     return {'all': ref}
   }
 
-  export function greater(a: Expression, b: Expression) {
-    return {'greater': [a, b]}
+  export function gtFloat(a: Expression, b: Expression) {
+    return {'gtFloat': [a, b]}
   }
 
-  export function less(a: Expression, b: Expression) {
-    return {'less': [a, b]}
+  export function ltFloat(a: Expression, b: Expression) {
+    return {'ltFloat': [a, b]}
   }
 
   export function equal(a: Expression, b: Expression) {
@@ -138,6 +138,10 @@ export namespace expression {
     return {'create': [model, val]}
   }
 
+  export function createMultiple(model: Expression, values: {[key: string]: Expression}) {
+    return {'createMultiple': [model, values]}
+  }
+
   export function update(ref: Expression, val: Expression) {
     return {
       'update': {
@@ -159,5 +163,9 @@ export namespace expression {
     return {
       mapList: [value, expression]
     }
+  }
+
+  export function inList(list: Expression, value: Expression) {
+    return {inList: {in: list, value}
   }
 }

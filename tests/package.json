@@ -2,13 +2,17 @@
   "name": "karma.run-tests",
   "version": "1.0.0",
   "description": "Karma integration tests",
+  "engines": {
+    "node": "^9.11.0",
+    "yarn": "^1.6.0"
+  },
   "scripts": {
     "watch": "run-p watch:*",
     "build": "tsc",
     "watch:build": "tsc -w",
     "test": "yarn build && ava dist/*.js --serial --verbose",
     "watch:test": "ava dist/*.js --serial --watch --verbose",
-    "nyan": "ava --serial --tap | tap-nyan"
+    "test-nyan": "yarn build && ava dist/*.js --serial --tap | tap-nyan"
   },
   "keywords": [
     "karma"
