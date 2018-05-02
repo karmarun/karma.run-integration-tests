@@ -1,16 +1,5 @@
-import { data as d, expression as e } from 'karma.run'
-import test, { recordIdRegex } from './_before'
-
-let testRef: any = null
-
-test('tag', async t => {
-  const response = await t.context.exampleQuery('tag_0',
-    e.tag(d.data(d.string('_tag')))
-  )
-
-  t.true(Array.isArray(response))
-  t.is(response.length, 2)
-})
+import { data as d } from 'karma.run'
+import test from '../_before'
 
 test('bool', async t => {
   const response = await t.context.exampleQuery('bool_0',
@@ -173,32 +162,3 @@ test('union', async t => {
   t.deepEqual(response, {'foo': -127})
 })
 
-test.serial('refTo', async t => {
-  let q = e.refTo(e.first(e.all(e.tag(d.data(d.string('_tag'))))))
-  const response = await t.context.exampleQuery('refTo_0', q)
-
-  t.regex(response[0], recordIdRegex)
-  t.regex(response[1], recordIdRegex)
-
-  testRef = response
-})
-
-test.serial('ref', async t => {
-  const query = d.data(e.ref(
-    testRef[0],
-    testRef[1]
-  ))
-
-  const response = await t.context.exampleQuery('ref_0', query)
-
-  t.regex(response[0], recordIdRegex)
-  t.regex(response[1], recordIdRegex)
-})
-
-test.serial('model', async t => {
-  const q = d.model(d.data(d.string(testRef[0])))
-  const response = await t.context.exampleQuery('model_0', q)
-
-  t.regex(response[0], recordIdRegex)
-  t.regex(response[1], recordIdRegex)
-})

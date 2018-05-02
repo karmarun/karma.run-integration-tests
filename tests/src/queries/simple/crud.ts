@@ -1,6 +1,6 @@
 import { ExecutionContext } from 'ava'
 import { data as d, expression as e, model as m, func as f, KarmaError, KarmaErrorType } from 'karma.run'
-import test, { TestContext, recordIdRegex } from './_before'
+import test, { QueryTestContext, recordIDRegex } from '../_before'
 
 test.serial('get', async t => {
   const response = await t.context.exampleQuery(
@@ -37,8 +37,8 @@ test.serial('model create', async t => {
     ))
   )
 
-  t.regex(response[0], recordIdRegex)
-  t.regex(response[1], recordIdRegex)
+  t.regex(response[0], recordIDRegex)
+  t.regex(response[1], recordIDRegex)
 })
 
 test.serial('nested create', async t => {
@@ -57,7 +57,7 @@ test.serial('nested create', async t => {
     f.func(['param'],
       d.data(d.struct({
         'tag': d.string('myModel'),
-        'model': e.expr(e.scope('myNewModel'))
+        'model': e.expr(f.scope('myNewModel'))
       }))
     ))
 
@@ -71,8 +71,8 @@ test.serial('nested create', async t => {
     ...query
   )
 
-  t.regex(response[0], recordIdRegex)
-  t.regex(response[1], recordIdRegex)
+  t.regex(response[0], recordIDRegex)
+  t.regex(response[1], recordIDRegex)
 })
 
 test.serial('create record', async t => {
@@ -90,8 +90,8 @@ test.serial('create record', async t => {
     )
   )
 
-  t.regex(response[0], recordIdRegex)
-  t.regex(response[1], recordIdRegex)
+  t.regex(response[0], recordIDRegex)
+  t.regex(response[1], recordIDRegex)
 })
 
 
@@ -108,8 +108,8 @@ test.serial('update', async t => {
     )
   )
 
-  t.regex(updateResponse[0], recordIdRegex)
-  t.regex(updateResponse[1], recordIdRegex)
+  t.regex(updateResponse[0], recordIDRegex)
+  t.regex(updateResponse[1], recordIDRegex)
 
   const getResponse = await t.context.exampleQuery(
     'get_1',
@@ -150,8 +150,8 @@ test('zero', async t => {
     )
   )
 
-  t.regex(response[0], recordIdRegex)
-  t.regex(response[1], recordIdRegex)
+  t.regex(response[0], recordIDRegex)
+  t.regex(response[1], recordIDRegex)
 })
 
 test.serial('create multiple record', async t => {
@@ -174,10 +174,10 @@ test.serial('create multiple record', async t => {
     )
   )
 
-  t.regex(response.a[0], recordIdRegex)
-  t.regex(response.a[1], recordIdRegex)
-  t.regex(response.b[0], recordIdRegex)
-  t.regex(response.b[1], recordIdRegex)
+  t.regex(response.a[0], recordIDRegex)
+  t.regex(response.a[1], recordIDRegex)
+  t.regex(response.b[0], recordIDRegex)
+  t.regex(response.b[1], recordIDRegex)
 })
 
 
@@ -186,7 +186,7 @@ test.serial('create multiple record', async t => {
 
 let recordRef: any = null
 
-function compareResponse(t: ExecutionContext<TestContext>, response: any, expected: any) {
+function compareResponse(t: ExecutionContext<QueryTestContext>, response: any, expected: any) {
   t.is(response.string, expected.string)
   t.is(response.int, expected.int)
   t.is(response.float, expected.float)
@@ -424,7 +424,7 @@ test.serial('create complex model', async t => {
     f.func(['param'],
       d.data(d.struct({
         'tag': d.string('tagTest'),
-        'model': e.expr(e.scope('tagTestModel'))
+        'model': e.expr(f.scope('tagTestModel'))
       }))
     )
   )
@@ -436,8 +436,8 @@ test.serial('create complex model', async t => {
 
   const modelResponse = await t.context.query(...modelQuery)
 
-  t.regex(modelResponse[0], recordIdRegex)
-  t.regex(modelResponse[1], recordIdRegex)
+  t.regex(modelResponse[0], recordIDRegex)
+  t.regex(modelResponse[1], recordIDRegex)
 
   // Create record
   const recordQuery = e.create(
@@ -447,8 +447,8 @@ test.serial('create complex model', async t => {
 
   const recordResponse = await t.context.query(recordQuery)
 
-  t.regex(recordResponse[0], recordIdRegex)
-  t.regex(recordResponse[1], recordIdRegex)
+  t.regex(recordResponse[0], recordIDRegex)
+  t.regex(recordResponse[1], recordIDRegex)
 
   recordRef = recordResponse
 
@@ -480,8 +480,8 @@ test.serial('create complex model', async t => {
   const response = await t.context.query(updateQuery)
 
   t.is(response[1], recordRef[1])
-  t.regex(response[0], recordIdRegex)
-  t.regex(response[1], recordIdRegex)
+  t.regex(response[0], recordIDRegex)
+  t.regex(response[1], recordIDRegex)
 
   // Check record again
   checkResponse = await t.context.query(checkQuery)
@@ -503,8 +503,8 @@ test.serial('create complex model', async t => {
   const changeResponse = await t.context.query(changeQuery)
 
   t.is(changeResponse[1], recordRef[1])
-  t.regex(changeResponse[0], recordIdRegex)
-  t.regex(changeResponse[1], recordIdRegex)
+  t.regex(changeResponse[0], recordIDRegex)
+  t.regex(changeResponse[1], recordIDRegex)
 
   // Check record again
   checkResponse = await t.context.query(checkQuery)

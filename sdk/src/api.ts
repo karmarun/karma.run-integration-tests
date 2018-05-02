@@ -158,7 +158,7 @@ export async function authenticate(
 
 export async function exportDB(
   url: string, session: Session | undefined, codec = Codec.JSON
-): Promise<ArrayBuffer> {
+): Promise<ArrayBuffer | Buffer> {
   return await getBinaryRequest(url + '/admin/export', session, codec)
 }
 

@@ -21,6 +21,14 @@ export namespace expression {
     return {'all': ref}
   }
 
+  export function gtInt8(a: Expression, b: Expression) {
+    return {gtInt8: [a, b]}
+  }
+
+  export function ltInt8(a: Expression, b: Expression) {
+    return {ltInt8: [a, b]}
+  }
+
   export function gtFloat(a: Expression, b: Expression) {
     return {'gtFloat': [a, b]}
   }
@@ -86,14 +94,12 @@ export namespace expression {
     return ['arg', {}]
   }
 
-  export function filterList(val: Expression, ex: Expression) {
-    return [
-      'filterList',
-      {
-        'value': val,
-        'expression': ex
-      }
-    ]
+  export function reduceList(value: Expression, initial: Expression, reducer: Expression) {
+    return {reduceList: {value, initial, reducer}}
+  }
+
+  export function filterList(value: Expression, expression: Expression) {
+    return {filterList: [value, expression]}
   }
 
   export function refTo(v: Expression) {
@@ -116,10 +122,6 @@ export namespace expression {
 
   export function metarialize(v: Expression) {
     return {'metarialize': v}
-  }
-
-  export function scope(key: Expression) {
-    return {'scope': key}
   }
 
   /**
@@ -166,6 +168,6 @@ export namespace expression {
   }
 
   export function inList(list: Expression, value: Expression) {
-    return {inList: {in: list, value}
+    return {inList: {in: list, value}}
   }
 }
