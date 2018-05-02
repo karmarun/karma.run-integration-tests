@@ -79,7 +79,7 @@ export function bodyForData(data: any, codec: Codec) {
   }
 }
 
-export async function postUploadRequest(
+async function postUploadRequest(
   url: string, data: any, session?: Session, codec = Codec.JSON
 ): Promise<any> {
   try {
@@ -98,7 +98,7 @@ export async function postUploadRequest(
   }
 }
 
-export async function postRequest(
+async function postRequest(
   url: string, data: any, session?: Session, codec = Codec.JSON
 ): Promise<any> {
   try {
@@ -116,7 +116,7 @@ export async function postRequest(
   }
 }
 
-export async function getBinaryRequest(
+async function binaryGetRequest(
   url: string, session?: Session, codec = Codec.JSON
 ): Promise<any> {
   try {
@@ -159,7 +159,7 @@ export async function authenticate(
 export async function exportDB(
   url: string, session: Session | undefined, codec = Codec.JSON
 ): Promise<ArrayBuffer> {
-  return await getBinaryRequest(url + '/admin/export', session, codec)
+  return await binaryGetRequest(url + '/admin/export', session, codec)
 }
 
 export async function importDB(

@@ -56,7 +56,7 @@ test('length', async t => {
     e.length(e.all(e.tag(d.data(d.string('_tag')))))
   )
 
-  t.deepEqual(response, 6)
+  t.is(response, 6)
 })
 
 test('first', async t => {
