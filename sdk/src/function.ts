@@ -18,4 +18,8 @@ export namespace func {
       ]
     }
   }
+
+  export function scope(key: string) {
+    return {scope: key}
+  }
 }

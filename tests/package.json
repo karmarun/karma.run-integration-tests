@@ -10,9 +10,9 @@
     "watch": "run-p watch:*",
     "build": "tsc",
     "watch:build": "tsc -w",
-    "test": "yarn build && ava dist/*.js --serial --verbose",
-    "watch:test": "ava dist/*.js --serial --watch --verbose",
-    "test-nyan": "yarn build && ava dist/*.js --serial --tap | tap-nyan"
+    "test": "yarn build && ava dist/** --serial --verbose",
+    "watch:test": "ava dist/** --serial --watch --verbose",
+    "test-nyan": "yarn build && ava dist/** --serial --tap | tap-nyan"
   },
   "keywords": [
     "karma"

@@ -1,5 +1,5 @@
 import { data as d, expression as e, KarmaError, KarmaErrorType } from 'karma.run'
-import test from './_before'
+import test from '../_before'
 
 test('all', async t => {
   const response = await t.context.exampleQuery('all_0',
