@@ -1,5 +1,6 @@
 import axios, { AxiosError } from 'axios'
 import { Expression } from './expression'
+import { ObjectMap } from './util'
 
 export const enum KarmaErrorType {
   RequestError = 'requestError',
@@ -48,8 +49,6 @@ export class KarmaError extends Error {
     }
   }
 }
-
-export type ObjectMap<T = any> = {[key: string]: T}
 
 export interface Session {
   username: string

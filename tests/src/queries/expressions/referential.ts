@@ -1,6 +1,7 @@
 import { ExecutionContext } from 'ava'
 import { data as d, expression as e, build } from 'karma.run'
 import test, { recordIDRegex, QueryTestContext } from '../_before'
+// import { writeFile } from 'fs'
 
 async function getFirstTagRef(t: ExecutionContext<QueryTestContext>) {
   let q = e.refTo(e.first(e.all(e.tag(d.data(d.string('_tag'))))))
@@ -8,18 +9,20 @@ async function getFirstTagRef(t: ExecutionContext<QueryTestContext>) {
 }
 
 test('tag2', async t => {
-  const response = await t.context.exampleQuery('tag_0',
-    build(e => e.field('blu',
-      e.data(d =>
-        d.struct({
-          bla: d.string('test'),
-          blu: d.expr(e => e.tag('_tag'))
-        })
-      )
-    ))
-  )
+  // const response = await t.context.exampleQuery('tag_0',
+  //   build(e => e.field('blu',
+  //     e.data(d =>
+  //       d.struct({
+  //         bla: d.string('test'),
+  //         blu: d.expr(e => e.tag('_tag'))
+  //       })
+  //     )
+  //   ))
+  // )
 
-  console.log(response)
+  const response = await t.context.exampleQuery('tag_0',
+    e.get(e.tag(d.data(d.string('_expression'))))
+  )
 
   t.true(Array.isArray(response))
   t.is(response.length, 2)

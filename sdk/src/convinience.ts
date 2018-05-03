@@ -1,14 +1,14 @@
 import { func as f } from './function'
 import * as e from './raw'
+import { Expression } from './raw'
 
-export type Expression2 = object
 export type ScopeExpression = {scope: string}
-export type FunctionBody = (...params: ScopeExpression[]) => Expression2
+export type FunctionBody = (...params: ScopeExpression[]) => Expression
 
 export interface ExpressionScope {
-  tag(tag: string | Expression2): {tag: string | Expression2}
-  field(name: string, value: Expression2): {field: [string, Expression2]}
-  data(scopeFn: DataScopeFn): Expression2
+  tag(tag: string | Expression): {tag: string | Expression}
+  field(name: string, value: Expression): {field: [string, Expression]}
+  data(scopeFn: DataScopeFn): Expression
 }
 
 export const dataScope = {
@@ -20,7 +20,7 @@ export const dataScope = {
 }
 
 export const expressionScope: ExpressionScope = {
-  tag(tag: string | Expression2) {
+  tag(tag: string | Expression) {
     if (typeof tag === 'string') {
       return {tag: e.data(e.string(tag))}
     } else {
@@ -28,7 +28,7 @@ export const expressionScope: ExpressionScope = {
     }
   },
 
-  field(name: string, value: Expression2) {
+  field(name: string, value: Expression) {
     return {field: [name, value]}
   },
 
@@ -39,8 +39,8 @@ export const expressionScope: ExpressionScope = {
 
 export type DataScope = typeof dataScope
 
-export type ExpressionScopeFn = (e: ExpressionScope) => Expression2
-export type DataScopeFn = (e: DataScope) => Expression2
+export type ExpressionScopeFn = (e: ExpressionScope) => Expression
+export type DataScopeFn = (e: DataScope) => Expression
 
 export function funct(params: string[], ...bodies: FunctionBody[]) {
   const scopes = params.map(paramName => f.scope(paramName))
