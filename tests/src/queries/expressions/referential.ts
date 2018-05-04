@@ -20,8 +20,12 @@ test('tag2', async t => {
   //   ))
   // )
 
+  // const response = await t.context.exampleQuery('tag_0',
+  //   e.get(e.tag(d.data(d.string('_migration'))))
+  // )
+
   const response = await t.context.exampleQuery('tag_0',
-    e.get(e.tag(d.data(d.string('_migration'))))
+    d.data(d.int8(1.5))
   )
 
   console.log(JSON.stringify(response, null, 2))

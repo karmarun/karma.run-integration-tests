@@ -72,9 +72,8 @@ export interface IntToFloatFn {intToFloat: Expression}
 // Logic
 // -----
 
-export interface AfterFn {after: [Expression, Expression]}
-export interface BeforeFn {before: [Expression, Expression]}
 export interface AndFn {and: Expression[]}
+export interface OrFn {or: Expression[]}
 export interface ArgFn {arg: {}}
 export interface IDFn {id: {}}
 export interface AssertCaseFn {assertCase: {case: string, value: Expression}}
@@ -83,13 +82,12 @@ export interface AssertPresentFn {assertPresent: Expression}
 export interface EqualFn {equal: [Expression, Expression]}
 export interface IfFn {if: {condition: Expression, then: Expression, else: Expression}}
 export interface NotFn {not: Expression}
-export interface OrFn {or: Expression[]}
 export interface PresentOrZeroFn {presentOrZero: Expression}
 export interface WithFn {with: {return: Expression, value: Expression}}
 
 export interface SwitchCaseFn {
   switchCase: {
-    cases: ObjectMap<FunctionExpression>,
+    cases: ObjectMap<FuncExpression>,
     value: Expression,
     default: Expression
   }
@@ -107,8 +105,8 @@ export interface SwitchModelRefFn {
 // ----
 
 export interface AllFn {all: Expression}
-export interface CreateFn {create: [Expression, FunctionExpression]}
-export interface CreateMultipleFn {createMultiple: [Expression, ObjectMap<FunctionExpression>]}
+export interface CreateFn {create: [Expression, FuncExpression]}
+export interface CreateMultipleFn {createMultiple: [Expression, ObjectMap<FuncExpression>]}
 export interface DeleteFn {delete: Expression}
 export interface GetFn {get: Expression}
 export interface UpdateFn {update: {ref: Expression, value: Expression}}
@@ -142,10 +140,10 @@ export interface CurrentUserFn {currentUser: {}}
 // ----
 
 export interface ConcatListsFn {concatLists: [Expression, Expression]}
-export interface FilterListFn {filterList: [Expression, FunctionExpression]}
+export interface FilterListFn {filterList: [Expression, FuncExpression]}
 export interface FirstFn {first: Expression}
 export interface InListFn {inList: {in: Expression, value: Expression}}
-export interface MapListFn {mapList: [Expression, FunctionExpression]}
+export interface MapListFn {mapList: [Expression, FuncExpression]}
 export interface LengthFn {length: Expression}
 export interface MemSortFn {memSort: {expression: Expression, value: Expression}}
 export interface ReverseListFn {reverseList: Expression}
@@ -155,7 +153,7 @@ export interface ReduceListFn {
   reduceList: {
     initial: Expression,
     value: Expression,
-    reducer: FunctionExpression
+    reducer: FuncExpression
   }
 }
 
@@ -181,13 +179,13 @@ export interface IsCaseFn {isCase: {case: Expression, value: Expression}}
 // ---
 
 export interface KeyFn {key: [Expression, Expression]}
-export interface MapMapFn {mapMap: [Expression, FunctionExpression]}
+export interface MapMapFn {mapMap: [Expression, FuncExpression]}
 export interface SetKeyFn {setKey: {name: string, in: Expression, value: Expression}}
 
 // Set
 // ---
 
-export interface MapSetFn {mapSet: [Expression, FunctionExpression]}
+export interface MapSetFn {mapSet: [Expression, FuncExpression]}
 
 // Optional
 // --------
@@ -227,13 +225,19 @@ export interface SearchRegexFn {
   }
 }
 
+// Date Time
+// ---------
+
+export interface AfterFn {after: [Expression, Expression]}
+export interface BeforeFn {before: [Expression, Expression]}
+
 // Scope
 // -----
 
 export interface DataFn {data: DataExpression}
 export interface DefineFn {define: [string, Expression]}
 export interface ScopeFn {scope: string}
-export interface SignatureFn {signature: FunctionExpression}
+export interface SignatureFn {signature: FuncExpression}
 
 // Other
 // -----
@@ -290,6 +294,8 @@ export type Expression =
   | ModelFn | ModelOfFn | MetarializeFn | ZeroFn
   // Scope
   | DataFn | DefineFn | ScopeFn | SignatureFn
+  // Date Time
+  | AfterFn | BeforeFn
   // String
   | JoinStringsFn | StringToLowerFn | MatchRegexFn | SearchAllRegexFn | SearchRegexFn
   // Optional
@@ -315,7 +321,7 @@ export type Expression =
   // CRUD
   | AllFn | CreateFn | CreateMultipleFn | DeleteFn | GetFn | UpdateFn
   // Logic
-  | AfterFn | BeforeFn | AndFn | OrFn | ArgFn | IDFn | AssertCaseFn | AssertModelRefFn | AssertPresentFn
+  | AndFn | OrFn | ArgFn | IDFn | AssertCaseFn | AssertModelRefFn | AssertPresentFn
   | EqualFn | IfFn | NotFn | NullFn | PresentOrZeroFn | WithFn
   // Numeric
   | AddFloatFn | AddInt8Fn | AddInt16Fn | AddInt32Fn | AddInt64Fn | AddUInt8Fn | AddUInt16Fn | AddUInt32Fn | AddUInt64Fn
@@ -326,7 +332,7 @@ export type Expression =
   | GtFloatFn | GtInt8Fn | GtInt16Fn | GtInt32Fn | GtInt64Fn | GtUInt8Fn | GtUInt16Fn | GtUInt32Fn | GtUInt64Fn
   | FloatToIntFn | IntToFloatFn
 
-export type FunctionExpression = FunctionFn
+export type FuncExpression = FunctionFn
 export type StringExpression = string | Expression
 export type NumberExpression = number | Expression
 export type DateExpression = string | number | Date | Expression

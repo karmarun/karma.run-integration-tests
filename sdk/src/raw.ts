@@ -42,257 +42,927 @@ function dataForDateExpression(expr: t.DateExpression) {
   }
 }
 
-export function tag(expr: t.StringExpression): t.TagFn {
-  return {tag: dataForStringExpression(expr)}
+// Function Scope
+// ==============
+
+export function func(params: string[], ...body: t.Expression[]): t.FunctionFn {
+  return {function: [params, body]}
 }
 
-export function after(a: t.DateExpression, b: t.DateExpression): t.AfterFn {
-  return {after: [dataForDateExpression(a), dataForDateExpression(b)]}
+// Data Scope
+// ==========
+
+export function bool(value: boolean): t.BoolFn {
+  return {bool: value}
 }
 
-export function before(a: t.Expression, b: t.Expression): t.BeforeFn {
-  return {before: [dataForDateExpression(a), dataForDateExpression(b)]}
+export function dateTime(value: string | number | Date): t.DateTimeFn {
+  if (typeof value === 'number' || typeof value === 'string') {
+    value = new Date(value)
+  }
+
+  return {dateTime: value.toISOString()}
 }
 
-export function length(v: t.Expression): t.LengthFn {
-  return {length: v}
+export function string(value: string): t.StringFn {
+  return {string: value}
 }
+
+export function nil(): t.NullFn {
+  return {null: {}}
+}
+
+export function symbol(value: string): t.SymbolFn {
+  return {symbol: value}
+}
+
+export function int8(value: number): t.Int8Fn {
+  return {int8: value}
+}
+
+export function int16(value: number): t.Int16Fn {
+  return {int16: value}
+}
+
+export function int32(value: number): t.Int32Fn {
+  return {int32: value}
+}
+
+export function int64(value: number): t.Int64Fn {
+  return {int64: value}
+}
+
+export function uint8(value: number): t.UInt8Fn {
+  return {uint8: value}
+}
+
+export function uint16(value: number): t.UInt16Fn {
+  return {uint16: value}
+}
+
+export function uint32(value: number): t.UInt32Fn {
+  return {uint32: value}
+}
+
+export function uint64(value: number): t.UInt64Fn {
+  return {uint64: value}
+}
+
+export function float(value: number): t.FloatFn {
+  return {float: value}
+}
+
+export function map(value: ObjectMap<t.DataExpression>): t.MapFn {
+  return {map: value}
+}
+
+export function list(...value: t.DataExpression[]): t.ListFn {
+  return {list: value}
+}
+
+export function set(...value: t.DataExpression[]): t.SetFn {
+  return {set: value}
+}
+
+export function struct(value: ObjectMap<t.DataExpression>): t.StructFn {
+  return {struct: value}
+}
+
+export function tuple(...value: t.DataExpression[]): t.TupleFn {
+  return {tuple: value}
+}
+
+export function union(caseKey: string, value: t.DataExpression): t.UnionFn {
+  return {union: [caseKey, value]}
+}
+
+export function ref(modelID: string, recordID: string): t.RefFn {
+  return {ref: [modelID, recordID]}
+}
+
+export function expr(expr: t.Expression): t.ExprFn {
+  return {expr}
+}
+
+// Expression Scope
+// ================
+
+// Other
+// -----
+
+export function model(id: t.Expression): t.ModelFn {
+  return {model: id}
+}
+
+export function modelOf(expr: t.Expression): t.ModelOfFn {
+  return {modelOf: expr}
+}
+
+export function metarialize(record: t.Expression): t.MetarializeFn {
+  return {metarialize: record}
+}
+
+export function zero(value: t.Expression): t.ZeroFn {
+  return {zero: value}
+}
+
+// Scope
+// -----
+
+export function data(value: t.DataExpression): t.DataFn {
+  return {data: value}
+}
+
+export function define(name: string, expr: t.Expression): t.DefineFn {
+  return {define: [name, expr]}
+}
+
+export function scope(name: string): t.ScopeFn {
+  return {scope: name}
+}
+
+export function signature(func: t.FuncExpression): t.SignatureFn {
+  return {signature: func}
+}
+
+// Date Time
+// ---------
+
+export function after(valueA: t.DateExpression, valueB: t.DateExpression): t.AfterFn {
+  return {after: [dataForDateExpression(valueA), dataForDateExpression(valueB)]}
+}
+
+export function before(valueA: t.DateExpression, valueB: t.DateExpression): t.BeforeFn {
+  return {before: [dataForDateExpression(valueA), dataForDateExpression(valueB)]}
+}
+
+// String
+// ------
+
+export function joinString(separator: t.Expression, strings: t.Expression): t.JoinStringsFn {
+  return {joinStrings: {separator, strings}}
+}
+
+export function stringToLower(value: t.Expression): t.StringToLowerFn {
+  return {stringToLower: value}
+}
+
+export function matchRegex(
+  regex: string, value: t.Expression, caseInsensitive: boolean = false, multiLine: boolean = false
+): t.MatchRegexFn {
+  return {matchRegex: {regex, value, caseInsensitive, multiLine}}
+}
+
+export function searchAllRegex(
+  regex: string, value: t.Expression, caseInsensitive: boolean = false, multiLine: boolean = false
+): t.SearchAllRegexFn {
+  return {searchAllRegex: {regex, value, caseInsensitive, multiLine}}
+}
+
+export function searchRegex(
+  regex: string, value: t.Expression, caseInsensitive: boolean = false, multiLine: boolean = false
+): t.SearchRegexFn {
+  return {searchRegex: {regex, value, caseInsensitive, multiLine}}
+}
+
+// Optional
+// --------
+
+export function isPresent(optional: t.Expression): t.IsPresentFn {
+  return {isPresent: optional}
+}
+
+// Set
+// ---
+
+export function mapSet(value: t.Expression, mapper: t.FuncExpression): t.MapSetFn {
+  return {mapSet: [value, mapper]}
+}
+
+// Map
+// ---
+
+export function setKey(name: string, value: t.Expression, inMap: t.Expression): t.SetKeyFn {
+  return {setKey: {name, value, in: inMap}}
+}
+
+export function mapMap(value: t.Expression, mapper: t.FuncExpression): t.MapMapFn {
+  return {mapMap: [value, mapper]}
+}
+
+export function key(name: t.Expression, value: t.Expression): t.KeyFn {
+  return {key: [name, value]}
+}
+
+// Union
+// -----
+
+export function isCase(caseKey: t.Expression, value: t.Expression): t.IsCaseFn {
+  return {isCase: {case: caseKey, value}}
+}
+
+// Tuple
+// -----
+
+export function indexTuple(index: number, value: t.Expression): t.IndexTupleFn {
+  return {indexTuple: {number: index, value}}
+}
+
+// Struct
+// ------
+
+export function extractStrings(value: t.Expression): t.ExtractStringsFn {
+  return {extractStrings: value}
+}
+
+export function field(name: string, value: t.Expression): t.FieldFn {
+  return {field: [name, value]}
+}
+
+export function setField(name: string, value: t.Expression, inStruct: t.Expression): t.SetFieldFn {
+  return {setField: {name, value, in: inStruct}}
+}
+
+// List
+// ----
+
+export function concatLists(valueA: t.Expression, valueB: t.Expression): t.ConcatListsFn {
+  return {concatLists: [valueA, valueB]}
+}
+
+export function filterList(value: t.Expression, filter: t.FuncExpression): t.FilterListFn {
+  return {filterList: [value, filter]}
+}
+
+export function first(value: t.Expression): t.FirstFn {
+  return {first: value}
+}
+
+export function inList(value: t.Expression, inList: t.Expression): t.InListFn {
+  return {inList: {value, in: inList}}
+}
+
+export function mapList(value: t.Expression, mapper: t.FuncExpression): t.MapListFn {
+  return {mapList: [value, mapper]}
+}
+
+export function length(value: t.Expression): t.LengthFn {
+  return {length: value}
+}
+
+export function memSort(value: t.Expression, expression: t.Expression): t.MemSortFn {
+  return {memSort: {value, expression}}
+}
+
+export function reverseList(value: t.Expression): t.ReverseListFn {
+  return {reverseList: value}
+}
+
+export function slice(value: t.Expression, offset: t.NumberExpression, length: t.NumberExpression): t.SliceFn {
+  return {
+    slice: {
+      value,
+      offset: dataForNumberExpression(offset, NumberType.Int64),
+      length: dataForNumberExpression(length, NumberType.Int64)
+    }
+  }
+}
+
+export function reduceList(value: t.Expression, initial: t.Expression, reducer: t.FuncExpression): t.ReduceListFn {
+  return {reduceList: {value, initial, reducer}}
+}
+
+// User / Permission
+// -----------------
+
+export function currentUser(): t.CurrentUserFn {
+  return {currentUser: {}}
+}
+
+// Graph / Referential
+// -------------------
+
+export function allReferrers(ref: t.Expression): t.AllReferrersFn {
+  return {allReferrers: ref}
+}
+
+export function refTo(value: t.Expression): t.RefToFn {
+  return {refTo: value}
+}
+
+export function referred(from: t.Expression, inRef: t.Expression): t.ReferredFn {
+  return {referred: {from, in: inRef}}
+}
+
+export function referrers(of: t.Expression, inRef: t.Expression): t.ReferrersFn {
+  return {referrers: {of, in: inRef}}
+}
+
+export function relocateRef(model: t.Expression, ref: t.Expression): t.RelocateRefFn {
+  return {relocateRef: {model, ref}}
+}
+
+export function resolveAllRefs(ref: t.Expression): t.ResolveAllRefsFn {
+  return {resolveAllRefs: ref}
+}
+
+export function tag(value: t.StringExpression): t.TagFn {
+  return {tag: dataForStringExpression(value)}
+}
+
+export function tagExists(value: t.StringExpression): t.TagExistsFn {
+  return {tagExists: dataForStringExpression(value)}
+}
+
+export function graphFlow(
+  start: t.Expression, flow: {backward: t.Expression[], forward: t.Expression[], from: t.Expression}[]
+): t.GraphFlowFn {
+  return {graphFlow: {start, flow}}
+}
+
+// CRUD
+// ----
 
 export function all(ref: t.Expression): t.AllFn {
   return {all: ref}
 }
 
-export function gtInt8(a: t.NumberExpression, b: t.NumberExpression): t.GtInt8Fn {
-  return {gtInt8: [
-    dataForNumberExpression(a, NumberType.Int8),
-    dataForNumberExpression(b, NumberType.Int8)
-  ]}
+export function create(modelRef: t.Expression, func: t.FuncExpression): t.CreateFn {
+  return {create: [modelRef, func]}
 }
 
-export function ltInt8(a: t.Expression, b: t.Expression): t.LtInt8Fn {
-  return {ltInt8: [a, b]}
+// TODO: How to insert in different models?
+export function createMultiple(modelRef: t.Expression, funcs: ObjectMap<t.FuncExpression>): t.CreateMultipleFn {
+  return {createMultiple: [modelRef, funcs]}
 }
 
-export function gtFloat(a: t.Expression, b: t.Expression): t.GtFloatFn {
-  return {gtFloat: [a, b]}
-}
-
-export function ltFloat(a: t.Expression, b: t.Expression): t.LtFloatFn {
-  return {ltFloat: [a, b]}
-}
-
-export function equal(a: t.Expression, b: t.Expression): t.EqualFn {
-  return {equal: [a, b]}
-}
-
-export function and(a: t.Expression, b: t.Expression): t.AndFn {
-  return {and: [a, b]}
-}
-
-export function or(a: t.Expression, b: t.Expression): t.OrFn {
-  return {or: [a, b]}
-}
-
-export function field(key: string, value: t.Expression): t.FieldFn {
-  return {field: [key, value]}
-}
-
-export function key(key: t.Expression, value: t.Expression): t.KeyFn {
-  return {key: [key, value]}
-}
-
-export function not(val: t.Expression) {
-  return {not: val}
-}
-
-export function addInt8(a: t.Expression, b: t.Expression) {
-  return {addInt8: [a, b]}
-}
-
-export function subInt8(a: t.Expression, b: t.Expression) {
-  return {subInt8: [a, b]}
-}
-
-export function mulInt8(a: t.Expression, b: t.Expression) {
-  return {mulInt8: [a, b]}
-}
-
-export function divInt8(a: t.Expression, b: t.Expression) {
-  return {divInt8: [a, b]}
-}
-
-export function assertPresent(value: t.Expression) {
-  return {assertPresent: value}
-}
-
-export function assertCase(caseKey: t.Expression, value: t.Expression) {
-  return {assertCase: {case: caseKey, value}}
-}
-
-export function arg() {
-  return {arg: {}}
-}
-
-export function reduceList(value: t.Expression, initial: t.Expression, reducer: t.Expression) {
-  return {reduceList: {value, initial, reducer}}
-}
-
-export function filterList(value: t.Expression, expression: t.Expression) {
-  return {filterList: [value, expression]}
-}
-
-export function refTo(v: t.Expression) {
-  return {refTo: v}
-}
-
-export function first(v: t.Expression) {
-  return {first: v}
-}
-
-export function ref(...v: t.Expression[]) {
-  if (arguments.length !== 2) {
-    throw new Error(`Expecting 2 arguments for union but got ${arguments.length}`)
-  }
-
-  return {ref: v}
-}
-
-export function metarialize(v: t.Expression) {
-  return {metarialize: v}
-}
-
-/**
- * switches from data to t.expression scope
- * @param val
- */
-export function expr(val: t.Expression) {
-  return {expr: val}
-}
-
-export function define(name: t.Expression, argument: t.Expression) {
-  return {define: [name, argument]}
-}
-
-export function create(model: t.Expression, val: t.Expression) {
-  return {create: [model, val]}
-}
-
-export function createMultiple(model: t.Expression, values: {[key: string]: t.Expression}) {
-  return {createMultiple: [model, values]}
-}
-
-export function update(ref: t.Expression, value: t.Expression) {
-  return {update: {ref, value}}
-}
-
-export function del(ref: t.Expression) {
+// delete
+export function del(ref: t.Expression): t.DeleteFn {
   return {delete: ref}
 }
 
-export function get(ref: t.Expression) {
+export function get(ref: t.Expression): t.GetFn {
   return {get: ref}
 }
 
-export function mapList(value: t.Expression, expression: t.Expression) {
-  return {mapList: [value, expression]}
+export function update(ref: t.Expression, value: t.Expression): t.UpdateFn {
+  return {update: {ref, value}}
 }
 
-export function inList(list: t.Expression, value: t.Expression) {
-  return {inList: {in: list, value}}
+// Logic
+// -----
+
+export function and(...values: t.Expression[]): t.AndFn {
+  return {and: values}
 }
 
-/**
- * switches t.expression to data scope
- * @param val
- */
-export function data(val: t.DataExpression): t.DataFn {
-  return {data: val}
+export function or(...values: t.Expression[]): t.OrFn {
+  return {or: values}
 }
 
-export function zero() {
-  return {zero: {}}
+export function arg(): t.ArgFn {
+  return {arg: {}}
 }
 
-export function string(val: string): t.StringFn {
-  return {string: val}
+export function id(): t.IDFn {
+  return {id: {}}
 }
 
-export function list(...val: t.Expression[]) {
-  return {list: val}
+export function assertCase(caseKey: string, value: t.Expression): t.AssertCaseFn {
+  return {assertCase: {case: caseKey, value}}
 }
 
-export function tuple(...val: t.Expression[]) {
-  return {tuple: val}
+export function asserModelRef(ref: t.Expression, value: t.Expression): t.AssertModelRefFn {
+  return {assertModelRef: {ref, value}}
 }
 
-export function map(val: t.Expression) {
-  return {map: val}
+export function equal(valueA: t.Expression, valueB: t.Expression): t.EqualFn {
+  return {equal: [valueA, valueB]}
 }
 
-export function set(...val: t.Expression[]) {
-  return {set: val}
+// if
+export function when(condition: t.Expression, then: t.Expression, els: t.Expression): t.IfFn {
+  return {if: {condition, then, else: els}}
 }
 
-export function union(...val: t.Expression[]) {
-  if (arguments.length !== 2) {
-    throw new Error(`Expecting 2 arguments for union but got ${arguments.length}`)
+export function not(value: t.Expression): t.NotFn {
+  return {not: value}
+}
+
+export function presentOrZero(value: t.Expression): t.PresentOrZeroFn {
+  return {presentOrZero: value}
+}
+
+// with
+export function besides(retrn: t.Expression, value: t.Expression): t.WithFn {
+  return {with: {return: retrn, value}}
+}
+
+export function switchCase(
+  value: t.Expression, defaultValue: t.Expression, cases: ObjectMap<t.FuncExpression>
+): t.SwitchCaseFn {
+  return {switchCase: {value, default: defaultValue, cases}}
+}
+
+export function switchModelRef(
+  value: t.Expression, defaultValue: t.Expression, cases: {match: t.Expression, return: t.Expression}[]
+): t.SwitchModelRefFn {
+  return {switchModelRef: {value, default: defaultValue, cases}}
+}
+
+// Numeric
+// -------
+
+export function addFloat(valueA: t.NumberExpression, valueB: t.NumberExpression): t.AddFloatFn {
+  return {
+    addFloat: [
+      dataForNumberExpression(valueA, NumberType.Float),
+      dataForNumberExpression(valueB, NumberType.Float)
+    ]
   }
-  return {union: val}
 }
 
-export function model(val: t.Expression) {
-  return {model: val}
+export function addInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.AddInt8Fn {
+  return {
+    addInt8: [
+      dataForNumberExpression(valueA, NumberType.Int8),
+      dataForNumberExpression(valueB, NumberType.Int8)
+    ]
+  }
 }
 
-export function bool(val: t.Expression) {
-  return {bool: val}
+export function addInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.AddInt16Fn {
+  return {
+    addInt16: [
+      dataForNumberExpression(valueA, NumberType.Int16),
+      dataForNumberExpression(valueB, NumberType.Int16)
+    ]
+  }
 }
 
-export function symbol(val: t.Expression) {
-  return {symbol: val}
+export function addInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.AddInt32Fn {
+  return {
+    addInt32: [
+      dataForNumberExpression(valueA, NumberType.Int32),
+      dataForNumberExpression(valueB, NumberType.Int32)
+    ]
+  }
 }
 
-export function int8(val: number) {
-  return {int8: val}
+export function addInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.AddInt64Fn {
+  return {
+    addInt64: [
+      dataForNumberExpression(valueA, NumberType.Int64),
+      dataForNumberExpression(valueB, NumberType.Int64)
+    ]
+  }
 }
 
-export function int16(val: number) {
-  return {int16: val}
+export function addUInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.AddUInt8Fn {
+  return {
+    addUint8: [
+      dataForNumberExpression(valueA, NumberType.UInt8),
+      dataForNumberExpression(valueB, NumberType.UInt8)
+    ]
+  }
 }
 
-export function int32(val: number) {
-  return {int32: val}
+export function addUInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.AddUInt16Fn {
+  return {
+    addUint16: [
+      dataForNumberExpression(valueA, NumberType.UInt16),
+      dataForNumberExpression(valueB, NumberType.UInt16)
+    ]
+  }
 }
 
-export function int64(val: number) {
-  return {int64: val}
+export function addUInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.AddUInt32Fn {
+  return {
+    addUint32: [
+      dataForNumberExpression(valueA, NumberType.UInt32),
+      dataForNumberExpression(valueB, NumberType.UInt32)
+    ]
+  }
 }
 
-export function uint8(val: number) {
-  return {uint8: val}
+export function addUInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.AddUInt64Fn {
+  return {
+    addUint64: [
+      dataForNumberExpression(valueA, NumberType.UInt64),
+      dataForNumberExpression(valueB, NumberType.UInt64)
+    ]
+  }
 }
 
-export function uint16(val: number) {
-  return {uint16: val}
+export function subFloat(valueA: t.NumberExpression, valueB: t.NumberExpression): t.SubFloatFn {
+  return {
+    subFloat: [
+      dataForNumberExpression(valueA, NumberType.Float),
+      dataForNumberExpression(valueB, NumberType.Float)
+    ]
+  }
 }
 
-export function uint32(val: number) {
-  return {uint32: val}
+export function subInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.SubInt8Fn {
+  return {
+    subInt8: [
+      dataForNumberExpression(valueA, NumberType.Int8),
+      dataForNumberExpression(valueB, NumberType.Int8)
+    ]
+  }
 }
 
-export function uint64(val: number) {
-  return {uint64: val}
+export function subInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.SubInt16Fn {
+  return {
+    subInt16: [
+      dataForNumberExpression(valueA, NumberType.Int16),
+      dataForNumberExpression(valueB, NumberType.Int16)
+    ]
+  }
 }
 
-export function float(val: number) {
-  return {float: val}
+export function subInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.SubInt32Fn {
+  return {
+    subInt32: [
+      dataForNumberExpression(valueA, NumberType.Int32),
+      dataForNumberExpression(valueB, NumberType.Int32)
+    ]
+  }
 }
 
-export function dateTime(value: string | number | Date): t.DateTimeFn {
-  const date = new Date(value)
-  return {dateTime: date.toISOString()}
+export function subInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.SubInt64Fn {
+  return {
+    subInt64: [
+      dataForNumberExpression(valueA, NumberType.Int64),
+      dataForNumberExpression(valueB, NumberType.Int64)
+    ]
+  }
 }
 
-export function struct(val: ObjectMap<t.DataExpression> = {}): t.StructFn {
-  return {struct: val}
+export function subUInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.SubUInt8Fn {
+  return {
+    subUint8: [
+      dataForNumberExpression(valueA, NumberType.UInt8),
+      dataForNumberExpression(valueB, NumberType.UInt8)
+    ]
+  }
+}
+
+export function subUInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.SubUInt16Fn {
+  return {
+    subUint16: [
+      dataForNumberExpression(valueA, NumberType.UInt16),
+      dataForNumberExpression(valueB, NumberType.UInt16)
+    ]
+  }
+}
+
+export function subUInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.SubUInt32Fn {
+  return {
+    subUint32: [
+      dataForNumberExpression(valueA, NumberType.UInt32),
+      dataForNumberExpression(valueB, NumberType.UInt32)
+    ]
+  }
+}
+
+export function subUInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.SubUInt64Fn {
+  return {
+    subUint64: [
+      dataForNumberExpression(valueA, NumberType.UInt64),
+      dataForNumberExpression(valueB, NumberType.UInt64)
+    ]
+  }
+}
+
+export function divFloat(valueA: t.NumberExpression, valueB: t.NumberExpression): t.DivFloatFn {
+  return {
+    divFloat: [
+      dataForNumberExpression(valueA, NumberType.Float),
+      dataForNumberExpression(valueB, NumberType.Float)
+    ]
+  }
+}
+
+export function divInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.DivInt8Fn {
+  return {
+    divInt8: [
+      dataForNumberExpression(valueA, NumberType.Int8),
+      dataForNumberExpression(valueB, NumberType.Int8)
+    ]
+  }
+}
+
+export function divInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.DivInt16Fn {
+  return {
+    divInt16: [
+      dataForNumberExpression(valueA, NumberType.Int16),
+      dataForNumberExpression(valueB, NumberType.Int16)
+    ]
+  }
+}
+
+export function divInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.DivInt32Fn {
+  return {
+    divInt32: [
+      dataForNumberExpression(valueA, NumberType.Int32),
+      dataForNumberExpression(valueB, NumberType.Int32)
+    ]
+  }
+}
+
+export function divInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.DivInt64Fn {
+  return {
+    divInt64: [
+      dataForNumberExpression(valueA, NumberType.Int64),
+      dataForNumberExpression(valueB, NumberType.Int64)
+    ]
+  }
+}
+
+export function divUInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.DivUInt8Fn {
+  return {
+    divUint8: [
+      dataForNumberExpression(valueA, NumberType.UInt8),
+      dataForNumberExpression(valueB, NumberType.UInt8)
+    ]
+  }
+}
+
+export function divUInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.DivUInt16Fn {
+  return {
+    divUint16: [
+      dataForNumberExpression(valueA, NumberType.UInt16),
+      dataForNumberExpression(valueB, NumberType.UInt16)
+    ]
+  }
+}
+
+export function divUInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.DivUInt32Fn {
+  return {
+    divUint32: [
+      dataForNumberExpression(valueA, NumberType.UInt32),
+      dataForNumberExpression(valueB, NumberType.UInt32)
+    ]
+  }
+}
+
+export function divUInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.DivUInt64Fn {
+  return {
+    divUint64: [
+      dataForNumberExpression(valueA, NumberType.UInt64),
+      dataForNumberExpression(valueB, NumberType.UInt64)
+    ]
+  }
+}
+
+export function mulFloat(valueA: t.NumberExpression, valueB: t.NumberExpression): t.MulFloatFn {
+  return {
+    mulFloat: [
+      dataForNumberExpression(valueA, NumberType.Float),
+      dataForNumberExpression(valueB, NumberType.Float)
+    ]
+  }
+}
+
+export function mulInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.MulInt8Fn {
+  return {
+    mulInt8: [
+      dataForNumberExpression(valueA, NumberType.Int8),
+      dataForNumberExpression(valueB, NumberType.Int8)
+    ]
+  }
+}
+
+export function mulInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.MulInt16Fn {
+  return {
+    mulInt16: [
+      dataForNumberExpression(valueA, NumberType.Int16),
+      dataForNumberExpression(valueB, NumberType.Int16)
+    ]
+  }
+}
+
+export function mulInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.MulInt32Fn {
+  return {
+    mulInt32: [
+      dataForNumberExpression(valueA, NumberType.Int32),
+      dataForNumberExpression(valueB, NumberType.Int32)
+    ]
+  }
+}
+
+export function mulInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.MulInt64Fn {
+  return {
+    mulInt64: [
+      dataForNumberExpression(valueA, NumberType.Int64),
+      dataForNumberExpression(valueB, NumberType.Int64)
+    ]
+  }
+}
+
+export function mulUInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.MulUInt8Fn {
+  return {
+    mulUint8: [
+      dataForNumberExpression(valueA, NumberType.UInt8),
+      dataForNumberExpression(valueB, NumberType.UInt8)
+    ]
+  }
+}
+
+export function mulUInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.MulUInt16Fn {
+  return {
+    mulUint16: [
+      dataForNumberExpression(valueA, NumberType.UInt16),
+      dataForNumberExpression(valueB, NumberType.UInt16)
+    ]
+  }
+}
+
+export function mulUInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.MulUInt32Fn {
+  return {
+    mulUint32: [
+      dataForNumberExpression(valueA, NumberType.UInt32),
+      dataForNumberExpression(valueB, NumberType.UInt32)
+    ]
+  }
+}
+
+export function mulUInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.MulUInt64Fn {
+  return {
+    mulUint64: [
+      dataForNumberExpression(valueA, NumberType.UInt64),
+      dataForNumberExpression(valueB, NumberType.UInt64)
+    ]
+  }
+}
+
+export function ltFloat(valueA: t.NumberExpression, valueB: t.NumberExpression): t.LtFloatFn {
+  return {
+    ltFloat: [
+      dataForNumberExpression(valueA, NumberType.Float),
+      dataForNumberExpression(valueB, NumberType.Float)
+    ]
+  }
+}
+
+export function ltInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.LtInt8Fn {
+  return {
+    ltInt8: [
+      dataForNumberExpression(valueA, NumberType.Int8),
+      dataForNumberExpression(valueB, NumberType.Int8)
+    ]
+  }
+}
+
+export function ltInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.LtInt16Fn {
+  return {
+    ltInt16: [
+      dataForNumberExpression(valueA, NumberType.Int16),
+      dataForNumberExpression(valueB, NumberType.Int16)
+    ]
+  }
+}
+
+export function ltInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.LtInt32Fn {
+  return {
+    ltInt32: [
+      dataForNumberExpression(valueA, NumberType.Int32),
+      dataForNumberExpression(valueB, NumberType.Int32)
+    ]
+  }
+}
+
+export function ltInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.LtInt64Fn {
+  return {
+    ltInt64: [
+      dataForNumberExpression(valueA, NumberType.Int64),
+      dataForNumberExpression(valueB, NumberType.Int64)
+    ]
+  }
+}
+
+export function ltUInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.LtUInt8Fn {
+  return {
+    ltUint8: [
+      dataForNumberExpression(valueA, NumberType.UInt8),
+      dataForNumberExpression(valueB, NumberType.UInt8)
+    ]
+  }
+}
+
+export function ltUInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.LtUInt16Fn {
+  return {
+    ltUint16: [
+      dataForNumberExpression(valueA, NumberType.UInt16),
+      dataForNumberExpression(valueB, NumberType.UInt16)
+    ]
+  }
+}
+
+export function ltUInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.LtUInt32Fn {
+  return {
+    ltUint32: [
+      dataForNumberExpression(valueA, NumberType.UInt32),
+      dataForNumberExpression(valueB, NumberType.UInt32)
+    ]
+  }
+}
+
+export function ltUInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.LtUInt64Fn {
+  return {
+    ltUint64: [
+      dataForNumberExpression(valueA, NumberType.UInt64),
+      dataForNumberExpression(valueB, NumberType.UInt64)
+    ]
+  }
+}
+
+export function gtFloat(valueA: t.NumberExpression, valueB: t.NumberExpression): t.GtFloatFn {
+  return {
+    gtFloat: [
+      dataForNumberExpression(valueA, NumberType.Float),
+      dataForNumberExpression(valueB, NumberType.Float)
+    ]
+  }
+}
+
+export function gtInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.GtInt8Fn {
+  return {
+    gtInt8: [
+      dataForNumberExpression(valueA, NumberType.Int8),
+      dataForNumberExpression(valueB, NumberType.Int8)
+    ]
+  }
+}
+
+export function gtInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.GtInt16Fn {
+  return {
+    gtInt16: [
+      dataForNumberExpression(valueA, NumberType.Int16),
+      dataForNumberExpression(valueB, NumberType.Int16)
+    ]
+  }
+}
+
+export function gtInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.GtInt32Fn {
+  return {
+    gtInt32: [
+      dataForNumberExpression(valueA, NumberType.Int32),
+      dataForNumberExpression(valueB, NumberType.Int32)
+    ]
+  }
+}
+
+export function gtInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.GtInt64Fn {
+  return {
+    gtInt64: [
+      dataForNumberExpression(valueA, NumberType.Int64),
+      dataForNumberExpression(valueB, NumberType.Int64)
+    ]
+  }
+}
+
+export function gtUInt8(valueA: t.NumberExpression, valueB: t.NumberExpression): t.GtUInt8Fn {
+  return {
+    gtUint8: [
+      dataForNumberExpression(valueA, NumberType.UInt8),
+      dataForNumberExpression(valueB, NumberType.UInt8)
+    ]
+  }
+}
+
+export function gtUInt16(valueA: t.NumberExpression, valueB: t.NumberExpression): t.GtUInt16Fn {
+  return {
+    gtUint16: [
+      dataForNumberExpression(valueA, NumberType.UInt16),
+      dataForNumberExpression(valueB, NumberType.UInt16)
+    ]
+  }
+}
+
+export function gtUInt32(valueA: t.NumberExpression, valueB: t.NumberExpression): t.GtUInt32Fn {
+  return {
+    gtUint32: [
+      dataForNumberExpression(valueA, NumberType.UInt32),
+      dataForNumberExpression(valueB, NumberType.UInt32)
+    ]
+  }
+}
+
+export function gtUInt64(valueA: t.NumberExpression, valueB: t.NumberExpression): t.GtUInt64Fn {
+  return {
+    gtUint64: [
+      dataForNumberExpression(valueA, NumberType.UInt64),
+      dataForNumberExpression(valueB, NumberType.UInt64)
+    ]
+  }
+}
+
+export function floatToInt(value: t.NumberExpression): t.FloatToIntFn {
+  return {floatToInt: dataForNumberExpression(value, NumberType.Float)}
+}
+
+export function intToFloat(value: t.NumberExpression): t.IntToFloatFn {
+  return {intToFloat: dataForNumberExpression(value, NumberType.Int64)}
 }
