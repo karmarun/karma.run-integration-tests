@@ -1,6 +1,6 @@
 import { func as f } from './function'
 import * as e from './raw'
-import { Expression } from './raw'
+import { Expression, DataExpression } from './types'
 
 export type ScopeExpression = {scope: string}
 export type FunctionBody = (...params: ScopeExpression[]) => Expression
@@ -40,7 +40,7 @@ export const expressionScope: ExpressionScope = {
 export type DataScope = typeof dataScope
 
 export type ExpressionScopeFn = (e: ExpressionScope) => Expression
-export type DataScopeFn = (e: DataScope) => Expression
+export type DataScopeFn = (e: DataScope) => DataExpression
 
 export function funct(params: string[], ...bodies: FunctionBody[]) {
   const scopes = params.map(paramName => f.scope(paramName))
@@ -50,4 +50,3 @@ export function funct(params: string[], ...bodies: FunctionBody[]) {
 export function build(scopeFn: ExpressionScopeFn) {
   return scopeFn(expressionScope)
 }
-

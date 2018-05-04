@@ -21,8 +21,10 @@ test('tag2', async t => {
   // )
 
   const response = await t.context.exampleQuery('tag_0',
-    e.get(e.tag(d.data(d.string('_expression'))))
+    e.get(e.tag(d.data(d.string('_migration'))))
   )
+
+  console.log(JSON.stringify(response, null, 2))
 
   t.true(Array.isArray(response))
   t.is(response.length, 2)

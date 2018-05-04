@@ -265,8 +265,8 @@ export interface RefFn {ref: [string, string]}
 export interface SetFn {set: DataExpression[]}
 export interface ExprFn {expr: Expression}
 export interface ListFn {list: DataExpression[]}
-export interface MapFn {map: ObjectMap<DataExpression[]>}
-export interface StructFn {struct: ObjectMap<DataExpression[]>}
+export interface MapFn {map: ObjectMap<DataExpression>}
+export interface StructFn {struct: ObjectMap<DataExpression>}
 export interface UnionFn {union: [string, DataExpression]}
 
 // Function Scope

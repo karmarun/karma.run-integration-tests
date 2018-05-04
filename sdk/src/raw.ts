@@ -1,4 +1,5 @@
 import * as t from './types'
+import { ObjectMap } from './util'
 
 const enum NumberType {
   Int8, Int16, Int32, Int64,
@@ -136,8 +137,8 @@ export function reduceList(value: t.Expression, initial: t.Expression, reducer: 
   return {reduceList: {value, initial, reducer}}
 }
 
-export function filterList(value: t.Expression, t.expression: t.Expression) {
-  return {filterList: [value, t.expression]}
+export function filterList(value: t.Expression, expression: t.Expression) {
+  return {filterList: [value, expression]}
 }
 
 export function refTo(v: t.Expression) {
@@ -192,8 +193,8 @@ export function get(ref: t.Expression) {
   return {get: ref}
 }
 
-export function mapList(value: t.Expression, t.expression: t.Expression) {
-  return {mapList: [value, t.expression]}
+export function mapList(value: t.Expression, expression: t.Expression) {
+  return {mapList: [value, expression]}
 }
 
 export function inList(list: t.Expression, value: t.Expression) {
@@ -204,7 +205,7 @@ export function inList(list: t.Expression, value: t.Expression) {
  * switches t.expression to data scope
  * @param val
  */
-export function data(val: Datat.Expression): DataFn {
+export function data(val: t.DataExpression): t.DataFn {
   return {data: val}
 }
 
@@ -212,8 +213,7 @@ export function zero() {
   return {zero: {}}
 }
 
-
-export function string(val: string | ExprFn): StringFn {
+export function string(val: string): t.StringFn {
   return {string: val}
 }
 
@@ -293,6 +293,6 @@ export function dateTime(value: string | number | Date): t.DateTimeFn {
   return {dateTime: date.toISOString()}
 }
 
-export function struct(val: t.Expression = {}) {
+export function struct(val: ObjectMap<t.DataExpression> = {}): t.StructFn {
   return {struct: val}
 }
