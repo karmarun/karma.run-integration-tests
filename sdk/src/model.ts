@@ -1,139 +1,121 @@
-import { Expression } from './expression'
-import { data as d } from './data'
+import * as t from './types'
+import { ObjectMap } from './util'
+import { expression as e } from './expression'
 
-export namespace model {
-  export function struct(o: Expression) {
-    return d.union(
-      'struct',
-      d.map(o)
-    )
-  }
+export const model = {
+  bool(): t.UnionFn {
+    return e.union('bool', e.struct())
+  },
 
-  export function tuple(...o: Expression[]) {
-    return d.union(
-      'tuple',
-      d.list(...o)
-    )
-  }
+  dateTime(): t.UnionFn {
+    return e.union('dateTime', e.struct())
+  },
 
-  export function list(o: Expression) {
-    return d.union(
-      'list',
-      o
-    )
-  }
+  string(): t.UnionFn {
+    return e.union('string', e.struct())
+  },
 
-  export function set(o: Expression) {
-    return d.union(
-      'set',
-      o
-    )
-  }
+  optional(type: t.DataExpression): t.UnionFn {
+    return e.union('optional', type)
+  },
 
-  export function map(o: Expression) {
-    return d.union(
-      'map',
-      o
-    )
-  }
+  enum(...options: t.StringDataExpression[]): t.UnionFn {
+    return e.union('enum', e.set(...options.map(option => {
+      if (typeof option === 'string') {
+        return e.string(option)
+      }
 
-  export function optional(o: Expression) {
-    return d.union(
-      'optional',
-      o
-    )
-  }
+      return option
+    })))
+  },
 
-  export function unique(o: Expression) {
-    return d.union(
-      'unique',
-      o
-    )
-  }
+  int8(): t.UnionFn {
+    return e.union('int8', e.struct())
+  },
 
-  export function annotation(value: Expression, o: Expression) {
-    return d.union(
-      'annotation',
-      d.struct({
-        'value': d.string(value),
-        'model': o
-      })
-    )
-  }
+  int16(): t.UnionFn {
+    return e.union('int16', e.struct())
+  },
 
-  export function recursion(label: Expression, o: Expression) {
-    return d.union(
-      'recursion',
-      d.struct({
-        'label': d.string(label),
-        'model': o
-      })
-    )
-  }
+  int32(): t.UnionFn {
+    return e.union('int32', e.struct())
+  },
 
-  export function recurse(label: Expression) {
-    return d.union(
-      'recurse',
-      d.string(label)
-    )
-  }
+  int64(): t.UnionFn {
+    return e.union('int64', e.struct())
+  },
 
-  export function recursive(top: Expression, modelsMap: Expression) {
-    return d.union(
-      'recursive',
-      d.struct({
-        'top': d.string(top),
-        'models': d.map(modelsMap)
-      })
-    )
-  }
+  uint8(): t.UnionFn {
+    return e.union('uint8', e.struct())
+  },
 
-  export function union(o: Expression) {
-    return d.union(
-      'union',
-      d.map(o)
-    )
-  }
+  uint16(): t.UnionFn {
+    return e.union('uint16', e.struct())
+  },
 
-  export function string() {
-    return d.union(
-      'string',
-      d.struct()
-    )
-  }
+  uint32(): t.UnionFn {
+    return e.union('uint32', e.struct())
+  },
 
-  export function int32() {
-    return d.union(
-      'int32',
-      d.struct()
-    )
-  }
+  uint64(): t.UnionFn {
+    return e.union('uint64', e.struct())
+  },
 
-  export function float() {
-    return d.union(
-      'float',
-      d.struct()
-    )
-  }
+  float(): t.UnionFn {
+    return e.union('float', e.struct())
+  },
 
-  export function dateTime() {
-    return d.union(
-      'dateTime',
-      d.struct()
-    )
-  }
+  map(type: t.DataExpression): t.UnionFn {
+    return e.union('map', type)
+  },
 
-  export function enumeration(...o: Expression[]) {
-    return d.union(
-      'enum',
-      d.set(...o)
-    )
-  }
+  list(type: t.DataExpression): t.UnionFn {
+    return e.union('list', type)
+  },
 
-  export function bool() {
-    return d.union(
-      'bool',
-      d.struct()
-    )
+  set(type: t.DataExpression): t.UnionFn {
+    return e.union('set', type)
+  },
+
+  struct(fields: ObjectMap<t.DataExpression> = {}): t.UnionFn {
+    return e.union('struct', e.map(fields))
+  },
+
+  tuple(...types: t.DataExpression[]): t.UnionFn {
+    return e.union('tuple', e.list(...types))
+  },
+
+  union(fields: ObjectMap<t.DataExpression> = {}): t.UnionFn {
+    return e.union('union', e.map(fields))
+  },
+
+  ref(ref: t.DataExpression): t.UnionFn {
+    return e.union('ref', ref)
+  },
+
+  annotation(value: string, model: t.DataExpression): t.UnionFn {
+    return e.union('annotation', e.struct({
+      value: e.string(value), model
+    }))
+  },
+
+  recursion(label: string, model: t.DataExpression): t.UnionFn {
+    return e.union('recursion', e.struct({
+      label: e.string(label), model
+    }))
+  },
+
+  recurse(label: string): t.UnionFn {
+    return e.union('recurse', e.string(label))
+  },
+
+  recursive(top: string, models: ObjectMap<t.DataExpression>): t.UnionFn {
+    return e.union('recursive', e.struct({
+      top: e.string(top), models: e.map(models)
+    }))
+  },
+
+  unique(model: t.DataExpression): t.UnionFn {
+    return e.union('unique', model)
   }
 }

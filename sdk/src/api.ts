@@ -1,5 +1,5 @@
 import axios, { AxiosError } from 'axios'
-import { Expression } from './expression'
+import { FuncExpression } from './types'
 import { ObjectMap } from './util'
 
 export const enum KarmaErrorType {
@@ -135,7 +135,7 @@ async function binaryGetRequest(
 }
 
 export async function query(
-  url: string, session: Session | undefined, expression: Expression, codec = Codec.JSON
+  url: string, session: Session | undefined, expression: FuncExpression, codec = Codec.JSON
 ) {
   return await postRequest(url, expression, session, codec)
 }
@@ -177,7 +177,7 @@ export class Client {
     this.codec = codec
   }
 
-  public query(expression: Expression) {
+  public query(expression: FuncExpression) {
     return query(this.url, this.session, expression, this.codec)
   }
 

@@ -1,6 +1,9 @@
 import { ExecutionContext } from 'ava'
-import { data as d, expression as e, model as m, func as f, KarmaError, KarmaErrorType } from 'karma.run'
+import { expression as e, model as m, KarmaError, KarmaErrorType } from 'karma.run'
 import test, { QueryTestContext, recordIDRegex } from '../_before'
+
+const d = e
+const f = e
 
 test.serial('get', async t => {
   const response = await t.context.exampleQuery(
@@ -28,7 +31,7 @@ test('metarialize', async t => {
 test.serial('model create', async t => {
   const response = await t.context.exampleQuery(
     'create_0',
-    e.create(e.tag(d.string('_model')), f.func(['param'],
+    e.create(e.tag(d.string('_model')), f.function(['param'],
       d.data(m.struct({
         'myString': m.string(),
         'myInt': m.int32(),
@@ -44,7 +47,7 @@ test.serial('model create', async t => {
 test.serial('nested create', async t => {
   const createModel = e.create(
     e.tag(d.string('_model')),
-    f.func(['param'],
+    f.function(['param'],
       d.data(m.struct({
         'myString': m.string(),
         'myInt': m.int32(),
@@ -54,7 +57,7 @@ test.serial('nested create', async t => {
 
   const createTag = e.create(
     e.tag(d.string('_tag')),
-    f.func(['param'],
+    f.function(['param'],
       d.data(d.struct({
         'tag': d.string('myModel'),
         'model': e.expr(f.scope('myNewModel'))
@@ -80,7 +83,7 @@ test.serial('create record', async t => {
     'create_2',
     e.create(
       e.tag(d.string('myModel')),
-      f.func(['param'],
+      f.function(['param'],
         d.data(d.struct({
           'myString': d.string('my string content'),
           'myInt': d.int32(333),
@@ -126,7 +129,7 @@ test.serial('update', async t => {
 test.serial('delete', async t => {
   const response = await t.context.exampleQuery(
     'delete_0',
-    e.del(
+    e.delete(
       e.refTo(e.first(e.all(e.tag(d.string('myModel')))))
     )
   )
@@ -144,8 +147,8 @@ test('zero', async t => {
     'create_2',
     e.create(
       e.tag(d.string('myModel')),
-      f.func(['param'],
-        d.zero()
+      f.function(['param'],
+        d.zero(e.scope('param'))
       )
     )
   )
@@ -159,13 +162,13 @@ test.serial('create multiple record', async t => {
     e.createMultiple(
       e.tag(d.string('myModel')),
       {
-        'a': f.func(['refs'], d.data(d.struct({
+        'a': f.function(['refs'], d.data(d.struct({
           'myString': d.string('a'),
           'myInt': d.int32(1),
           'myBool': d.bool(true)
         }))),
 
-        'b': f.func(['refs'], d.data(d.struct({
+        'b': f.function(['refs'], d.data(d.struct({
           'myString': d.string('b'),
           'myInt': d.int32(2),
           'myBool': d.bool(false)
@@ -341,14 +344,14 @@ let recordTyped = d.struct({
 
 test.serial('create complex model', async t => {
   const createModel = e.create(e.tag(d.string('_model')),
-    f.func(['param'],
+    f.function(['param'],
       d.data(m.struct({
         'string': m.string(),
         'int': m.int32(),
         'float': m.float(),
         'dateTime': m.dateTime(),
         'bool': m.bool(),
-        'enum': m.enumeration(
+        'enum': m.enum(
           d.string('foo'),
           d.string('bar'),
           d.string('pop'),
@@ -421,7 +424,7 @@ test.serial('create complex model', async t => {
 
   const createTag = e.create(
     e.tag(d.string('_tag')),
-    f.func(['param'],
+    f.function(['param'],
       d.data(d.struct({
         'tag': d.string('tagTest'),
         'model': e.expr(f.scope('tagTestModel'))
@@ -442,7 +445,7 @@ test.serial('create complex model', async t => {
   // Create record
   const recordQuery = e.create(
     e.tag(d.string('tagTest')),
-    f.func(['param'], d.data(recordTyped)
+    f.function(['param'], d.data(recordTyped)
   ))
 
   const recordResponse = await t.context.query(recordQuery)
@@ -456,7 +459,7 @@ test.serial('create complex model', async t => {
   const error: KarmaError = await t.throws(async () => {
     const query = e.create(
       e.tag(d.string('tagTest')),
-      f.func(['param'],
+      f.function(['param'],
         d.data(recordTyped)
       )
     )

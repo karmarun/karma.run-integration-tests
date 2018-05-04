@@ -1,6 +1,5 @@
 export * from './api'
-export * from './data'
 export * from './model'
 export * from './expression'
-export * from './function'
-export * from './convinience'
+export * from './types'
+// export * from './convinience'

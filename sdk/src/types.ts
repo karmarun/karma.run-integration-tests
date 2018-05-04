@@ -336,3 +336,5 @@ export type FuncExpression = FunctionFn
 export type StringExpression = string | Expression
 export type NumberExpression = number | Expression
 export type DateExpression = string | number | Date | Expression
+
+export type StringDataExpression = string | DataExpression

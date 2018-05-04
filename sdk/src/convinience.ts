@@ -1,52 +1,56 @@
-import { func as f } from './function'
-import * as e from './raw'
-import { Expression, DataExpression } from './types'
+// import * as t from './types'
+// import { expression as e } from './expression'
 
-export type ScopeExpression = {scope: string}
-export type FunctionBody = (...params: ScopeExpression[]) => Expression
+// export type ScopeExpression = {scope: string}
+// export type FunctionBody = (...params: ScopeExpression[]) => t.Expression | t.Expression[]
 
-export interface ExpressionScope {
-  tag(tag: string | Expression): {tag: string | Expression}
-  field(name: string, value: Expression): {field: [string, Expression]}
-  data(scopeFn: DataScopeFn): Expression
-}
+// export type bla = typeof e
 
-export const dataScope = {
-  string: e.string,
-  struct: e.struct,
-  expr(func: ExpressionScopeFn) {
-    return e.expr(func(expressionScope))
-  }
-}
+// export interface ExpressionScope {
+//   data(scopeFn: DataScopeFn): t.Expression
+// }
 
-export const expressionScope: ExpressionScope = {
-  tag(tag: string | Expression) {
-    if (typeof tag === 'string') {
-      return {tag: e.data(e.string(tag))}
-    } else {
-      return {tag}
-    }
-  },
+// export const dataScope = {
+//   ...e,
+//   expr(func: ExpressionScopeFn) {
+//     return e.expr(func(expressionScope))
+//   },
+// }
 
-  field(name: string, value: Expression) {
-    return {field: [name, value]}
-  },
+// export const expressionScope: ExpressionScope = {
+//   tag(tag: string | Expression) {
+//     if (typeof tag === 'string') {
+//       return {tag: e.data(e.string(tag))}
+//     } else {
+//       return {tag}
+//     }
+//   },
 
-  data(scopeFn: DataScopeFn) {
-    return e.data(scopeFn(dataScope))
-  }
-}
+//   field(name: string, value: Expression) {
+//     return {field: [name, value]}
+//   },
 
-export type DataScope = typeof dataScope
+//   data(scopeFn: DataScopeFn) {
+//     return e.data(scopeFn(dataScope))
+//   }
+// }
 
-export type ExpressionScopeFn = (e: ExpressionScope) => Expression
-export type DataScopeFn = (e: DataScope) => DataExpression
+// export type DataScope = typeof dataScope
 
-export function funct(params: string[], ...bodies: FunctionBody[]) {
-  const scopes = params.map(paramName => f.scope(paramName))
-  return {function: [params, bodies.map(body => body(...scopes))]}
-}
+// export type ExpressionScopeFn = (e: ExpressionScope) => Expression
+// export type DataScopeFn = (e: DataScope) => DataExpression
 
-export function build(scopeFn: ExpressionScopeFn) {
-  return scopeFn(expressionScope)
-}
+// export function funct(params: string[], body: FunctionBody) {
+//   const scopes = params.map(paramName => e.scope(paramName))
+//   const expressions = body(...scopes)
+
+//   return {function: [params, Array.isArray(expressions) ? expressions : [expressions]]}
+// }
+
+// export function build(scopeFn: ExpressionScopeFn) {
+//   return scopeFn(expressionScope)
+// }
+
+// funct(['test'], (test) => {
+//   const blu = e.define('test', e.tag('___bla'))
+// })

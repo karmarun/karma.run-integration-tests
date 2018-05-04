@@ -1,4 +1,4 @@
-import { data as d } from 'karma.run'
+import { expression as d } from 'karma.run'
 import test from '../_before'
 
 test('bool', async t => {

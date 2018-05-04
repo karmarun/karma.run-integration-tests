@@ -1,5 +1,5 @@
 import baseTest, { TestInterface } from 'ava'
-import { Client, Expression, func as f } from 'karma.run'
+import { Client, Expression, expression as e } from 'karma.run'
 import { KARMA_ENDPOINT, KARMA_INSTANCE_SECRET } from '../helpers/_environment'
 
 export const recordIDRegex = /^[\S]{10,}$/
@@ -18,11 +18,11 @@ test.before(async t => {
   t.context.client = client
   t.context.exampleQuery = (_name, ...queries) => {
     // TODO: Extract into JSON
-    return client.query(f.func([], ...queries))
+    return client.query(e.function([], ...queries))
   }
 
   t.context.query = (...queries) => {
-    return client.query(f.func([], ...queries))
+    return client.query(e.function([], ...queries))
   }
 
   await client.authenticate('admin', KARMA_INSTANCE_SECRET)
