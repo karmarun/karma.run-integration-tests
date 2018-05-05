@@ -51,17 +51,13 @@ function generateNumericTupleFunc<T extends {}>(name: keyof T, type: NumberType)
   }
 }
 
-export const expression = {
-  // Function Scope
-  // ==============
-
+export const func = {
   function(params: string[], ...body: t.Expression[]): t.FunctionFn {
     return {function: [params, body]}
-  },
+  }
+}
 
-  // Data Scope
-  // ==========
-
+export const data = {
   bool(value: boolean): t.BoolFn {
     return {bool: value}
   },
@@ -152,7 +148,27 @@ export const expression = {
 
   expr(expr: t.Expression): t.ExprFn {
     return {expr}
-  },
+  }
+}
+
+export const expression = {
+  // Convinience Primitives
+  // ======================
+
+  bool: data.bool,
+  dateTime: data.dateTime,
+  string: data.string,
+  null: data.null,
+  symbol: data.symbol,
+  int8: data.int8,
+  int16: data.int16,
+  int32: data.int32,
+  int64: data.int64,
+  uint8: data.uint8,
+  uint16: data.uint16,
+  uint32: data.uint32,
+  uint64: data.uint64,
+  float: data.float,
 
   // Expression Scope
   // ================
@@ -172,8 +188,8 @@ export const expression = {
     return {metarialize: record}
   },
 
-  zero(value: t.Expression): t.ZeroFn {
-    return {zero: value}
+  zero(): t.ZeroFn {
+    return {zero: {}}
   },
 
   // Scope
@@ -308,7 +324,7 @@ export const expression = {
     return {first: value}
   },
 
-  inList(value: t.Expression, inList: t.Expression): t.InListFn {
+  inList(inList: t.Expression, value: t.Expression): t.InListFn {
     return {inList: {value, in: inList}}
   },
 
@@ -441,8 +457,12 @@ export const expression = {
     return {assertCase: {case: caseKey, value}}
   },
 
-  asserModelRef(ref: t.Expression, value: t.Expression): t.AssertModelRefFn {
+  assertModelRef(ref: t.Expression, value: t.Expression): t.AssertModelRefFn {
     return {assertModelRef: {ref, value}}
+  },
+
+  assertPresent(value: t.Expression): t.AssertPresentFn {
+    return {assertPresent: value}
   },
 
   equal(valueA: t.Expression, valueB: t.Expression): t.EqualFn {

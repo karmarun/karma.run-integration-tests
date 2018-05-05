@@ -3,7 +3,7 @@ import test from '../_before'
 
 test('all', async t => {
   const response = await t.context.exampleQuery('all_0',
-    e.all(e.tag(d.data(d.string('_tag'))))
+    e.all(e.tag(e.data(d.string('_tag'))))
   )
 
   t.true(Array.isArray(response))
@@ -11,10 +11,10 @@ test('all', async t => {
 
 test('after', async t => {
   const response = await t.context.exampleQuery('after_0',
-    e.after([
-      d.data(d.dateTime('2018-01-01T00:00:00Z')),
-      d.data(d.dateTime('2017-01-01T00:00:00Z'))
-    ])
+    e.after(
+      e.dateTime('2018-01-01T00:00:00Z'),
+      e.dateTime('2017-01-01T00:00:00Z')
+    )
   )
 
   t.is(response, true)
@@ -22,10 +22,10 @@ test('after', async t => {
 
 test('before', async t => {
   const response = await t.context.exampleQuery('before_0',
-    e.before([
-      d.data(d.dateTime('2017-01-01T00:00:00Z')),
-      d.data(d.dateTime('2018-01-01T00:00:00Z'))
-    ])
+    e.before(
+      e.data(d.dateTime('2017-01-01T00:00:00Z')),
+      e.data(d.dateTime('2018-01-01T00:00:00Z'))
+    )
   )
 
   t.is(response, true)
@@ -33,7 +33,7 @@ test('before', async t => {
 
 test('length', async t => {
   const response = await t.context.exampleQuery('length_0',
-    e.length(d.data(d.list(
+    e.length(e.data(d.list(
       d.int8(1),
       d.int8(2),
       d.int8(3),
@@ -46,7 +46,7 @@ test('length', async t => {
 
 test('gtFloat', async t => {
   const response = await t.context.exampleQuery('greater_0',
-    e.gtFloat(d.data(d.float(2.2)), d.data(d.float(2.1)))
+    e.gtFloat(e.data(d.float(2.2)), e.data(d.float(2.1)))
   )
 
   t.is(response, true)
@@ -54,7 +54,7 @@ test('gtFloat', async t => {
 
 test('ltFloat', async t => {
   const response = await t.context.exampleQuery('less_0',
-    e.ltFloat(d.data(d.float(1)), d.data(d.float(2)))
+    e.ltFloat(e.data(d.float(1)), e.data(d.float(2)))
   )
 
   t.is(response, true)
@@ -68,7 +68,7 @@ test('equal', async t => {
   t.is(response, true)
 
   response = await t.context.exampleQuery('',
-    e.equal(d.int16('123'), d.string('foo'))
+    e.equal(e.int16(123), e.string('foo'))
   )
 
   t.is(response, false)
@@ -100,7 +100,7 @@ test('field', async t => {
   const response = await t.context.exampleQuery('field_0',
     e.field(
       'foo',
-      d.data(d.struct({
+      e.data(d.struct({
         'foo': d.string('bar')
       }))
     )
@@ -113,7 +113,7 @@ test('key', async t => {
   const response = await t.context.exampleQuery('key_0',
     e.key(
       d.string('foo'),
-      d.data(d.map({
+      e.data(d.map({
         'foo': d.string('bar')
       }))
     )
@@ -170,7 +170,7 @@ test('assertPresent', async t => {
       e.assertPresent(
         e.key(
           d.string('notFoo'),
-          d.data(d.map({
+          e.data(d.map({
             'foo': d.string('bar')
           }))
         )
@@ -184,7 +184,7 @@ test('assertPresent', async t => {
     e.assertPresent(
       e.key(
         d.string('foo'),
-        d.data(d.map({
+        e.data(d.map({
           'foo': d.string('bar')
         }))
       )
@@ -199,7 +199,7 @@ test('assertCase', async t => {
     return await t.context.exampleQuery('assertCase_0',
       e.assertCase(
         'foo',
-        d.data(d.union(
+        e.data(d.union(
           'bar', d.int8(4),
         ))
       )
@@ -211,7 +211,7 @@ test('assertCase', async t => {
   const response = await t.context.exampleQuery('assertCase_1',
     e.assertCase(
       'foo',
-      d.data(d.union(
+      e.data(d.union(
         'foo', d.int8(4),
       ))
     )

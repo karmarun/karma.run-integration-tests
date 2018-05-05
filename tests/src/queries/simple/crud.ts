@@ -1,9 +1,7 @@
 import { ExecutionContext } from 'ava'
-import { expression as e, model as m, KarmaError, KarmaErrorType } from 'karma.run'
+import { expression as e, data as d, model as m, func as f, KarmaError, KarmaErrorType } from 'karma.run'
 import test, { QueryTestContext, recordIDRegex } from '../_before'
 
-const d = e
-const f = e
 
 test.serial('get', async t => {
   const response = await t.context.exampleQuery(
@@ -32,7 +30,7 @@ test.serial('model create', async t => {
   const response = await t.context.exampleQuery(
     'create_0',
     e.create(e.tag(d.string('_model')), f.function(['param'],
-      d.data(m.struct({
+      e.data(m.struct({
         'myString': m.string(),
         'myInt': m.int32(),
         'myBool': m.bool()
@@ -48,7 +46,7 @@ test.serial('nested create', async t => {
   const createModel = e.create(
     e.tag(d.string('_model')),
     f.function(['param'],
-      d.data(m.struct({
+      e.data(m.struct({
         'myString': m.string(),
         'myInt': m.int32(),
         'myBool': m.bool()
@@ -58,9 +56,9 @@ test.serial('nested create', async t => {
   const createTag = e.create(
     e.tag(d.string('_tag')),
     f.function(['param'],
-      d.data(d.struct({
+      e.data(d.struct({
         'tag': d.string('myModel'),
-        'model': e.expr(f.scope('myNewModel'))
+        'model': d.expr(e.scope('myNewModel'))
       }))
     ))
 
@@ -84,7 +82,7 @@ test.serial('create record', async t => {
     e.create(
       e.tag(d.string('myModel')),
       f.function(['param'],
-        d.data(d.struct({
+        e.data(d.struct({
           'myString': d.string('my string content'),
           'myInt': d.int32(333),
           'myBool': d.bool(true)
@@ -103,7 +101,7 @@ test.serial('update', async t => {
     'update_0',
     e.update(
       e.refTo(e.first(e.all(e.tag(d.string('myModel'))))),
-      d.data(d.struct({
+      e.data(d.struct({
         'myString': d.string('my updated string content'),
         'myInt': d.int32(777),
         'myBool': d.bool(false)
@@ -148,7 +146,7 @@ test('zero', async t => {
     e.create(
       e.tag(d.string('myModel')),
       f.function(['param'],
-        d.zero(e.scope('param'))
+        e.zero()
       )
     )
   )
@@ -162,13 +160,13 @@ test.serial('create multiple record', async t => {
     e.createMultiple(
       e.tag(d.string('myModel')),
       {
-        'a': f.function(['refs'], d.data(d.struct({
+        'a': f.function(['refs'], e.data(d.struct({
           'myString': d.string('a'),
           'myInt': d.int32(1),
           'myBool': d.bool(true)
         }))),
 
-        'b': f.function(['refs'], d.data(d.struct({
+        'b': f.function(['refs'], e.data(d.struct({
           'myString': d.string('b'),
           'myInt': d.int32(2),
           'myBool': d.bool(false)
@@ -213,12 +211,11 @@ function compareResponse(t: ExecutionContext<QueryTestContext>, response: any, e
   t.deepEqual(response.recursive, expected.recursive)
 }
 
-
 let recordUntyped = {
   'string': 'example text',
   'int': 1,
   'float': 0.5,
-  'dateTime': '2017-08-02T00:00:00+03:00',
+  'dateTime': '1970-01-01T00:00:00Z',
   'bool': true,
   'enum': 'bar',
   'tuple': [
@@ -283,7 +280,7 @@ let recordTyped = d.struct({
   'string': d.string('example text'),
   'int': d.int32(1),
   'float': d.float(0.5),
-  'dateTime': d.dateTime('2017-08-02T00:00:00+03:00'),
+  'dateTime': d.dateTime(new Date(0)),
   'bool': d.bool(true),
   'enum': d.symbol('bar'),
   'tuple': d.tuple(
@@ -345,7 +342,7 @@ let recordTyped = d.struct({
 test.serial('create complex model', async t => {
   const createModel = e.create(e.tag(d.string('_model')),
     f.function(['param'],
-      d.data(m.struct({
+      e.data(m.struct({
         'string': m.string(),
         'int': m.int32(),
         'float': m.float(),
@@ -425,9 +422,9 @@ test.serial('create complex model', async t => {
   const createTag = e.create(
     e.tag(d.string('_tag')),
     f.function(['param'],
-      d.data(d.struct({
+      e.data(d.struct({
         'tag': d.string('tagTest'),
-        'model': e.expr(f.scope('tagTestModel'))
+        'model': d.expr(e.scope('tagTestModel'))
       }))
     )
   )
@@ -445,7 +442,7 @@ test.serial('create complex model', async t => {
   // Create record
   const recordQuery = e.create(
     e.tag(d.string('tagTest')),
-    f.function(['param'], d.data(recordTyped)
+    f.function(['param'], e.data(recordTyped)
   ))
 
   const recordResponse = await t.context.query(recordQuery)
@@ -460,7 +457,7 @@ test.serial('create complex model', async t => {
     const query = e.create(
       e.tag(d.string('tagTest')),
       f.function(['param'],
-        d.data(recordTyped)
+        e.data(recordTyped)
       )
     )
 
@@ -477,7 +474,7 @@ test.serial('create complex model', async t => {
   // Update without changes
   const updateQuery = e.update(
     e.refTo(e.first(e.all(e.tag(d.string('tagTest'))))),
-    d.data(recordTyped)
+    e.data(recordTyped)
   )
 
   const response = await t.context.query(updateQuery)
@@ -501,7 +498,7 @@ test.serial('create complex model', async t => {
 
   const changeQuery = e.update(
     e.refTo(e.first(e.all(e.tag(d.string('tagTest'))))),
-    d.data(recordTyped)
+    e.data(recordTyped)
   )
   const changeResponse = await t.context.query(changeQuery)
 
