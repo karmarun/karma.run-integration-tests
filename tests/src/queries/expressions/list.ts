@@ -1,5 +1,5 @@
 
-import { data as d, expression as e, func as f, build } from 'karma.run'
+import { data as d, expression as e, build } from 'karma.run'
 import test from '../_before'
 
 test('length', async t => {
@@ -12,15 +12,11 @@ test('length', async t => {
 
 test('filterList', async t => {
   const response = await t.context.exampleQuery('filterList_0',
-    e.filterList(
-      e.data(
-        d.list(
-          d.int8(3),
-          d.int8(2),
-          d.int8(1)
-        )
-      ),
-      f.function(['list', 'value'], e.gtInt8(e.scope('value'), e.data(d.int8(2))))
+    build(e =>
+      e.filterList(
+        e.data(d => d.list(d.int8(3), d.int8(2), d.int8(1))),
+        (_, value) => e.gtInt8(value, e.data(d => d.int8(2)))
+      )
     )
   )
 

@@ -33,34 +33,62 @@ export function createContext() {
       return e.data(scopeFn(dataContext, modelContext))
     },
 
+    filterList(value: t.Expression, filter: (index: t.ScopeFn, value: t.ScopeFn, ) => t.Expression) {
+      return e.filterList(value, this.function(filter, this.getUniqueParamNames('index', 'value')))
+    },
+
     mapList(value: t.Expression, mapper: (value: t.ScopeFn, index: t.ScopeFn) => t.Expression) {
-      const currentParamIndex = paramIndex++
-      return e.mapList(value, this.function(mapper, [
-        `_index_${currentParamIndex}`, `_value_${currentParamIndex}`
-      ]))
+      return e.mapList(value, this.function(mapper, this.getUniqueParamNames('index', 'value')))
     },
 
     reduceList(
       value: t.Expression, initial: t.Expression,
       reducer: (value: t.ScopeFn, nextValue: t.ScopeFn) => t.Expression
     ) {
-      const currentParamIndex = paramIndex++
-      return e.reduceList(value, initial, this.function(reducer, [
-        `_value_${currentParamIndex}`, `_nextValue_${currentParamIndex}`
-      ]))
+      return e.reduceList(value, initial, this.function(reducer,
+        this.getUniqueParamNames('value', 'nextValue')
+      ))
     },
 
-    mapMap(value: t.Expression, func: (value: t.ScopeFn, index: t.ScopeFn) => t.Expression) {
+    mapMap(value: t.Expression, mapper: (value: t.ScopeFn, index: t.ScopeFn) => t.Expression) {
+      return e.mapMap(value, this.function(mapper, this.getUniqueParamNames('key', 'value')))
+    },
+
+    mapSet(value: t.Expression, mapper: (value: t.ScopeFn, index: t.ScopeFn) => t.Expression) {
+      return e.mapSet(value, this.function(mapper, this.getUniqueParamNames('index', 'value')))
+    },
+
+    signature(func: (...params: t.ScopeFn[]) => t.Expression) {
+      return e.signature(this.function(func))
+    },
+
+    create(modelRef: t.Expression, func: (ref: t.ScopeFn) => t.Expression) {
+      return e.create(modelRef, this.function(func, ['ref']))
+    },
+
+    createMultiple(modelRef: t.Expression, creators: {[key: string]:  (refs: t.ScopeFn) => t.Expression}) {
+      const entries = Object.entries(creators)
+      const functions: {[key: string]:  t.FunctionFn} = {}
+
+      for (const [key, func] of entries) {
+        functions[key] = this.function(func, this.getUniqueParamNames('refs'))
+      }
+
+      return e.createMultiple(modelRef, functions)
+    },
+
+    // TODO
+    // switchCase() {},
+
+    getUniqueParamNames(...prefixes: string[]) {
       const currentParamIndex = paramIndex++
-      return e.mapMap(value, this.function(func, [
-        `_index_${currentParamIndex}`, `_value_${currentParamIndex}`
-      ]))
+      return prefixes.map(prefix => `_${prefix}_${currentParamIndex}`)
     },
 
     function(body: FunctionBodyFn, paramNames: string[] = []) {
       if (body.length > 0) {
         for (let i = paramNames.length; i < paramNames.length - body.length; i++) {
-          paramNames[i] = `_param_${i}_${paramIndex++}`
+          paramNames[i] = this.getUniqueParamNames(`param${i}`)[0]
         }
       }
 
@@ -75,15 +103,15 @@ export function createContext() {
   return context
 }
 
-export function build(contextFn: ExpressionContextFn) {
-  const context = createContext()
+export function build(contextFn: ExpressionContextFn, context: ExpressionContext = createContext()) {
   return contextFn(context)
 }
 
 export function buildFunction(
-  contextFn: FunctionBodyContextFn, paramNames: string[] = []
+  contextFn: FunctionBodyContextFn,
+  paramNames: string[] = [],
+  context: ExpressionContext = createContext()
 ) {
-  const context = createContext()
   const body = contextFn(context)
   return context.function(body, paramNames)
 }
