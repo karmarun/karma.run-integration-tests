@@ -22,9 +22,9 @@ test('migration', async t => {
       modelB: d.expr(e => e.scope('modelB')),
     }))),
 
-    // build(e => createMigration(
-    //   {from: e.scope('modelA'), to: e.scope('modelB')}
-    // ))
+    build(e => createMigration(
+      {from: e.scope('modelA'), to: e.scope('modelB')}
+    ))
   )
 
   console.log(response)
