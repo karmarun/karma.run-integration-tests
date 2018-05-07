@@ -35,7 +35,7 @@ buildFunction(e =>
 )
 ```
 
-## Karma API
+### Karma API
 
 ```ts
 import { Client, buildFunction } from 'karma.run'
