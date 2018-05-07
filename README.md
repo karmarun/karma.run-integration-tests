@@ -1,5 +1,5 @@
-Karma.run SDK/Tests Monorepo
-============================
+Karma.run Integration Tests
+===========================
 
 Prerequisites
 -------------
@@ -9,7 +9,7 @@ Prerequisites
 Get Started
 -----------
 ```
-cp ./tests/.env.example ./tests/.env
+cp .env.example .env
 // Fill in required env variables in .env file
 yarn install
 yarn watch

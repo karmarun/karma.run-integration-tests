@@ -1,19 +1,35 @@
 {
-  "private": true,
+  "name": "karma.run-integration-tests",
+  "version": "1.0.0",
+  "description": "Karma integration tests",
+  "engines": {
+    "node": "^9.11.0",
+    "yarn": "^1.6.0"
+  },
   "scripts": {
     "watch": "run-p watch:*",
-    "watch:sdk": "cd sdk && yarn watch",
-    "watch:test": "cd tests && yarn watch",
-    "test": "cd tests && yarn test",
-    "test-nyan": "cd tests && yarn test-nyan"
+    "build": "tsc",
+    "watch:build": "tsc -w",
+    "test": "yarn build && ava dist/** --serial --verbose",
+    "watch:test": "ava dist/** --serial --watch --verbose",
+    "test-nyan": "yarn build && ava dist/** --serial --tap | tap-nyan"
   },
-  "workspaces": [
-    "sdk",
-    "tests"
+  "keywords": [
+    "karma"
   ],
+  "private": true,
+  "author": "karma.run",
+  "license": "MIT",
+  "dependencies": {
+    "karma.run": "https://github.com/karmarun/js-sdk",
+    "ava": "^1.0.0-beta.4",
+    "dotenv": "4.0.0",
+    "tap-nyan": "^1.1.0"
+  },
   "devDependencies": {
     "npm-run-all": "^4.1.2",
-    "tslint": "^5.9.1",
-    "typescript": "^2.8.3"
+    "typescript": "^2.8.3",
+    "@types/node": "^10.0.0",
+    "tslint": "^5.9.1"
   }
 }
