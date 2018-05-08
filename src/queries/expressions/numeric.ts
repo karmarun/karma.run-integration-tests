@@ -1,4 +1,4 @@
-import { build } from 'karma.run'
+import { buildExpression as build } from 'karma.run'
 import test from '../_before'
 
 // Addition

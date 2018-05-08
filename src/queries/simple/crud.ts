@@ -1,6 +1,7 @@
 import { ExecutionContext } from 'ava'
 import { expression as e, data as d, model as m, func as f, KarmaError, KarmaErrorType } from 'karma.run'
-import test, { QueryTestContext, recordIDRegex } from '../_before'
+import test, { QueryTestContext } from '../_before'
+import { isReference } from '../../helpers/_karma'
 
 
 test.serial('get', async t => {
@@ -38,8 +39,7 @@ test.serial('model create', async t => {
     ))
   )
 
-  t.regex(response[0], recordIDRegex)
-  t.regex(response[1], recordIDRegex)
+  t.true(isReference(response))
 })
 
 test.serial('nested create', async t => {
@@ -72,8 +72,7 @@ test.serial('nested create', async t => {
     ...query
   )
 
-  t.regex(response[0], recordIDRegex)
-  t.regex(response[1], recordIDRegex)
+  t.true(isReference(response))
 })
 
 test.serial('create record', async t => {
@@ -91,8 +90,7 @@ test.serial('create record', async t => {
     )
   )
 
-  t.regex(response[0], recordIDRegex)
-  t.regex(response[1], recordIDRegex)
+  t.true(isReference(response))
 })
 
 
@@ -109,8 +107,7 @@ test.serial('update', async t => {
     )
   )
 
-  t.regex(updateResponse[0], recordIDRegex)
-  t.regex(updateResponse[1], recordIDRegex)
+  t.true(isReference(updateResponse))
 
   const getResponse = await t.context.exampleQuery(
     'get_1',
@@ -151,8 +148,7 @@ test('zero', async t => {
     )
   )
 
-  t.regex(response[0], recordIDRegex)
-  t.regex(response[1], recordIDRegex)
+  t.true(isReference(response))
 })
 
 test.serial('create multiple record', async t => {
@@ -175,10 +171,8 @@ test.serial('create multiple record', async t => {
     )
   )
 
-  t.regex(response.a[0], recordIDRegex)
-  t.regex(response.a[1], recordIDRegex)
-  t.regex(response.b[0], recordIDRegex)
-  t.regex(response.b[1], recordIDRegex)
+  t.true(isReference(response.a))
+  t.true(isReference(response.b))
 })
 
 
@@ -436,8 +430,7 @@ test.serial('create complex model', async t => {
 
   const modelResponse = await t.context.query(...modelQuery)
 
-  t.regex(modelResponse[0], recordIDRegex)
-  t.regex(modelResponse[1], recordIDRegex)
+  t.true(isReference(modelResponse))
 
   // Create record
   const recordQuery = e.create(
@@ -447,8 +440,7 @@ test.serial('create complex model', async t => {
 
   const recordResponse = await t.context.query(recordQuery)
 
-  t.regex(recordResponse[0], recordIDRegex)
-  t.regex(recordResponse[1], recordIDRegex)
+  t.true(isReference(recordResponse))
 
   recordRef = recordResponse
 
@@ -480,8 +472,7 @@ test.serial('create complex model', async t => {
   const response = await t.context.query(updateQuery)
 
   t.is(response[1], recordRef[1])
-  t.regex(response[0], recordIDRegex)
-  t.regex(response[1], recordIDRegex)
+  t.true(isReference(response))
 
   // Check record again
   checkResponse = await t.context.query(checkQuery)
@@ -503,8 +494,7 @@ test.serial('create complex model', async t => {
   const changeResponse = await t.context.query(changeQuery)
 
   t.is(changeResponse[1], recordRef[1])
-  t.regex(changeResponse[0], recordIDRegex)
-  t.regex(changeResponse[1], recordIDRegex)
+  t.true(isReference(changeResponse))
 
   // Check record again
   checkResponse = await t.context.query(checkQuery)

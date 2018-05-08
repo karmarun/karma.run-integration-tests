@@ -1,8 +1,16 @@
-import { build } from 'karma.run'
+import { buildExpression as build } from 'karma.run'
 import test from '../_before'
 
-// TODO
-test('concatLists', async t => {t.fail()})
+test('concatLists', async t => {
+  const response = await t.context.exampleQuery('concatLists_0', build(e =>
+    e.concatLists(
+      e.data(d => d.list(d.int8(1), d.int8(2), d.int8(3))),
+      e.data(d => d.list(d.int8(4), d.int8(5), d.int8(6)))
+    )
+  ))
+
+  t.deepEqual(response, [1, 2, 3, 4, 5, 6])
+})
 
 test('filterList', async t => {
   const response = await t.context.exampleQuery('filterList_0', build(e =>
@@ -80,11 +88,36 @@ test('length', async t => {
   t.deepEqual(response, 6)
 })
 
+test('memSort', async t => {
+  const response = await t.context.exampleQuery('memSort_0', build(e =>
+    e.memSort(
+      e.data(d => d.list(d.int8(3), d.int8(2), d.int8(1))),
+      (value) => value
+    )
+  ))
 
-// TODO
-test('memSort', async t => {t.fail()})
-test('reverseList', async t => {t.fail()})
-test('slice', async t => {t.fail()})
+  t.deepEqual(response, [1, 2, 3])
+})
+
+test('reverseList', async t => {
+  const response = await t.context.exampleQuery('concatLists_0', build(e =>
+    e.reverseList(
+      e.data(d => d.list(d.int8(1), d.int8(2), d.int8(3)))
+    )
+  ))
+
+  t.deepEqual(response, [3, 2, 1])
+})
+test('slice', async t => {
+  const response = await t.context.exampleQuery('concatLists_0', build(e =>
+    e.slice(
+      e.data(d => d.list(d.int8(1), d.int8(2), d.int8(3))),
+      1, 2
+    )
+  ))
+
+  t.deepEqual(response, [2, 3])
+})
 
 test('reduceList', async t => {
   const response = await t.context.exampleQuery('reduceList_0', build(e =>

@@ -1,4 +1,4 @@
-import { build, KarmaError, KarmaErrorType } from 'karma.run'
+import { buildExpression as build, KarmaError, KarmaErrorType } from 'karma.run'
 import test from '../_before'
 import { isReference } from '../../helpers/_karma'
 

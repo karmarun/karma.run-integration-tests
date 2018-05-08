@@ -1,8 +1,8 @@
 
-import { createMigration, build, createModel } from 'karma.run'
+import { createMigration, buildExpression as build, createModel } from 'karma.run'
 import test from '../_before'
 
-test('migration', async t => {
+test('auto migration', async t => {
   const response = await t.context.exampleQuery('length_0',
     build(e => e.define('modelA',
       createModel(m => m.struct({
@@ -28,6 +28,8 @@ test('migration', async t => {
   )
 
   console.log(response)
-
   t.fail()
 })
+
+// TODO
+test('manual migration', async t => {t.fail()})
