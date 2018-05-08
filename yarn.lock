@@ -1816,9 +1816,9 @@ jsonify@~0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
 
-"karma.run@https://github.com/karmarun/js-sdk":
-  version "0.5.0"
-  resolved "https://github.com/karmarun/js-sdk#c6e279d0a06cc522ded24cc38f85135beb5562a6"
+"karma.run@https://github.com/karmarun/js-sdk.git#0.5.0-beta.1":
+  version "0.5.0-beta.1"
+  resolved "https://github.com/karmarun/js-sdk.git#93350c61409996f47fc618ec8d7002535605c919"
   dependencies:
     axios "^0.18.0"
 

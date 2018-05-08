@@ -26,10 +26,8 @@ test.before(async t => {
   }
 
   await client.authenticate('admin', KARMA_INSTANCE_SECRET)
-})
-
-test.after(async t => {
   await t.context.client.reset()
+  await client.authenticate('admin', KARMA_INSTANCE_SECRET)
 })
 
 export default test
