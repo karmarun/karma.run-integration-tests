@@ -14,7 +14,7 @@ test.before(async t => {
   t.context.client = client
 })
 
-test.serial('exportDB/importDB', async t => {
+test.skip('exportDB/importDB', async t => {
   const response = await t.context.client.exportDB()
 
   // Will be ArrayBuffer in browser

@@ -1,7 +1,6 @@
 import { buildExpression as build } from 'karma.run'
 import test from '../_before'
 
-// TODO
 test('key', async t => {
   const response = await t.context.exampleQuery('key_0', build(e =>
     e.key('a', e.data(d => d.map({

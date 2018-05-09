@@ -1,5 +1,6 @@
 import { buildExpression as build, KarmaError, KarmaErrorType } from 'karma.run'
 import test from '../_before'
+import { isReference } from '../../helpers/_karma'
 
 test('and', async t => {
   const response = await t.context.exampleQuery('and_0', build(e =>
@@ -86,28 +87,28 @@ test('not', async t => {
   t.is(response, false)
 })
 
-// TODO
-// test('switchCase', async t => {
-//   const response = await t.context.exampleQuery('switchCase_0', build(e =>
-//     e.switchCase(
-//       e.data(d => d.union('foo', d.string('bar'))),
-//       e.string('default'),
-//       {
-//         test: () => e.string('test')
-//       }
-//     )
-//   ))
+test('switchCase', async t => {
+  const response = await t.context.exampleQuery('switchCase_0', build(e =>
+    e.data(d => d.list(
+      d.expr(e => e.switchCase(
+        e.data(d => d.union('foo', d.string('bar'))),
+        e.string('default'),
+        {foo: () => e.string('test')}
+      )),
 
-//   t.is(response, false)
-// })
+      d.expr(e => e.switchCase(
+        e.data(d => d.union('foo', d.string('bar'))),
+        e.string('default'),
+        {bar: () => e.string('test')}
+      ))
+    ))
+  ))
 
-// test('switchModelRef', async t => {
-//   const response = await t.context.exampleQuery('switchModelRef_0', build(e =>
-//     e.not(e.bool(true))
-//   ))
+  t.is(response, ['test', 'default'])
+})
 
-//   t.is(response, false)
-// })
+// TODO: Return parameter will be converted to function
+test.skip('switchModelRef', async t => {t.fail()})
 
 test('assertCase', async t => {
   const response = await t.context.exampleQuery('assertCase_0', build(e =>
@@ -142,6 +143,22 @@ test('assertPresent', async t => {
   t.is(error.type, KarmaErrorType.CompilationError)
 })
 
-// TODO
-test('assertModelRef', async t => {t.fail()})
+test('assertModelRef', async t => {
+  const response = await t.context.exampleQuery('assertPresent_0', build(e =>
+    e.assertModelRef(e.tag('_tag'), e.first(e.all(e.tag('_tag'))))
+  ))
+
+  t.is(typeof response, 'object')
+  t.is(typeof response.tag, 'string')
+  t.true(isReference(response.model))
+
+  const error: KarmaError = await t.throws(async () => {
+    await t.context.exampleQuery('assertPresent_1', build(e =>
+      e.assertModelRef(e.tag('_tag'), e.first(e.all(e.tag('_user'))))
+    ))
+
+  }, KarmaError)
+
+  t.is(error.type, KarmaErrorType.ExecutionError)
+})
 

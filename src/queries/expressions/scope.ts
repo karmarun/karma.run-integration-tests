@@ -1,8 +1,38 @@
-// import { build } from 'karma.run'
+import { buildExpression as build } from 'karma.run'
 import test from '../_before'
+import { isReference } from '../../helpers/_karma'
 
-// TODO
-test('data', async t => {t.fail()})
-test('define', async t => {t.fail()})
-test('scope', async t => {t.fail()})
-test('signature', async t => {t.fail()})
+test('data', async t => {
+  const response = await t.context.exampleQuery('metarialize_0', build(e =>
+    e.data(d => d.list(
+      d.expr(e => e.tag('_tag')),
+      d.expr(e => e.tag('_user'))
+    ))
+  ))
+
+  t.true(Array.isArray(response))
+  t.true(isReference(response[0]))
+  t.true(isReference(response[1]))
+})
+
+test('define/scope', async t => {
+  const response = await t.context.exampleQuery('metarialize_0',
+    build(e => e.define('foo', e.string('bar'))),
+    build(e => e.scope('foo'))
+  )
+
+  t.is(response, 'bar')
+})
+
+// TODO: Something wrong with signature in the builder API.
+test('signature', async t => {
+  // console.log(JSON.stringify(build(e =>
+  //   e.signature((param) => e.tag(param))
+  // ), undefined, 2))
+
+  // const response = await t.context.exampleQuery('metarialize_0', build(e =>
+  //   e.signature((param) => e.tag(param))
+  // ))
+
+  t.fail()
+})

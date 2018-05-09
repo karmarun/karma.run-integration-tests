@@ -2,16 +2,16 @@
 import test from '../_before'
 
 // TODO
-test('allReferrers', async t => {t.fail()})
-test('refTo', async t => {t.fail()})
-test('referred', async t => {t.fail()})
-test('referrers', async t => {t.fail()})
-test('relocateRef', async t => {t.fail()})
-test('resolveAllRefs', async t => {t.fail()})
-test('resolveRefs', async t => {t.fail()})
-test('tag', async t => {t.fail()})
-test('tagExists', async t => {t.fail()})
-test('graphFlow', async t => {t.fail()})
+test.skip('allReferrers', async t => {t.fail()})
+test.skip('refTo', async t => {t.fail()})
+test.skip('referred', async t => {t.fail()})
+test.skip('referrers', async t => {t.fail()})
+test.skip('relocateRef', async t => {t.fail()})
+test.skip('resolveAllRefs', async t => {t.fail()})
+test.skip('resolveRefs', async t => {t.fail()})
+test.skip('tag', async t => {t.fail()})
+test.skip('tagExists', async t => {t.fail()})
+test.skip('graphFlow', async t => {t.fail()})
 
 // import { ExecutionContext } from 'ava'
 // import { build } from 'karma.run'
