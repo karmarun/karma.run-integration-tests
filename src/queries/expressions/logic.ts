@@ -3,7 +3,7 @@ import test from '../_before'
 import { isReference } from '../../helpers/_karma'
 
 test('and', async t => {
-  const response = await t.context.exampleQuery('and_0', build(e =>
+  const response = await t.context.exampleQuery(undefined, build(e =>
     e.data(
       d => d.list(
         d.expr(e => e.and(e.bool(false), e.bool(false))),
@@ -87,7 +87,7 @@ test('not', async t => {
   t.is(response, false)
 })
 
-test('switchCase', async t => {
+test.skip('switchCase', async t => {
   const response = await t.context.exampleQuery('switchCase_0', build(e =>
     e.data(d => d.list(
       d.expr(e => e.switchCase(

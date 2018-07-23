@@ -10,7 +10,16 @@ Get Started
 -----------
 ```
 cp .env.example .env
+```
 // Fill in required env variables in .env file
+```
 yarn install
 yarn watch
+```
+
+Test specific file
+-----------
+```
+yarn watch:build
+ava dist/queries/expressions/<file>.js --watch
 ```

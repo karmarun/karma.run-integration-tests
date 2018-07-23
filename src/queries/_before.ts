@@ -6,7 +6,7 @@ export const recordIDRegex = /^[\S]{10,}$/
 
 export interface QueryTestContext {
   client: Client
-  exampleQuery: (name: string, ...queries: Expression[]) => Promise<any>
+  exampleQuery: (name?: string, ...queries: Expression[]) => Promise<any>
   query: (...queries: Expression[]) => Promise<any>
 }
 
