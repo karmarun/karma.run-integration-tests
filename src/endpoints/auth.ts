@@ -1,5 +1,5 @@
 import baseTest, { TestInterface } from 'ava'
-import { Client, KarmaError, KarmaErrorType } from 'karma.run'
+import { Client, KarmaError, KarmaErrorType } from '@karma.run/sdk'
 import { KARMA_ENDPOINT, KARMA_INSTANCE_SECRET } from '../helpers/_environment'
 
 interface AuthTestContext {

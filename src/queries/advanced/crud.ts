@@ -1,5 +1,5 @@
 import { ExecutionContext } from 'ava'
-import { expression as e, data as d, model as m, func as f, KarmaError, KarmaErrorType } from 'karma.run'
+import { expression as e, data as d, model as m, func as f, KarmaError, KarmaErrorType } from '@karma.run/sdk'
 import test, { QueryTestContext } from '../_before'
 import { isReference } from '../../helpers/_karma'
 

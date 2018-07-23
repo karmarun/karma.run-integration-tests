@@ -1,4 +1,4 @@
-// import { data as d, expression as e, KarmaError, KarmaErrorType } from 'karma.run'
+// import { data as d, expression as e, KarmaError, KarmaErrorType } from '@karma.run/sdk'
 // import test from './_before'
 
 // //**********************************************************************************************************************

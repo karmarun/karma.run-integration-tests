@@ -1,4 +1,4 @@
-import { buildExpression as build, KarmaError, KarmaErrorType } from 'karma.run'
+import { buildExpression as build, KarmaError, KarmaErrorType } from '@karma.run/sdk'
 import test from './_before'
 
 // TODO: Currently crashes server, so we skip.

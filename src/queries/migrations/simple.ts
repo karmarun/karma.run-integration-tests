@@ -1,5 +1,5 @@
 
-import { createMigration, buildExpression as build, createModel } from 'karma.run'
+import { createMigration, buildExpression as build, createModel } from '@karma.run/sdk'
 import test from '../_before'
 
 test.skip('auto migration', async t => {

@@ -1,4 +1,4 @@
-import { buildExpression as build } from 'karma.run'
+import { buildExpression as build } from '@karma.run/sdk'
 import test from '../_before'
 
 test('bool', async t => {

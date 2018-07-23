@@ -293,6 +293,12 @@
   dependencies:
     arrify "^1.0.1"
 
+"@karma.run/sdk@^0.5.0-beta.3":
+  version "0.5.0-beta.3"
+  resolved "https://registry.yarnpkg.com/@karma.run/sdk/-/sdk-0.5.0-beta.3.tgz#4b09f9519b5c9f1e4bc51d555984268673284088"
+  dependencies:
+    axios "^0.18.0"
+
 "@ladjs/time-require@^0.1.4":
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/@ladjs/time-require/-/time-require-0.1.4.tgz#5c615d75fd647ddd5de9cf6922649558856b21a1"
@@ -1815,12 +1821,6 @@ json5@^1.0.1:
 jsonify@~0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/jsonify/-/jsonify-0.0.0.tgz#2c74b6ee41d93ca51b7b5aaee8f503631d252a73"
-
-"karma.run@https://github.com/karmarun/js-sdk.git#0.5.0-beta.9":
-  version "0.5.0-beta.9"
-  resolved "https://github.com/karmarun/js-sdk.git#ebf1a4fced9d17e7c78fe666cb2901cca6a8681e"
-  dependencies:
-    axios "^0.18.0"
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"

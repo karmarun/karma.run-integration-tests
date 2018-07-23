@@ -1,5 +1,5 @@
 import baseTest, { TestInterface } from 'ava'
-import { Client } from 'karma.run'
+import { Client } from '@karma.run/sdk'
 import { KARMA_ENDPOINT, KARMA_INSTANCE_SECRET } from '../helpers/_environment'
 
 interface AdminTestContext {

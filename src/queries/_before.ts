@@ -1,5 +1,5 @@
 import baseTest, { TestInterface } from 'ava'
-import { Client, Expression, func as f } from 'karma.run'
+import { Client, Expression, func as f } from '@karma.run/sdk'
 import { KARMA_ENDPOINT, KARMA_INSTANCE_SECRET } from '../helpers/_environment'
 
 export const recordIDRegex = /^[\S]{10,}$/

@@ -1,4 +1,4 @@
-// import { buildExpression as build } from 'karma.run'
+// import { buildExpression as build } from '@karma.run/sdk'
 import test from '../_before'
 
 // TODO
@@ -14,8 +14,8 @@ test.skip('tagExists', async t => {t.fail()})
 test.skip('graphFlow', async t => {t.fail()})
 
 // import { ExecutionContext } from 'ava'
-// import { build } from 'karma.run'
-// import { data as d, expression as e } from 'karma.run'
+// import { build } from '@karma.run/sdk'
+// import { data as d, expression as e } from '@karma.run/sdk'
 // import test, { QueryTestContext } from '../_before'
 
 // async function getFirstTagRef(t: ExecutionContext<QueryTestContext>) {
