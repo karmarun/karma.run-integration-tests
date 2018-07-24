@@ -243,8 +243,7 @@ let recordUntyped = {
     'next': {
       'payload': 2,
       'next': {
-        'payload': 3,
-        'next': null
+        'payload': 3
       }
     }
   },
@@ -256,8 +255,7 @@ let recordUntyped = {
           'bar': 2,
           'zap': {
             'foo': {
-              'bar': 3,
-              'zap': null
+              'bar': 3
             },
             'bar': 3
           }

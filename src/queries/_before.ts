@@ -2,8 +2,6 @@ import baseTest, { TestInterface } from 'ava'
 import { Client, Expression, func as f } from '@karma.run/sdk'
 import { KARMA_ENDPOINT, KARMA_INSTANCE_SECRET } from '../helpers/_environment'
 
-export const recordIDRegex = /^[\S]{10,}$/
-
 export interface QueryTestContext {
   client: Client
   exampleQuery: (name?: string, ...queries: Expression[]) => Promise<any>
@@ -18,6 +16,8 @@ test.before(async t => {
   t.context.client = client
   t.context.exampleQuery = (_name, ...queries) => {
     // TODO: Extract into JSON
+    // console.log("****************************************************************************************************")
+    // console.log(JSON.stringify(f.function([], ...queries)))
     return client.query(f.function([], ...queries))
   }
 

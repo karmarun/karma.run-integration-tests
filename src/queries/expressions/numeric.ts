@@ -464,7 +464,7 @@ test('floatToInt', async t => {
 
 test('intToFloat', async t => {
   const response = await t.context.exampleQuery('intToFloat_0',
-    build(e => e.addFloat(0.5, e.floatToInt(e.int8(1))))
+    build(e => e.addFloat(0.5, e.intToFloat(e.int8(1))))
   )
 
   t.is(response, 1.5)

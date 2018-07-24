@@ -2,7 +2,31 @@ import { buildExpression as build, KarmaError, KarmaErrorType } from '@karma.run
 import test from '../_before'
 import { isReference } from '../../helpers/_karma'
 
-test('and', async t => {
+test.skip('and', async t => {
+  const response = await t.context.exampleQuery('and_0', build(e =>
+    e.and(e.bool(true), e.bool(true))
+  ))
+
+  t.deepEqual(response, true)
+})
+
+test.skip('or', async t => {
+  const response = await t.context.exampleQuery('or_0', build(e =>
+    e.and(e.bool(true), e.bool(true))
+  ))
+
+  t.deepEqual(response, true)
+})
+
+test.skip('equal', async t => {
+  const response = await t.context.exampleQuery('equal_0', build(e =>
+    e.equal(e.string('foo'), e.string('foo'))
+  ))
+
+  t.deepEqual(response, true)
+})
+
+test.skip('and list', async t => {
   const response = await t.context.exampleQuery(undefined, build(e =>
     e.data(
       d => d.list(
@@ -16,8 +40,8 @@ test('and', async t => {
   t.deepEqual(response, [false, false, true])
 })
 
-test('or', async t => {
-  const response = await t.context.exampleQuery('or_0', build(e =>
+test.skip('or list', async t => {
+  const response = await t.context.exampleQuery(undefined, build(e =>
     e.data(
       d => d.list(
         d.expr(e => e.or(e.bool(false), e.bool(false))),
@@ -30,8 +54,8 @@ test('or', async t => {
   t.deepEqual(response, [false, true, true])
 })
 
-test('equal', async t => {
-  const response = await t.context.exampleQuery('and_0', build(e =>
+test('equal list', async t => {
+  const response = await t.context.exampleQuery(undefined, build(e =>
     e.data(
       d => d.list(
         d.expr(e => e.equal(e.string('foo'), e.string('foo'))),
@@ -58,7 +82,7 @@ test('equal', async t => {
 })
 
 test('if', async t => {
-  const response = await t.context.exampleQuery('or_0', build(e =>
+  const response = await t.context.exampleQuery(undefined, build(e =>
     e.data(
       d => d.list(
         d.expr(e => e.if(
@@ -80,14 +104,14 @@ test('if', async t => {
 })
 
 test('not', async t => {
-  const response = await t.context.exampleQuery('or_0', build(e =>
+  const response = await t.context.exampleQuery(undefined, build(e =>
     e.not(e.bool(true))
   ))
 
   t.is(response, false)
 })
 
-test.skip('switchCase', async t => {
+test('switchCase', async t => {
   const response = await t.context.exampleQuery('switchCase_0', build(e =>
     e.data(d => d.list(
       d.expr(e => e.switchCase(
@@ -108,7 +132,9 @@ test.skip('switchCase', async t => {
 })
 
 // TODO: Return parameter will be converted to function
-test.skip('switchModelRef', async t => {t.fail()})
+test.skip('switchModelRef', async t => {
+  t.fail()
+})
 
 test('assertCase', async t => {
   const response = await t.context.exampleQuery('assertCase_0', build(e =>
@@ -144,7 +170,7 @@ test('assertPresent', async t => {
 })
 
 test('assertModelRef', async t => {
-  const response = await t.context.exampleQuery('assertPresent_0', build(e =>
+  const response = await t.context.exampleQuery('assertModelRef_0', build(e =>
     e.assertModelRef(e.tag('_tag'), e.first(e.all(e.tag('_tag'))))
   ))
 
