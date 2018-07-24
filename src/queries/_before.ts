@@ -29,7 +29,7 @@ test.before(async t => {
 
   t.context.client = client
   t.context.exampleQuery = (_name, ...queries) => {
-    if (_name) {
+    if (process.env.EXTRACT_QUERIES === 'true' && _name) {
       const filePath = `./temp/queries/${_name}`
       if (fs.existsSync(filePath)) {
         throw new Error(`more than one definition of ${_name}`)
