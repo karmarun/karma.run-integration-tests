@@ -16,7 +16,7 @@ test('all', async t => {
 })
 
 test('create', async t => {
-  const response = await t.context.exampleQuery('create_0', build(e =>
+  const response = await t.context.exampleQuery(undefined, build(e =>
     e.create(e.tag('_tag'), () => e.data(d =>
       d.struct({
         tag: d.string('createTestTag'),
@@ -29,7 +29,7 @@ test('create', async t => {
 })
 
 test('createMultiple', async t => {
-  const response = await t.context.exampleQuery('createMultiple_0', build(e =>
+  const response = await t.context.exampleQuery(undefined, build(e =>
     e.createMultiple(e.tag('_tag'), {
       tagA: () => e.data(d =>
         d.struct({
@@ -52,7 +52,7 @@ test('createMultiple', async t => {
 })
 
 test('get', async t => {
-  const response = await t.context.exampleQuery('create_0',
+  const response = await t.context.exampleQuery(undefined,
     build(e =>
       e.define('getTestTag', e.create(e.tag('_tag'), () => e.data(d =>
         d.struct({
@@ -71,7 +71,7 @@ test('get', async t => {
 })
 
 test('update', async t => {
-  const response = await t.context.exampleQuery('create_0',
+  const response = await t.context.exampleQuery(undefined,
     build(e =>
       e.define('updateTestTag', e.create(e.tag('_tag'), () => e.data(d =>
         d.struct({
@@ -100,7 +100,7 @@ test('update', async t => {
 
 test('delete', async t => {
   const error: KarmaError = await t.throws(async () => {
-    await t.context.exampleQuery('create_0',
+    await t.context.exampleQuery(undefined,
       build(e =>
         e.define('deleteTestTag', e.create(e.tag('_tag'), () => e.data(d =>
           d.struct({

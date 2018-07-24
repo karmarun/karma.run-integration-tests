@@ -100,7 +100,7 @@ test('memSort', async t => {
 })
 
 test('reverseList', async t => {
-  const response = await t.context.exampleQuery('concatLists_0', build(e =>
+  const response = await t.context.exampleQuery('reverseList_0', build(e =>
     e.reverseList(
       e.data(d => d.list(d.int8(1), d.int8(2), d.int8(3)))
     )
@@ -109,7 +109,7 @@ test('reverseList', async t => {
   t.deepEqual(response, [3, 2, 1])
 })
 test('slice', async t => {
-  const response = await t.context.exampleQuery('concatLists_0', build(e =>
+  const response = await t.context.exampleQuery('slice_0', build(e =>
     e.slice(
       e.data(d => d.list(d.int8(1), d.int8(2), d.int8(3))),
       1, 2

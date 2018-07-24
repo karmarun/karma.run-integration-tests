@@ -1,6 +1,7 @@
-import baseTest, { TestInterface } from 'ava'
-import { Client, Expression, func as f } from '@karma.run/sdk'
-import { KARMA_ENDPOINT, KARMA_INSTANCE_SECRET } from '../helpers/_environment'
+import baseTest, {TestInterface} from 'ava'
+import {Client, Expression, func as f} from '@karma.run/sdk'
+import {KARMA_ENDPOINT, KARMA_INSTANCE_SECRET} from '../helpers/_environment'
+import * as fs from 'fs'
 
 export interface QueryTestContext {
   client: Client
@@ -10,12 +11,32 @@ export interface QueryTestContext {
 
 export const test = baseTest as TestInterface<QueryTestContext>
 
+async function writeFile(filePath: string, json: any) {
+  return new Promise(function (resolve, reject) {
+    fs.writeFile(filePath, JSON.stringify(json, null, 2), function (error) {
+      if (error) {
+        return reject(error)
+      }
+      else {
+        resolve(true)
+      }
+    })
+  })
+}
+
 test.before(async t => {
   const client = new Client(KARMA_ENDPOINT)
 
   t.context.client = client
   t.context.exampleQuery = (_name, ...queries) => {
-    // TODO: Extract into JSON
+    if (_name) {
+      const filePath = `./temp/queries/${_name}`
+      if (fs.existsSync(filePath)) {
+        throw new Error(`more than one definition of ${_name}`)
+      }
+      writeFile(filePath, queries).catch(console.error)
+    }
+
     // console.log("****************************************************************************************************")
     // console.log(JSON.stringify(f.function([], ...queries)))
     return client.query(f.function([], ...queries))

@@ -3,7 +3,7 @@ import test from '../_before'
 
 // TODO: Test more extensively.
 test('extractStrings', async t => {
-  const response = await t.context.exampleQuery('key_0', build(e =>
+  const response = await t.context.exampleQuery('extractStrings_0', build(e =>
     e.extractStrings(e.data(d =>
       d.struct({
         a: d.int8(1),
@@ -22,7 +22,7 @@ test('extractStrings', async t => {
 })
 
 test('field', async t => {
-  const response = await t.context.exampleQuery('key_0', build(e =>
+  const response = await t.context.exampleQuery('field_0', build(e =>
     e.field('a', e.data(d => d.struct({
         a: d.int8(1),
         b: d.int8(2),
@@ -35,7 +35,7 @@ test('field', async t => {
 })
 
 test('setField', async t => {
-  const response = await t.context.exampleQuery('setKey_0', build(e =>
+  const response = await t.context.exampleQuery('setField_0', build(e =>
     e.setField('d', e.int8(4), e.data(d => d.struct({
         a: d.int8(1),
         b: d.int8(2),

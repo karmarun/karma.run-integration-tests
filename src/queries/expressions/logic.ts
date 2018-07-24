@@ -111,7 +111,7 @@ test('not', async t => {
   t.is(response, false)
 })
 
-test('switchCase', async t => {
+test.skip('switchCase', async t => {
   const response = await t.context.exampleQuery('switchCase_0', build(e =>
     e.data(d => d.list(
       d.expr(e => e.switchCase(
@@ -179,7 +179,7 @@ test('assertModelRef', async t => {
   t.true(isReference(response.model))
 
   const error: KarmaError = await t.throws(async () => {
-    await t.context.exampleQuery('assertPresent_1', build(e =>
+    await t.context.exampleQuery(undefined, build(e =>
       e.assertModelRef(e.tag('_tag'), e.first(e.all(e.tag('_user'))))
     ))
 

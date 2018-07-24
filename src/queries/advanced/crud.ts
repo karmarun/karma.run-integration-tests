@@ -5,8 +5,7 @@ import { isReference } from '../../helpers/_karma'
 
 
 test.serial('get', async t => {
-  const response = await t.context.exampleQuery(
-    'get_0',
+  const response = await t.context.exampleQuery('get_0',
     e.get(e.refTo(e.first(e.all(e.tag(d.string('_tag'))))))
   )
 
@@ -14,22 +13,8 @@ test.serial('get', async t => {
   t.truthy(response.tag)
 })
 
-test('metarialize', async t => {
-  const response = await t.context.exampleQuery(
-    'metarialize_0',
-    e.metarialize(e.first(e.all(e.tag(d.string('_tag')))))
-  )
-
-  t.truthy(response.created)
-  t.truthy(response.updated)
-  t.truthy(response.id)
-  t.truthy(response.model)
-  t.truthy(response.value)
-})
-
 test.serial('model create', async t => {
-  const response = await t.context.exampleQuery(
-    'create_0',
+  const response = await t.context.exampleQuery('create_0',
     e.create(e.tag(d.string('_model')), f.function(['param'],
       e.data(m.struct({
         'myString': m.string(),
@@ -67,8 +52,7 @@ test.serial('nested create', async t => {
     createTag
   ]
 
-  const response = await t.context.exampleQuery(
-    'create_1',
+  const response = await t.context.exampleQuery('create_1',
     ...query
   )
 
@@ -95,8 +79,7 @@ test.serial('create record', async t => {
 
 
 test.serial('update', async t => {
-  const updateResponse = await t.context.exampleQuery(
-    'update_0',
+  const updateResponse = await t.context.exampleQuery('update_0',
     e.update(
       e.refTo(e.first(e.all(e.tag(d.string('myModel'))))),
       e.data(d.struct({
@@ -122,8 +105,7 @@ test.serial('update', async t => {
 })
 
 test.serial('delete', async t => {
-  const response = await t.context.exampleQuery(
-    'delete_0',
+  const response = await t.context.exampleQuery('delete_0',
     e.delete(
       e.refTo(e.first(e.all(e.tag(d.string('myModel')))))
     )
@@ -138,8 +120,7 @@ test.serial('delete', async t => {
 })
 
 test('zero', async t => {
-  const response = await t.context.exampleQuery(
-    'create_2',
+  const response = await t.context.exampleQuery(undefined,
     e.create(
       e.tag(d.string('myModel')),
       f.function(['param'],
@@ -434,7 +415,7 @@ test.serial('create complex model', async t => {
   const recordQuery = e.create(
     e.tag(d.string('tagTest')),
     f.function(['param'], e.data(recordTyped)
-  ))
+    ))
 
   const recordResponse = await t.context.query(recordQuery)
 

@@ -163,7 +163,7 @@ test('union', async t => {
 })
 
 test('null', async t => {
-  const response = await t.context.exampleQuery('union_0', build(e =>
+  const response = await t.context.exampleQuery('null_0', build(e =>
     e.null()
   ))
 
