@@ -34,7 +34,7 @@ test.before(async t => {
       if (fs.existsSync(filePath)) {
         throw new Error(`more than one definition of ${_name}`)
       }
-      writeFile(filePath, queries).catch(console.error)
+      writeFile(filePath, queries[0]).catch(console.error)
     }
 
     // console.log("****************************************************************************************************")
