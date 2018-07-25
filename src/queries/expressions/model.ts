@@ -192,19 +192,27 @@ test('recursive', async t => {
   })
 })
 
-test('recursion', async t => {
-  const response = await t.context.exampleQuery('recursion_0',
+test('recursive error', async t => {
+  const response = await t.context.exampleQuery('recursive_2',
     e.data(
-      m.recursion(
-        'self',
-        m.struct({
-          'payload': m.int32(),
-          'next': m.optional(m.recurse('self'))
-        })
+      m.recursive('A',
+        {
+          'A': m.recurse('B'),
+          'B': m.recurse('A')
+        }
       )
     )
   )
-  //console.log(JSON.stringify(response))
+  t.deepEqual(response, {"recursive": {"models": {"A": {"recurse": "B"}, "B": {"recurse": "A"}}, "top": "A"}})
+})
+
+test('recursion', async t => {
+  const response = await t.context.exampleQuery('recursion_0',
+    e.data(m.recursion("self", m.struct({
+      payload: m.int32(),
+      next: m.optional(m.recurse("self")),
+    })))
+  )
   t.deepEqual(response, {
     "recursion": {
       "label": "self",

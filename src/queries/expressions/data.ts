@@ -203,26 +203,24 @@ test('optional omitting optional', async t => {
 
 test('recursive', async t => {
   const response = await t.context.exampleQuery('recursive_1',
-    e.data(
-      d.struct({
-        'foo': d.struct({
-          'bar': d.int32(1),
-          'zap': d.struct({
-            'foo': d.struct({
-              'bar': d.int32(2),
-              'zap': d.struct({
-                'foo': d.struct({
-                  'bar': d.int32(3)
-                }),
-                'bar': d.int32(3)
-              })
+    e.data(d.struct({
+      foo: d.struct({
+        bar: d.int32(1),
+        zap: d.struct({
+          foo: d.struct({
+            bar: d.int32(2),
+            zap: d.struct({
+              foo: d.struct({
+                bar: d.int32(3),
+              }),
+              bar: d.int32(3),
             }),
-            'bar': d.int32(2)
-          })
+          }),
+          bar: d.int32(2),
         }),
-        'bar': d.int32(1)
-      })
-    )
+      }),
+      bar: d.int32(1),
+    }))
   )
   //console.log(JSON.stringify(response))
   t.deepEqual(response, {
@@ -233,17 +231,15 @@ test('recursive', async t => {
 
 test('recursion', async t => {
   const response = await t.context.exampleQuery('recursion_1',
-    e.data(
-      d.struct({
-        'payload': d.int32(1),
-        'next': d.struct({
-          'payload': d.int32(2),
-          'next': d.struct({
-            'payload': d.int32(3)
-          })
-        })
-      })
-    )
+    e.data(d.struct({
+      payload: d.int32(1),
+      next: d.struct({
+        payload: d.int32(2),
+        next: d.struct({
+          payload: d.int32(3),
+        }),
+      }),
+    }))
   )
   t.deepEqual(response, {"next": {"next": {"payload": 3}, "payload": 2}, "payload": 1})
 })

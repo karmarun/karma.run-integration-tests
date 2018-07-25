@@ -1,29 +1,29 @@
-import { buildExpression as build, KarmaError, KarmaErrorType } from '@karma.run/sdk'
+import {buildExpression as build, KarmaError, KarmaErrorType, expression as e, data as d} from '@karma.run/sdk'
 import test from '../_before'
-import { isReference } from '../../helpers/_karma'
+import {isReference} from '../../helpers/_karma'
 
 test.skip('and', async t => {
-  const response = await t.context.exampleQuery('and_0', build(e =>
-    e.and(e.bool(true), e.bool(true))
-  ))
+  const response = await t.context.exampleQuery('and_0',
+    e.and(d.bool(true), d.bool(true))
+  )
 
   t.deepEqual(response, true)
 })
 
 test.skip('or', async t => {
-  const response = await t.context.exampleQuery('or_0', build(e =>
-    e.and(e.bool(true), e.bool(true))
-  ))
+  const response = await t.context.exampleQuery('or_0',
+    e.and(d.bool(true), d.bool(true))
+  )
 
   t.deepEqual(response, true)
 })
 
-test.skip('equal', async t => {
-  const response = await t.context.exampleQuery('equal_0', build(e =>
-    e.equal(e.string('foo'), e.string('foo'))
-  ))
+test('equal', async t => {
+  const response = await t.context.exampleQuery('equal_0',
+    e.equal(d.string('foo'), d.string('bar'))
+  )
 
-  t.deepEqual(response, true)
+  t.deepEqual(response, false)
 })
 
 test.skip('and list', async t => {
