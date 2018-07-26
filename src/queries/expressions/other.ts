@@ -1,18 +1,6 @@
 import { buildExpression as build, createModel } from '@karma.run/sdk'
 import test from '../_before'
 
-test('model', async t => {
-  const tagResponse = await t.context.query(build(e =>
-    e.tag('_tag')
-  ))
-
-  const response = await t.context.exampleQuery('model_0', build(e =>
-    e.model(e.string(tagResponse[1]))
-  ))
-
-  t.deepEqual(response, tagResponse)
-})
-
 test('modelOf', async t => {
   const response = await t.context.exampleQuery('modelOf_0', build(e =>
     e.modelOf(e.data(d => d.struct({
