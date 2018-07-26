@@ -91,12 +91,12 @@ test('length', async t => {
 test('memSort', async t => {
   const response = await t.context.exampleQuery('memSort_0', build(e =>
     e.memSort(
-      e.data(d => d.list(d.int8(3), d.int8(2), d.int8(1))),
+      e.data(d => d.list(d.int8(2), d.int8(8), d.int8(4))),
       (value) => value
     )
   ))
 
-  t.deepEqual(response, [1, 2, 3])
+  t.deepEqual(response, [2, 4, 8])
 })
 
 test('reverseList', async t => {

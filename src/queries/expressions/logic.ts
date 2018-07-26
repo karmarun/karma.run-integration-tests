@@ -2,7 +2,7 @@ import {buildExpression as build, KarmaError, KarmaErrorType, expression as e, d
 import test from '../_before'
 import {isReference} from '../../helpers/_karma'
 
-test.skip('and', async t => {
+test('and', async t => {
   const response = await t.context.exampleQuery('and_0',
     e.and(d.bool(true), d.bool(true))
   )
@@ -10,7 +10,7 @@ test.skip('and', async t => {
   t.deepEqual(response, true)
 })
 
-test.skip('or', async t => {
+test('or', async t => {
   const response = await t.context.exampleQuery('or_0',
     e.and(d.bool(true), d.bool(true))
   )
@@ -26,7 +26,7 @@ test('equal', async t => {
   t.deepEqual(response, false)
 })
 
-test.skip('and list', async t => {
+test('and all', async t => {
   const response = await t.context.exampleQuery(undefined, build(e =>
     e.data(
       d => d.list(
@@ -40,7 +40,7 @@ test.skip('and list', async t => {
   t.deepEqual(response, [false, false, true])
 })
 
-test.skip('or list', async t => {
+test('or all', async t => {
   const response = await t.context.exampleQuery(undefined, build(e =>
     e.data(
       d => d.list(
@@ -54,7 +54,7 @@ test.skip('or list', async t => {
   t.deepEqual(response, [false, true, true])
 })
 
-test('equal list', async t => {
+test('equal all', async t => {
   const response = await t.context.exampleQuery(undefined, build(e =>
     e.data(
       d => d.list(
@@ -82,6 +82,16 @@ test('equal list', async t => {
 })
 
 test('if', async t => {
+  const response = await t.context.exampleQuery('if_0',
+    e.if(e.equal(d.string("foo"), d.string("bar")),
+      d.string('foo and bar are equal'),
+      d.string('foo and bar are not equal')
+    )
+  )
+  t.deepEqual(response, 'foo and bar are not equal')
+})
+
+test('if all', async t => {
   const response = await t.context.exampleQuery(undefined, build(e =>
     e.data(
       d => d.list(
@@ -104,7 +114,7 @@ test('if', async t => {
 })
 
 test('not', async t => {
-  const response = await t.context.exampleQuery(undefined, build(e =>
+  const response = await t.context.exampleQuery('not_0', build(e =>
     e.not(e.bool(true))
   ))
 
@@ -179,7 +189,7 @@ test('assertModelRef', async t => {
   t.true(isReference(response.model))
 
   const error: KarmaError = await t.throws(async () => {
-    await t.context.exampleQuery(undefined, build(e =>
+    await t.context.exampleQuery('assertModelRef_1', build(e =>
       e.assertModelRef(e.tag('_tag'), e.first(e.all(e.tag('_user'))))
     ))
 

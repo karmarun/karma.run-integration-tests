@@ -1,4 +1,4 @@
-import { buildExpression as build } from '@karma.run/sdk'
+import {buildExpression as build} from '@karma.run/sdk'
 import test from '../_before'
 
 // Addition
@@ -455,6 +455,7 @@ test('gtUint64', async t => {
 // ==========
 
 test.skip('floatToInt', async t => {
+  // TODO should be floatToInt8, floatToInt16, floatToInt32 but they are all not implemented yet
   const response = await t.context.exampleQuery('floatToInt_0',
     build(e => e.addInt8(0, e.floatToInt(e.float(0.5))))
   )
@@ -463,6 +464,7 @@ test.skip('floatToInt', async t => {
 })
 
 test.skip('intToFloat', async t => {
+  // TODO should be int8ToFloat, int16ToFloat, int32ToFloat but they are all not implemented yet
   const response = await t.context.exampleQuery('intToFloat_0',
     build(e => e.addFloat(0.5, e.intToFloat(e.int8(1))))
   )

@@ -1,4 +1,4 @@
-import { buildExpression as build } from '@karma.run/sdk'
+import {buildExpression as build, expression as e, data as d} from '@karma.run/sdk'
 import test from '../_before'
 
 test('joinStrings', async t => {
@@ -23,7 +23,23 @@ test('stringToLower', async t => {
   t.is(response, 'capsüäöë')
 })
 
-// TODO
-test.skip('matchRegex', async t => {t.fail()})
-test.skip('searchAllRegex', async t => {t.fail()})
-test.skip('searchRegex', async t => {t.fail()})
+test('matchRegex', async t => {
+  const response = await t.context.exampleQuery('matchRegex_0',
+    e.matchRegex('[0-9]{3}', d.string('123'), true, false)
+  )
+  t.is(response, true)
+})
+
+test('searchAllRegex', async t => {
+  const response = await t.context.exampleQuery('searchAllRegex_0',
+    e.searchAllRegex('[0-9]{3}', d.string('123 qwer 456 asdf 789'), true, false)
+  )
+  t.deepEqual(response, [0, 9, 18])
+})
+
+test('searchRegex', async t => {
+  const response = await t.context.exampleQuery('searchRegex_0',
+    e.searchRegex('[0-9]{3}', d.string('qwer456asdf789'), true, false)
+  )
+  t.is(response, 4)
+})
