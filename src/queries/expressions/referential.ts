@@ -34,7 +34,7 @@ test('ref', async t => {
     e.metarialize(e.first(e.all(e.tag('_tag'))))
   )
   response = await t.context.exampleQuery('ref_0',
-    e.data(d.ref(response.id[0], response.id[1]))
+    e.data(d.ref(response.id))
   )
 
   t.truthy(response[0])

@@ -43,7 +43,7 @@ test('zero', async t => {
   const response = await t.context.exampleQuery('zero_0',
     build(e =>
       e.define('record', e.create(
-        e.data(d => d.ref(modelResponse[0], modelResponse[1])),
+        e.data(d => d.ref(modelResponse)),
         () => e.zero()
       ))
     ),
