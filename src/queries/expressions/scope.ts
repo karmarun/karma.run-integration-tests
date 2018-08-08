@@ -24,15 +24,12 @@ test('define/scope', async t => {
   t.is(response, 'bar')
 })
 
-// TODO: Something wrong with signature in the builder API.
-test.skip('signature', async t => {
-  // console.log(JSON.stringify(build(e =>
-  //   e.signature((param) => e.tag(param))
-  // ), undefined, 2))
+test('signature', async t => {
+  const response = await t.context.exampleQuery(undefined, build(e =>
+    e.signature((param) => e.tag(param))
+  ))
 
-  // const response = await t.context.exampleQuery(undefined, build(e =>
-  //   e.signature((param) => e.tag(param))
-  // ))
-
-  t.fail()
+  t.true(Array.isArray(response))
+  t.true(typeof response[0] === 'object')
+  t.true(isReference(response[1].ref))
 })

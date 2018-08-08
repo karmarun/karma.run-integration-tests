@@ -121,24 +121,15 @@ test('not', async t => {
   t.is(response, false)
 })
 
-test.skip('switchCase', async t => {
+test('switchCase', async t => {
   const response = await t.context.exampleQuery('switchCase_0', build(e =>
-    e.data(d => d.list(
-      d.expr(e => e.switchCase(
-        e.data(d => d.union('foo', d.string('bar'))),
-        e.string('default'),
-        {foo: () => e.string('test')}
-      )),
-
-      d.expr(e => e.switchCase(
-        e.data(d => d.union('foo', d.string('bar'))),
-        e.string('default'),
-        {bar: () => e.string('test')}
-      ))
-    ))
+    e.switchCase(
+      e.data(d => d.union('foo', d.string('bar'))),
+      {foo: (value) => value}
+    )
   ))
 
-  t.is(response, ['test', 'default'])
+  t.is(response, 'bar')
 })
 
 // TODO: Return parameter will be converted to function
