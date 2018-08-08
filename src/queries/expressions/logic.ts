@@ -132,7 +132,7 @@ test('switchCase', async t => {
   t.is(response, 'bar')
 })
 
-// TODO: Return parameter will be converted to function
+// TODO
 test.skip('switchModelRef', async t => {
   t.fail()
 })

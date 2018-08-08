@@ -12,9 +12,8 @@ test('isPresent', async t => {
   t.deepEqual(response, [true, false])
 })
 
-// TODO: Check if this is expected to work this way:
-// "presentOrZero: argument is always present".
-test('presentOrZero', async t => {
+// TODO: Test model with optionals
+test.skip('presentOrZero', async t => {
   const response = await t.context.exampleQuery('presentOrZero_0', build(e =>
     e.data(d => d.list(
       d.expr(e => e.addInt8(5, e.presentOrZero(e.null()))),
