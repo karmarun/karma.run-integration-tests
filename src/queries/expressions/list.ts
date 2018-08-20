@@ -99,6 +99,18 @@ test('memSort', async t => {
   t.deepEqual(response, [2, 4, 8])
 })
 
+test('memSortFunction', async t => {
+  // TODO
+  const response = await t.context.exampleQuery('memSortFunction_0', build(e =>
+    e.memSortFunction(
+      e.data(d => d.list(d.int8(2), d.int8(8), d.int8(4))),
+      (value) => value
+    )
+  ))
+
+  t.deepEqual(response, [2, 4, 8])
+})
+
 test('reverseList', async t => {
   const response = await t.context.exampleQuery('reverseList_0', build(e =>
     e.reverseList(
@@ -130,3 +142,35 @@ test('reduceList', async t => {
 
   t.is(response, 30)
 })
+
+test.skip('leftFoldList', async t => {
+  // TODO
+  const response = await t.context.exampleQuery('leftFoldList_0', build(e =>
+    e.leftFoldList(
+      e.data(d => d.list(d.int8(5), d.int8(10), d.int8(15))),
+      e.data(d => d.struct({value: d.int8(0)})),
+      (aggregator, value) =>
+        e.data(d => d.struct({value: d.expr(e.divInt8(e.field('value', aggregator), value))})
+      )
+    )
+  ))
+
+  t.is(response, {value: 30})
+})
+
+test.skip('rightFoldList', async t => {
+  // TODO
+  const response = await t.context.exampleQuery('rightFoldList_0', build(e =>
+    e.rightFoldList(
+      e.data(d => d.list(d.int8(5), d.int8(10), d.int8(15))),
+      e.data(d => d.struct({value: d.int8(0)})),
+      (aggregator, value) =>
+        e.data(d => d.struct({value: d.expr(e.divInt8(e.field('value', aggregator), value))})
+      )
+    )
+  ))
+
+  t.is(response, 30)
+})
+
+

@@ -222,7 +222,7 @@ test('recursive', async t => {
       bar: d.int32(1),
     }))
   )
-  //console.log(JSON.stringify(response))
+
   t.deepEqual(response, {
     "bar": 1,
     "foo": {"bar": 1, "zap": {"bar": 2, "foo": {"bar": 2, "zap": {"bar": 3, "foo": {"bar": 3}}}}}

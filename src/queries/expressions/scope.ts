@@ -33,3 +33,11 @@ test('signature', async t => {
   t.true(typeof response[0] === 'object')
   t.true(isReference(response[1].ref))
 })
+
+test('with', async t => {
+  const response = await t.context.exampleQuery('with_0', build(e =>
+    e.with(e.string('foo'), value => value)
+  ))
+
+  t.is(response, 'foo')
+})

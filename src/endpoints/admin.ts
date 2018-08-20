@@ -21,8 +21,10 @@ test.skip('exportDB/importDB', async t => {
   t.true(response instanceof Buffer)
 
   // TODO: Reenable once import is fixed.
-  // const response = await t.context.client.importDB(t.context.exportData)
-  // console.log(response)
+  await t.notThrows(async () => {
+    const importResponse = await t.context.client.importDB(response)
+    console.log(importResponse)
+  })
 })
 
 test.serial('reset', async t => {

@@ -28,11 +28,11 @@ test.before(async t => {
   const client = new Client(KARMA_ENDPOINT)
 
   t.context.client = client
-  t.context.exampleQuery = (_name, ...queries) => {
-    if (process.env.EXTRACT_QUERIES === 'true' && _name) {
-      const filePath = `./temp/queries/${_name}`
+  t.context.exampleQuery = (name, ...queries) => {
+    if (process.env.EXTRACT_QUERIES === 'true' && name) {
+      const filePath = `./temp/queries/${name}`
       if (fs.existsSync(filePath)) {
-        throw new Error(`more than one definition of ${_name}`)
+        throw new Error(`more than one definition of ${name}`)
       }
       writeFile(filePath, queries[0]).catch(console.error)
     }
