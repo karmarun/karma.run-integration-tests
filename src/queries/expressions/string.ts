@@ -43,3 +43,19 @@ test('searchRegex', async t => {
   )
   t.is(response, 4)
 })
+
+test('stringContains', async t => {
+  const response = await t.context.exampleQuery('stringContains_0',
+    e.stringContains(d.string('foobar'), d.string('oba'))
+  )
+
+  t.true(response)
+})
+
+test('substringIndex', async t => {
+  const response = await t.context.exampleQuery('substringIndex_0',
+    e.substringIndex(d.string('foobar'), d.string('oba'))
+  )
+
+  t.is(response, 2)
+})
