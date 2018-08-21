@@ -293,9 +293,9 @@
   dependencies:
     arrify "^1.0.1"
 
-"@karma.run/sdk@^0.5.5":
-  version "0.5.5"
-  resolved "https://registry.yarnpkg.com/@karma.run/sdk/-/sdk-0.5.5.tgz#37d7ee44d748380074fc9e2a4baa74bf6ed7f2ec"
+"@karma.run/sdk@^0.5.7":
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/@karma.run/sdk/-/sdk-0.5.7.tgz#bab74bd8b813970df1bc6996ae4b581bf2d7fff9"
   dependencies:
     axios "^0.18.0"
 

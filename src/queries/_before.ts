@@ -12,12 +12,11 @@ export interface QueryTestContext {
 export const test = baseTest as TestInterface<QueryTestContext>
 
 async function writeFile(filePath: string, json: any) {
-  return new Promise(function (resolve, reject) {
-    fs.writeFile(filePath, JSON.stringify(json, null, 2), function (error) {
+  return new Promise(function(resolve, reject) {
+    fs.writeFile(filePath, JSON.stringify(json, null, 2), function(error) {
       if (error) {
         return reject(error)
-      }
-      else {
+      } else {
         resolve(true)
       }
     })
