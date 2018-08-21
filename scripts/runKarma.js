@@ -1,7 +1,7 @@
 require('dotenv').config()
 const {spanProcess} = require('./tools')
 
-const karmaDockerImage = "gcr.io/karma-run-registry/karma:0.5-6e40cd36d102945a99a4586981102aa8a8fa0f87"
+const {KARMA_INSTANCE_SECRET, KARMA_DOCKER_IMAGE} = process.env
 
 main().catch(console.error)
 
@@ -13,8 +13,8 @@ async function runDockerImages(name, port) {
   await spanProcess(`docker`, [`run`,
     `-d`,
     `-e "KARMA_DATA_FILE=/db-karma-run.data"`,
-    `-e "KARMA_INSTANCE_SECRET=${process.env.KARMA_INSTANCE_SECRET}"`,
+    `-e "KARMA_INSTANCE_SECRET=${KARMA_INSTANCE_SECRET}"`,
     `-p ${port}:80`,
     `--name ${name}`,
-    karmaDockerImage])
+    KARMA_DOCKER_IMAGE])
 }

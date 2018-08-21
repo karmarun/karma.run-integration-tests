@@ -87,6 +87,7 @@ test('memSort', async t => {
   t.deepEqual(response, [2, 4, 8])
 })
 
+
 test('memSortFunction', async t => {
   const response = await t.context.exampleQuery(
     'memSortFunction_0',

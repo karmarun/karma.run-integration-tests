@@ -13,6 +13,8 @@ async function main() {
 
   const answer = await askUSer('run "cp -Rf ./temp/queries ../karma-documentation/temp" (Yes/No)? ')
   if (answer === 'Yes') {
+    await execCommand('rm -rf ../karma-documentation/temp')
+    await execCommand('mkdir ../karma-documentation/temp')
     await execCommand('cp -Rf ./temp/queries ../karma-documentation/temp')
   }
 }
