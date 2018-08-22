@@ -3,10 +3,11 @@ import {
   KarmaError,
   KarmaErrorType,
   expression as e,
-  data as d
+  data as d,
+  isRef
 } from '@karma.run/sdk'
+
 import test from '../_before'
-import {isReference} from '../../helpers/_karma'
 
 test('and', async t => {
   const response = await t.context.exampleQuery('and_0', e.and(d.bool(true), d.bool(false)))
@@ -183,7 +184,7 @@ test('assertModelRef', async t => {
 
   t.is(typeof response, 'object')
   t.is(typeof response.tag, 'string')
-  t.true(isReference(response.model))
+  t.true(isRef(response.model))
 
   const error: KarmaError = await t.throws(async () => {
     await t.context.exampleQuery(

@@ -1,6 +1,5 @@
-import { buildExpression as build } from '@karma.run/sdk'
+import { buildExpression as build, isRef } from '@karma.run/sdk'
 import test from '../_before'
-import { isReference } from '../../helpers/_karma'
 
 test('data', async t => {
   const response = await t.context.exampleQuery(undefined, build(e =>
@@ -11,8 +10,8 @@ test('data', async t => {
   ))
 
   t.true(Array.isArray(response))
-  t.true(isReference(response[0]))
-  t.true(isReference(response[1]))
+  t.true(isRef(response[0]))
+  t.true(isRef(response[1]))
 })
 
 test('define/scope', async t => {
@@ -31,7 +30,7 @@ test('signature', async t => {
 
   t.true(Array.isArray(response))
   t.true(typeof response[0] === 'object')
-  t.true(isReference(response[1].ref))
+  t.true(isRef(response[1].ref))
 })
 
 test('with', async t => {

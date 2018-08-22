@@ -14,13 +14,13 @@ test.before(async t => {
   t.context.client = client
 })
 
+// TODO: Reenable once "gzip" problem is solved
 test.skip('exportDB/importDB', async t => {
   const response = await t.context.client.exportDB()
 
   // Will be ArrayBuffer in browser
   t.true(response instanceof Buffer)
 
-  // TODO: Reenable once import is fixed.
   await t.notThrows(async () => {
     const importResponse = await t.context.client.importDB(response)
     console.log(importResponse)

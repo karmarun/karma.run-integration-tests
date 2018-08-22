@@ -1,4 +1,4 @@
-import { buildExpression as build, createModel } from '@karma.run/sdk'
+import { buildExpression as build } from '@karma.run/sdk'
 import test from '../_before'
 
 test('modelOf', async t => {
@@ -32,12 +32,12 @@ test('metarialize', async t => {
 // TODO: Test some more zeroable and unzeroable types.
 test('zero', async t => {
   const modelResponse: [string, string] = await t.context.query(build(e =>
-    createModel(m =>
+    e.util.createModel(m =>
       m.struct({
         foo: m.string(),
         bar: m.int32()
-      }),
-    e)
+      })
+    )
   ))
 
   const response = await t.context.exampleQuery('zero_0',

@@ -1,6 +1,5 @@
-import { buildExpression as build, KarmaError, KarmaErrorType } from '@karma.run/sdk'
+import { buildExpression as build, KarmaError, KarmaErrorType, isRef } from '@karma.run/sdk'
 import test from '../_before'
-import { isReference } from '../../helpers/_karma'
 
 test('all', async t => {
   const response: any[] = await t.context.exampleQuery('all_0', build(e =>
@@ -11,7 +10,7 @@ test('all', async t => {
 
   response.forEach(value => {
     t.is(typeof value.tag, 'string')
-    t.true(isReference(value.model))
+    t.true(isRef(value.model))
   })
 })
 
@@ -25,7 +24,7 @@ test('create', async t => {
     ))
   ))
 
-  t.true(isReference(response))
+  t.true(isRef(response))
 })
 
 test('createMultiple', async t => {
@@ -47,8 +46,8 @@ test('createMultiple', async t => {
     }),
   ))
 
-  t.true(isReference(response.tagA))
-  t.true(isReference(response.tagB))
+  t.true(isRef(response.tagA))
+  t.true(isRef(response.tagB))
 })
 
 test('get', async t => {

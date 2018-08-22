@@ -30,6 +30,7 @@ test.before(async t => {
   t.context.client = client
   t.context.exampleQuery = async (name, ...queries) => {
     const result = await client.query(f.function([], ...queries))
+
     if (process.env.EXTRACT_QUERIES === 'true' && name) {
       const filePath = `./temp/queries/${name}`
       const example = {

@@ -1,7 +1,6 @@
 import { ExecutionContext } from 'ava'
-import { expression as e, data as d, model as m, func as f, KarmaError, KarmaErrorType } from '@karma.run/sdk'
+import { expression as e, data as d, model as m, func as f, KarmaError, KarmaErrorType, isRef } from '@karma.run/sdk'
 import test, { QueryTestContext } from '../_before'
-import { isReference } from '../../helpers/_karma'
 
 
 test.serial('get', async t => {
@@ -24,7 +23,7 @@ test.serial('model create', async t => {
     ))
   )
 
-  t.true(isReference(response))
+  t.true(isRef(response))
 })
 
 test.serial('nested create', async t => {
@@ -56,7 +55,7 @@ test.serial('nested create', async t => {
     ...query
   )
 
-  t.true(isReference(response))
+  t.true(isRef(response))
 })
 
 test.serial('create record', async t => {
@@ -74,7 +73,7 @@ test.serial('create record', async t => {
     )
   )
 
-  t.true(isReference(response))
+  t.true(isRef(response))
 })
 
 
@@ -90,7 +89,7 @@ test.serial('update', async t => {
     )
   )
 
-  t.true(isReference(updateResponse))
+  t.true(isRef(updateResponse))
 
   const getResponse = await t.context.exampleQuery(
     'get_1',
@@ -129,7 +128,7 @@ test('zero', async t => {
     )
   )
 
-  t.true(isReference(response))
+  t.true(isRef(response))
 })
 
 test.serial('create multiple record', async t => {
@@ -152,8 +151,8 @@ test.serial('create multiple record', async t => {
     )
   )
 
-  t.true(isReference(response.a))
-  t.true(isReference(response.b))
+  t.true(isRef(response.a))
+  t.true(isRef(response.b))
 })
 
 
@@ -409,7 +408,7 @@ test.serial('create complex model', async t => {
 
   const modelResponse = await t.context.query(...modelQuery)
 
-  t.true(isReference(modelResponse))
+  t.true(isRef(modelResponse))
 
   // Create record
   const recordQuery = e.create(
@@ -419,7 +418,7 @@ test.serial('create complex model', async t => {
 
   const recordResponse = await t.context.query(recordQuery)
 
-  t.true(isReference(recordResponse))
+  t.true(isRef(recordResponse))
 
   recordRef = recordResponse
 
@@ -451,7 +450,7 @@ test.serial('create complex model', async t => {
   const response = await t.context.query(updateQuery)
 
   t.is(response[1], recordRef[1])
-  t.true(isReference(response))
+  t.true(isRef(response))
 
   // Check record again
   checkResponse = await t.context.query(checkQuery)
@@ -473,7 +472,7 @@ test.serial('create complex model', async t => {
   const changeResponse = await t.context.query(changeQuery)
 
   t.is(changeResponse[1], recordRef[1])
-  t.true(isReference(changeResponse))
+  t.true(isRef(changeResponse))
 
   // Check record again
   checkResponse = await t.context.query(checkQuery)
