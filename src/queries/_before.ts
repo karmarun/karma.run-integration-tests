@@ -2,7 +2,7 @@ import baseTest, {TestInterface} from 'ava'
 import {Client, Expression, func as f} from '@karma.run/sdk'
 import {KARMA_ENDPOINT, KARMA_INSTANCE_SECRET} from '../helpers/_environment'
 import * as fs from 'fs'
-import {Error} from "tslint/lib/error";
+import {Error} from 'tslint/lib/error'
 
 export interface QueryTestContext {
   client: Client
@@ -29,7 +29,7 @@ test.before(async t => {
 
   t.context.client = client
   t.context.exampleQuery = async (name, ...queries) => {
-    const result = await client.query(f.function([], ...queries))
+    const result = await t.context.query(...queries)
 
     if (process.env.EXTRACT_QUERIES === 'true' && name) {
       const filePath = `./temp/queries/${name}`
@@ -45,8 +45,23 @@ test.before(async t => {
     return result
   }
 
+  let queryCounter: number = 0
+
   t.context.query = (...queries) => {
-    return client.query(f.function([], ...queries))
+    const func = f.function([], ...queries)
+
+    if (process.env.PRINT_QUERIES === 'true' || process.env.PRINT_QUERIES === '1') {
+      queryCounter += 1
+
+      const title = `#${queryCounter}`
+
+      console.log(title)
+      console.log('='.repeat(title.length))
+      console.log(JSON.stringify(func, undefined, 2))
+      console.log('\n')
+    }
+
+    return client.query(func)
   }
 
   await client.authenticate('admin', KARMA_INSTANCE_SECRET)
