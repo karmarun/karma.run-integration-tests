@@ -244,8 +244,9 @@ test('auto migration/remove optional', async t => {
     ])
   )
 
+
   t.deepEqual(createResponse, {
-    recordA: [{foo: 'foo', bar: null}],
+    recordA: [{foo: 'foo'}],
     recordB: [{foo: 'foo', bar: ''}]
   })
 })
