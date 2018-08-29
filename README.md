@@ -20,13 +20,19 @@ yarn watch
 Test specific file
 -----------
 ```
+yarn test
+```
+
+Test specific file
+-----------
+```
 yarn watch:build
-ava dist/queries/expressions/<file>.js
+yarn ava dist/queries/expressions/<file>.js --serial
 ```
 
 Test specific test in file
 -----------
 ```
 yarn watch:build
-ava dist/queries/expressions/<file>.js -m <test>
+yarn ava dist/queries/expressions/<file>.js --serial -m <test>
 ```
