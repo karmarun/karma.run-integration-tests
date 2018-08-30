@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Karma integration tests",
   "engines": {
-    "node": ">=9.0.0",
+    "node": ">=8.0.0",
     "yarn": ">=1.6.0"
   },
   "scripts": {
@@ -22,7 +22,7 @@
   "author": "karma.run",
   "license": "MIT",
   "dependencies": {
-    "@karma.run/sdk": "^0.5.12",
+    "@karma.run/sdk": "^0.5.13",
     "ava": "^1.0.0-beta.4",
     "dotenv": "4.0.0",
     "tap-nyan": "^1.1.0"
