@@ -609,7 +609,6 @@ test('auto migration/simple ref', async t => {
 })
 
 test('auto migration/circular ref', async t => {
-  // TODO
   const response = await t.context.exampleQuery(
     'auto_migration_circular_ref_0',
     ...buildExpressions(e => [
@@ -623,7 +622,7 @@ test('auto migration/circular ref', async t => {
 
           modelA2: (m, d, r) =>
             m.struct({
-              ref: m.ref(d.expr(e.field('modelB', r))),
+              ref: m.ref(d.expr(e.field('modelB2', r))),
               bar: m.string()
             }),
 
@@ -672,14 +671,26 @@ test('auto migration/circular ref', async t => {
           recordA: d.expr(e.all(e.data(d => d.ref(response.modelA)))),
           recordA2: d.expr(e.all(e.data(d => d.ref(response.modelA2)))),
           recordB: d.expr(e.all(e.data(d => d.ref(response.modelB)))),
-          recordC: d.expr(e.all(e.data(d => d.ref(response.modelC))))
+          recordB2: d.expr(e.all(e.data(d => d.ref(response.modelB2)))),
+          recordC: d.expr(e.all(e.data(d => d.ref(response.modelC)))),
+          recordC2: d.expr(e.all(e.data(d => d.ref(response.modelC2))))
         })
       )
     ])
   )
 
+  t.is(createResponse.recordA.length, 1)
+  t.is(createResponse.recordA2.length, 1)
   t.true(isRef(createResponse.recordA[0].ref))
   t.true(isRef(createResponse.recordA2[0].ref))
-  t.is(createResponse.recordA2[0].bar, '')
-  t.is(createResponse.recordB[0], 'foo')
+
+  t.is(createResponse.recordB.length, 1)
+  t.is(createResponse.recordB2.length, 1)
+  t.true(isRef(createResponse.recordB[0]))
+  t.true(isRef(createResponse.recordB2[0]))
+
+  t.is(createResponse.recordC.length, 1)
+  t.is(createResponse.recordC2.length, 1)
+  t.is(createResponse.recordC[0], null)
+  t.is(createResponse.recordC2[0], null)
 })
