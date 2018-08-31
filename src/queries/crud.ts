@@ -1,6 +1,6 @@
 import { ExecutionContext } from 'ava'
 import { expression as e, data as d, model as m, func as f, KarmaError, KarmaErrorType, isRef } from '@karma.run/sdk'
-import test, { QueryTestContext } from '../_before'
+import test, { QueryTestContext } from './_before'
 
 
 test.serial('get', async t => {

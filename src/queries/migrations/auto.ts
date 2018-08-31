@@ -570,7 +570,7 @@ test('auto migration/simple ref', async t => {
               bar: m.string()
             }),
 
-          modelB: (m) => m.string(),
+          modelB: m => m.string()
         })
       ),
       e.util.createMigration({
@@ -585,9 +585,13 @@ test('auto migration/simple ref', async t => {
     'auto_migration_simple_ref_1',
     ...buildExpressions(e => [
       e.define('recordB', e.create(e.data(d => d.ref(response.modelB)), () => e.string('foo'))),
-      e.create(e.data(d => d.ref(response.modelA)), () => e.data(d => d.struct({
-        ref: d.expr(e => e.scope('recordB'))
-      }))),
+      e.create(e.data(d => d.ref(response.modelA)), () =>
+        e.data(d =>
+          d.struct({
+            ref: d.expr(e => e.scope('recordB'))
+          })
+        )
+      ),
       e.data(d =>
         d.struct({
           recordA: d.expr(e.all(e.data(d => d.ref(response.modelA)))),
@@ -604,7 +608,7 @@ test('auto migration/simple ref', async t => {
   t.is(createResponse.recordB[0], 'foo')
 })
 
-test.skip('auto migration/circular ref', async t => {
+test('auto migration/circular ref', async t => {
   // TODO
   const response = await t.context.exampleQuery(
     'auto_migration_circular_ref_0',
@@ -630,10 +634,20 @@ test.skip('auto migration/circular ref', async t => {
           modelC2: (m, d, r) => m.optional(m.ref(d.expr(e.field('modelA2', r))))
         })
       ),
-      e.util.createMigration({
-        from: e.field('modelA', e.scope('models')),
-        to: e.field('modelA2', e.scope('models'))
-      }),
+      e.util.createMigration(
+        {
+          from: e.field('modelC', e.scope('models')),
+          to: e.field('modelC2', e.scope('models'))
+        },
+        {
+          from: e.field('modelB', e.scope('models')),
+          to: e.field('modelB2', e.scope('models'))
+        },
+        {
+          from: e.field('modelA', e.scope('models')),
+          to: e.field('modelA2', e.scope('models'))
+        }
+      ),
       e.scope('models')
     ])
   )
@@ -643,15 +657,22 @@ test.skip('auto migration/circular ref', async t => {
     ...buildExpressions(e => [
       e.define('recordC', e.create(e.data(d => d.ref(response.modelC)), () => e.null())),
       e.define('recordB', e.create(e.data(d => d.ref(response.modelB)), () => e.scope('recordC'))),
-      e.define('recordA', e.create(e.data(d => d.ref(response.modelA)), () => e.data(d => d.struct({
-        ref: d.expr(e => e.scope('recordB'))
-      })))),
+      e.define(
+        'recordA',
+        e.create(e.data(d => d.ref(response.modelA)), () =>
+          e.data(d =>
+            d.struct({
+              ref: d.expr(e => e.scope('recordB'))
+            })
+          )
+        )
+      ),
       e.data(d =>
         d.struct({
           recordA: d.expr(e.all(e.data(d => d.ref(response.modelA)))),
           recordA2: d.expr(e.all(e.data(d => d.ref(response.modelA2)))),
           recordB: d.expr(e.all(e.data(d => d.ref(response.modelB)))),
-          recordC: d.expr(e.all(e.data(d => d.ref(response.modelC)))),
+          recordC: d.expr(e.all(e.data(d => d.ref(response.modelC))))
         })
       )
     ])

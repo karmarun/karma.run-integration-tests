@@ -1,4 +1,4 @@
-import { buildExpression as build } from '@karma.run/sdk'
+import { buildExpression as build, isRef } from '@karma.run/sdk'
 import test from '../_before'
 
 test('modelOf', async t => {
@@ -54,4 +54,12 @@ test('zero', async t => {
   )
 
   t.deepEqual(response, {foo: '', bar: 0})
+})
+
+test('currentUser', async t => {
+  const response = await t.context.exampleQuery('currentUser_0', build(e =>
+    e.currentUser()
+  ))
+
+  t.true(isRef(response))
 })

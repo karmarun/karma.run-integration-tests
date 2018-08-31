@@ -1,6 +1,5 @@
 import {
   Client,
-  buildExpression as build,
   isRef,
   expression as e,
   data as d,
@@ -8,16 +7,9 @@ import {
   model as m,
   CreateFn, DataExpression, createTypedExpression, DefaultTags
 } from '@karma.run/sdk'
-import {KARMA_ENDPOINT} from '../../helpers/_environment'
-import test from '../_before'
 
-test('currentUser', async t => {
-  const response = await t.context.exampleQuery(undefined, build(e =>
-    e.currentUser()
-  ))
-  t.true(isRef(response))
-})
-
+import {KARMA_ENDPOINT} from '../helpers/_environment'
+import test from './_before'
 
 test.serial('create roles and permissions', async t => {
 

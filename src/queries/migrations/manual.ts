@@ -1,64 +1,62 @@
-import {buildExpression} from '@karma.run/sdk'
+import {buildExpressions} from '@karma.run/sdk'
 import test from '../_before'
 
-// TODO
-test.skip('manual migration', async t => {
+test('manual migration', async t => {
   const response = await t.context.exampleQuery(
     'manual_migration_0',
-    buildExpression(e =>
+    ...buildExpressions(e => [
       e.define(
         'modelA',
+        e.util.createModel(m =>
+          m.struct({
+            foo: m.string()
+          })
+        )
+      ),
+      e.define(
+        'modelB',
         e.util.createModel(m =>
           m.struct({
             foo: m.string(),
             bar: m.string()
           })
         )
-      )
-    ),
-
-    buildExpression(e =>
-      e.define(
-        'modelB',
-        e.util.createModel(m =>
-          m.struct({
-            foo: m.string()
-          })
-        )
-      )
-    ),
-
-    buildExpression(e =>
+      ),
       e.util.createMigration({
         from: e.scope('modelA'),
-        to: e.scope('modelB')
-      })
-    ),
-
-    buildExpression(e =>
+        to: e.scope('modelB'),
+        manualExpression: (value) => e.setField('bar', e.string('bar'), value)
+      }),
       e.data(d =>
         d.struct({
           modelA: d.expr(e => e.scope('modelA')),
           modelB: d.expr(e => e.scope('modelB'))
         })
       )
-    )
+    ])
   )
 
   const createResponse = await t.context.exampleQuery(
     'manual_migration_1',
-    buildExpression(e =>
+    ...buildExpressions(e => [
       e.create(e.data(d => d.ref(response.modelA)), () =>
         e.data(d =>
           d.struct({
-            foo: e.string('foo'),
-            bar: e.string('bar')
+            foo: e.string('foo')
           })
         )
+      ),
+      e.data(d =>
+        d.struct({
+          recordA: d.expr(e.all(e.data(d => d.ref(response.modelA)))),
+          recordB: d.expr(e.all(e.data(d => d.ref(response.modelB))))
+        })
       )
-    )
+    ])
   )
 
-  console.log(createResponse)
-  t.pass()
+  t.deepEqual(createResponse, {
+    recordA: [{foo: 'foo'}],
+    recordB: [{foo: 'foo', bar: 'bar'}]
+  })
 })
