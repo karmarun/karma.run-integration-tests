@@ -2,7 +2,7 @@ import {buildExpressions, KarmaError, KarmaErrorType, isRef} from '@karma.run/sd
 
 import test from '../_before'
 
-test('auto migration/same types', async t => {
+test('same types', async t => {
   const response = await t.context.exampleQuery(
     'auto_migration_same_0',
     ...buildExpressions(e => [
@@ -40,7 +40,7 @@ test('auto migration/same types', async t => {
   })
 })
 
-test('auto migration/different types', async t => {
+test('different types', async t => {
   const error: KarmaError = await t.throws(
     async () =>
       await t.context.exampleQuery(
@@ -66,7 +66,7 @@ test('auto migration/different types', async t => {
   t.is(error.type, KarmaErrorType.AutoMigrationError)
 })
 
-test('auto migration/add struct field', async t => {
+test('add struct field', async t => {
   const response = await t.context.exampleQuery(
     'auto_migration_add_struct_key_0',
     ...buildExpressions(e => [
@@ -128,7 +128,7 @@ test('auto migration/add struct field', async t => {
   })
 })
 
-test('auto migration/remove struct field', async t => {
+test('remove struct field', async t => {
   const response = await t.context.exampleQuery(
     'auto_migration_remove_struct_key_0',
     ...buildExpressions(e => [
@@ -188,7 +188,7 @@ test('auto migration/remove struct field', async t => {
   })
 })
 
-test('auto migration/add optional', async t => {
+test('add optional', async t => {
   const response = await t.context.exampleQuery(
     'auto_migration_add_optional_0',
     ...buildExpressions(e => [
@@ -249,7 +249,7 @@ test('auto migration/add optional', async t => {
   })
 })
 
-test('auto migration/remove optional', async t => {
+test('remove optional', async t => {
   const response = await t.context.exampleQuery(
     'auto_migration_remove_optional_0',
     ...buildExpressions(e => [
@@ -310,7 +310,7 @@ test('auto migration/remove optional', async t => {
   })
 })
 
-test('auto migration/add union case', async t => {
+test('add union case', async t => {
   const response = await t.context.exampleQuery(
     'auto_migration_add_union_case_0',
     ...buildExpressions(e => [
@@ -367,7 +367,7 @@ test('auto migration/add union case', async t => {
   })
 })
 
-test('auto migration/remove union case', async t => {
+test('remove union case', async t => {
   const error: KarmaError = await t.throws(
     async () =>
       await t.context.exampleQuery(
@@ -408,7 +408,7 @@ test('auto migration/remove union case', async t => {
   t.is(error.type, KarmaErrorType.CompilationError)
 })
 
-test('auto migration/add tuple field', async t => {
+test('add tuple field', async t => {
   const response = await t.context.exampleQuery(
     'auto_migration_add_tuple_field_0',
     ...buildExpressions(e => [
@@ -448,7 +448,7 @@ test('auto migration/add tuple field', async t => {
   })
 })
 
-test('auto migration/remove tuple field', async t => {
+test('remove tuple field', async t => {
   const response = await t.context.exampleQuery(
     'auto_migration_remove_tuple_field_0',
     ...buildExpressions(e => [
@@ -488,7 +488,7 @@ test('auto migration/remove tuple field', async t => {
   })
 })
 
-test('auto migration/add enum option', async t => {
+test('add enum option', async t => {
   const response = await t.context.exampleQuery(
     'auto_migration_add_enum_case_0',
     ...buildExpressions(e => [
@@ -526,7 +526,7 @@ test('auto migration/add enum option', async t => {
   })
 })
 
-test('auto migration/remove enum option', async t => {
+test('remove enum option', async t => {
   const error: KarmaError = await t.throws(
     async () =>
       await t.context.exampleQuery(
@@ -552,7 +552,7 @@ test('auto migration/remove enum option', async t => {
   t.is(error.type, KarmaErrorType.AutoMigrationError)
 })
 
-test('auto migration/simple ref', async t => {
+test('simple ref', async t => {
   const response = await t.context.exampleQuery(
     'auto_migration_simple_ref_0',
     ...buildExpressions(e => [
@@ -608,7 +608,7 @@ test('auto migration/simple ref', async t => {
   t.is(createResponse.recordB[0], 'foo')
 })
 
-test('auto migration/circular ref', async t => {
+test('circular ref', async t => {
   const response = await t.context.exampleQuery(
     'auto_migration_circular_ref_0',
     ...buildExpressions(e => [
