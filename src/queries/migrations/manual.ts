@@ -126,16 +126,13 @@ test('remove enum case', async t => {
   const response = await t.context.exampleQuery(
     'manual_migration_remove_enum_case_0',
     ...buildExpressions(e => [
-      e.define('modelA', e.util.createModel(m => m.enum('foo', 'bar'))),
-      e.define('modelB', e.util.createModel(m => m.enum('foo'))),
+      e.define('modelA', e.util.createModel(m => m.enum('foo', 'bar', 'baz'))),
+      e.define('modelB', e.util.createModel(m => m.enum('foo', 'bar'))),
       e.util.createMigration({
         from: e.scope('modelA'),
         to: e.scope('modelB'),
         manualExpression: value =>
-          e.switchCase(value, {
-            foo: () => e.symbol('foo'),
-            bar: () => e.symbol('foo')
-          })
+          e.if(e.equal(value, e.symbol('baz')), e.symbol('foo'), value)
       }),
       e.data(d =>
         d.struct({
@@ -149,7 +146,8 @@ test('remove enum case', async t => {
   const createResponse = await t.context.exampleQuery(
     'manual_migration_remove_enum_case_1',
     ...buildExpressions(e => [
-      e.create(e.data(d => d.ref(response.modelA)), () => e.symbol('bar')),
+      e.create(e.data(d => d.ref(response.modelA)), () => e.symbol('foo')),
+      e.create(e.data(d => d.ref(response.modelA)), () => e.symbol('baz')),
       e.data(d =>
         d.struct({
           recordA: d.expr(e.all(e.data(d => d.ref(response.modelA)))),
@@ -160,8 +158,8 @@ test('remove enum case', async t => {
   )
 
   t.deepEqual(createResponse, {
-    recordA: ['foo'],
-    recordB: ['foo']
+    recordA: ['foo', 'baz'],
+    recordB: ['foo', 'foo']
   })
 })
 
@@ -285,11 +283,9 @@ test('join strings', async t => {
   const createResponse = await t.context.exampleQuery(
     'manual_migration_remove_join_strings_1',
     ...buildExpressions(e => [
-      e.create(e.data(d => d.ref(response.modelA)), () => e.data(d => d.list(
-        d.string('1'),
-        d.string('2'),
-        d.string('3')
-      ))),
+      e.create(e.data(d => d.ref(response.modelA)), () =>
+        e.data(d => d.list(d.string('1'), d.string('2'), d.string('3')))
+      ),
       e.data(d =>
         d.struct({
           recordA: d.expr(e.all(e.data(d => d.ref(response.modelA)))),
