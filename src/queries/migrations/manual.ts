@@ -132,7 +132,7 @@ test('remove enum case', async t => {
         from: e.scope('modelA'),
         to: e.scope('modelB'),
         manualExpression: value =>
-          e.if(e.equal(value, e.symbol('baz')), e.symbol('foo'), value)
+          e.if(e.equal(value, e.symbol('baz')), e.symbol('foo'), e.symbol('bar'))
       }),
       e.data(d =>
         d.struct({
@@ -146,7 +146,6 @@ test('remove enum case', async t => {
   const createResponse = await t.context.exampleQuery(
     'manual_migration_remove_enum_case_1',
     ...buildExpressions(e => [
-      e.create(e.data(d => d.ref(response.modelA)), () => e.symbol('foo')),
       e.create(e.data(d => d.ref(response.modelA)), () => e.symbol('baz')),
       e.data(d =>
         d.struct({
@@ -158,8 +157,8 @@ test('remove enum case', async t => {
   )
 
   t.deepEqual(createResponse, {
-    recordA: ['foo', 'baz'],
-    recordB: ['foo', 'foo']
+    recordA: ['baz'],
+    recordB: ['foo']
   })
 })
 
