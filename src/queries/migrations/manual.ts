@@ -264,7 +264,7 @@ test('remove optional', async t => {
 
 test('join strings', async t => {
   const response = await t.context.exampleQuery(
-    'manual_migration_remove_optional_field_0',
+    'manual_migration_join_strings_0',
     ...buildExpressions(e => [
       e.define('modelA', e.util.createModel(m => m.list(m.string()))),
       e.define('modelB', e.util.createModel(m => m.string())),
@@ -283,7 +283,7 @@ test('join strings', async t => {
   )
 
   const createResponse = await t.context.exampleQuery(
-    'manual_migration_remove_optional_field_1',
+    'manual_migration_remove_join_strings_1',
     ...buildExpressions(e => [
       e.create(e.data(d => d.ref(response.modelA)), () => e.data(d => d.list(
         d.string('1'),
