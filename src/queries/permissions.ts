@@ -19,8 +19,6 @@ test.serial('create roles and permissions', async t => {
   const expressionRef = await createExpression(t)
   t.true(isRef(expressionRef))
 
-  //const expressionRef = d.expr(e.refTo(e.first(e.all(e.tag('_expression')))))
-
   const refRoleA = await createRoleAndUser(t, expressionRef, 'GroupA')
   t.true(isRef(refRoleA))
 
@@ -144,15 +142,15 @@ async function createExpression(t: any) {
   return await t.context.exampleQuery(undefined, query)
 }
 
-async function createRoleAndUser(t: any, expressionRef: any, group: string) {
+async function createRoleAndUser(t: any, expressionRef: [string, string], group: string) {
   let query = create('_role',
     d.struct({
       name: d.string(group),
       permissions: d.struct({
-        create: expressionRef,
-        delete: expressionRef,
-        read: expressionRef,
-        update: expressionRef
+        create: d.ref(expressionRef),
+        delete: d.ref(expressionRef),
+        read: d.ref(expressionRef),
+        update: d.ref(expressionRef)
       })
     }))
   const refRole = await t.context.exampleQuery(undefined, query)
