@@ -454,20 +454,74 @@ test('gtUint64', async t => {
 // Conversion
 // ==========
 
-test.skip('floatToInt', async t => {
-  // TODO should be floatToInt8, floatToInt16, floatToInt32 but they are all not implemented yet
-  const response = await t.context.exampleQuery('floatToInt_0',
-    build(e => e.addInt8(0, e.floatToInt(e.float(0.5))))
+test('toFloat', async t => {
+  const response = await t.context.exampleQuery('toFloat_0',
+    build(e => e.toFloat(e.uint64(Number.MAX_SAFE_INTEGER)))
   )
 
-  t.is(response, 0)
+  t.is(response, Number.MAX_SAFE_INTEGER)
 })
 
-test.skip('intToFloat', async t => {
-  // TODO should be int8ToFloat, int16ToFloat, int32ToFloat but they are all not implemented yet
-  const response = await t.context.exampleQuery('intToFloat_0',
-    build(e => e.addFloat(0.5, e.intToFloat(e.int8(1))))
+test('toInt8', async t => {
+  const response = await t.context.exampleQuery('toInt8_0',
+    build(e => e.toInt8(e.float(127.5)))
   )
 
-  t.is(response, 1.5)
+  t.is(response, 127)
+})
+
+test('toInt16', async t => {
+  const response = await t.context.exampleQuery('toInt16_0',
+    build(e => e.toInt16(e.float(32_767.5)))
+  )
+
+  t.is(response, 32_767)
+})
+
+test('toInt32', async t => {
+  const response = await t.context.exampleQuery('toInt32_0',
+    build(e => e.toInt32(e.float(2_147_483_647.5)))
+  )
+
+  t.is(response, 2_147_483_647)
+})
+
+test('toInt64', async t => {
+  const response = await t.context.exampleQuery('toInt64_0',
+    build(e => e.toInt64(e.float(Number.MAX_SAFE_INTEGER - 0.5)))
+  )
+
+  t.is(response, Number.MAX_SAFE_INTEGER - 1)
+})
+
+test('toUint8', async t => {
+  const response = await t.context.exampleQuery('toUint8_0',
+    build(e => e.toUint8(e.float(127.5)))
+  )
+
+  t.is(response, 127)
+})
+
+test('toUint16', async t => {
+  const response = await t.context.exampleQuery('toUint16_0',
+    build(e => e.toUint16(e.float(32_767.5)))
+  )
+
+  t.is(response, 32_767)
+})
+
+test('toUint32', async t => {
+  const response = await t.context.exampleQuery('toUint32_0',
+    build(e => e.toUint32(e.float(2_147_483_647.5)))
+  )
+
+  t.is(response, 2_147_483_647)
+})
+
+test('toUint64', async t => {
+  const response = await t.context.exampleQuery('toUint64_0',
+    build(e => e.toUint64(e.float(Number.MAX_SAFE_INTEGER - 0.5)))
+  )
+
+  t.is(response, Number.MAX_SAFE_INTEGER - 1)
 })
