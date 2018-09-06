@@ -5,7 +5,7 @@ import {
   data as d,
   func as f,
   model as m,
-  CreateFn, DataExpression, createTypedExpression, DefaultTags
+  CreateFn, DataExpression, buildExpression
 } from '@karma.run/sdk'
 
 import {KARMA_ENDPOINT} from '../helpers/_environment'
@@ -108,39 +108,27 @@ async function createTestModel(t: any) {
 }
 
 async function createExpression(t: any) {
-  const query = e.create(
-    e.tag(DefaultTags.Expression),
-    f.function(['ref'],
-      e.data(
-        createTypedExpression(
-          f.function(['value'],
-            e.switchModelRef(
-              e.scope('value'),
-              e.data(d.bool(false)),
-              [
-                {
-                  match: e.tag('_role'),
-                  return: d.bool(true)
-                },
-                {
-                  match: e.tag('modelA'),
-                  return: e.equal(
-                    e.field('refRole', e.scope('value')),
-                    e.first(
-                      e.referred(
-                        e.currentUser(),
-                        e.tag('_role')
-                      )
-                    )
-                  )
-                }
-              ]
+  const query = buildExpression(e =>
+    e.util.createStoredExpression(value =>
+      e.switchModelRef(value, e.data(d.bool(false)), [
+        {
+          match: e.tag('_role'),
+          return: f.function(['value'], d.bool(true))
+        },
+        {
+          match: e.tag('modelA'),
+          return: f.function(
+            ['value'],
+            e.equal(
+              e.field('refRole', e.scope('value')),
+              e.first(e.referred(e.currentUser(), e.tag('_role')))
             )
           )
-        )
-      )
+        }
+      ])
     )
   )
+
   return await t.context.exampleQuery(undefined, query)
 }
 

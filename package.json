@@ -22,7 +22,7 @@
   "author": "karma.run",
   "license": "MIT",
   "dependencies": {
-    "@karma.run/sdk": "^0.5.15",
+    "@karma.run/sdk": "^0.5.17",
     "ava": "^1.0.0-beta.4",
     "dotenv": "4.0.0",
     "tap-nyan": "^1.1.0"
