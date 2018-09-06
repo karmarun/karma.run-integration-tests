@@ -48,7 +48,7 @@ test.serial('create roles and permissions', async t => {
 //**********************************************************************************************************************
 let client: Client
 
-test.skip('check userA', async t => {
+test.serial('check userA', async t => {
   client = new Client(KARMA_ENDPOINT)
   const signature = await client.authenticate('GroupA', 'asdf')
   t.truthy(signature)
@@ -62,6 +62,19 @@ test.skip('check userA', async t => {
   t.is(response.length, 1)
 })
 
+test.serial('check userB', async t => {
+  client = new Client(KARMA_ENDPOINT)
+  const signature = await client.authenticate('GroupB', 'asdf')
+  t.truthy(signature)
+
+  const response = await client.query(
+    f.function([],
+      e.all(e.tag('modelA'))
+    )
+  )
+  t.is(response[0].text, 'recordGroupB')
+  t.is(response.length, 1)
+})
 
 //**********************************************************************************************************************
 // Utils
@@ -118,7 +131,7 @@ async function createExpression(t: any) {
           return: f.function(
             ['value'],
             e.equal(
-              e.field('refRole', e.scope('value')),
+              e.field('owner', e.scope('value')),
               e.first(e.referred(e.currentUser(), e.tag('_role')))
             )
           )
