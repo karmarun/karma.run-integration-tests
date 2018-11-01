@@ -13,7 +13,8 @@
     "watch:build": "tsc -w",
     "test": "npm run clean && npm run build && ava dist/** --serial --verbose",
     "watch:test": "ava dist/** --serial --watch --verbose",
-    "test-nyan": "npm run build && ava dist/** --serial --tap | tap-nyan"
+    "test-nyan": "npm run build && ava dist/** --serial --tap | tap-nyan",
+    "karma": "node ./scripts/runKarma.js"
   },
   "keywords": [
     "karma.run"
