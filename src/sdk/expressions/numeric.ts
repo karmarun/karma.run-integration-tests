@@ -172,401 +172,535 @@ test('subUint8', async t => {
   t.is(response, 1)
 })
 
-// test('subUint16', async t => {
-//   const response = await t.context.exampleQuery('subUint16_0',
-//     build(e => e.subUint16(e.uint16(32_768), e.uint16(32_767)))
-//   )
-//
-//   t.is(response, 1)
-// })
-//
-// test('subUint32', async t => {
-//   const response = await t.context.exampleQuery('subUint32_0',
-//     build(e => e.subUint32(e.uint32(2_147_483_648), e.uint32(2_147_483_647)))
-//   )
-//
-//   t.is(response, 1)
-// })
-//
-// test('subUint64', async t => {
-//   const response = await t.context.exampleQuery('subUint64_0',
-//     build(e => e.subUint64(e.uint64(Number.MAX_SAFE_INTEGER), e.uint64(Number.MAX_SAFE_INTEGER - 1)))
-//   )
-//
-//   t.is(response, 1)
-// })
-//
-// // Multiplication
-// // ==============
-//
-// test('divFloat', async t => {
-//   const response = await t.context.exampleQuery('divFloat_0',
-//     build(e => e.divFloat(e.float(1), e.float(2)))
-//   )
-//
-//   t.is(response, 0.5)
-// })
-//
-// test('divInt8', async t => {
-//   const response = await t.context.exampleQuery('divInt8_0',
-//     build(e => e.divInt8(127, 2))
-//   )
-//
-//   t.is(response, 63)
-// })
-//
-// test('divInt16', async t => {
-//   const response = await t.context.exampleQuery('divInt16_0',
-//     build(e => e.divInt16(32_767, 2))
-//   )
-//
-//   t.is(response, 16_383)
-// })
-//
-// test('divInt32', async t => {
-//   const response = await t.context.exampleQuery('divInt32_0',
-//     build(e => e.divInt32(2_147_483_647, 2))
-//   )
-//
-//   t.is(response, 1_073_741_823)
-// })
-//
-// test('divInt64', async t => {
-//   const response = await t.context.exampleQuery('divInt64_0',
-//     build(e => e.divInt64(Number.MAX_SAFE_INTEGER, 2))
-//   )
-//
-//   t.is(response, Math.floor(Number.MAX_SAFE_INTEGER / 2))
-// })
-//
-// test('divUint8', async t => {
-//   const response = await t.context.exampleQuery('divUint8_0',
-//     build(e => e.divUint8(e.uint8(255), e.uint8(2)))
-//   )
-//
-//   t.is(response, 127)
-// })
-//
-// test('divUint16', async t => {
-//   const response = await t.context.exampleQuery('divUint16_0',
-//     build(e => e.divUint16(e.uint16(65_535), e.uint16(2)))
-//   )
-//
-//   t.is(response, 32_767)
-// })
-//
-// test('divUint32', async t => {
-//   const response = await t.context.exampleQuery('divUint32_0',
-//     build(e => e.divUint32(e.uint32(4_294_967_295), e.uint32(2)))
-//   )
-//
-//   t.is(response, 2_147_483_647)
-// })
-//
-// test('divUint64', async t => {
-//   const response = await t.context.exampleQuery('divUint64_0',
-//     build(e => e.divUint64(e.uint64(Number.MAX_SAFE_INTEGER), e.uint64(2)))
-//   )
-//
-//   t.is(response, Math.floor(Number.MAX_SAFE_INTEGER / 2))
-// })
-//
-// // Multiplication
-// // ==============
-//
-// test('mulFloat', async t => {
-//   const response = await t.context.exampleQuery('mulFloat_0',
-//     build(e => e.mulFloat(e.float(0.5), e.float(2)))
-//   )
-//
-//   t.is(response, 1)
-// })
-//
-// test('mulInt8', async t => {
-//   const response = await t.context.exampleQuery('mulInt8_0',
-//     build(e => e.mulInt8(63, 2))
-//   )
-//
-//   t.is(response, 127 - 1)
-// })
-//
-// test('mulInt16', async t => {
-//   const response = await t.context.exampleQuery('mulInt16_0',
-//     build(e => e.mulInt16(16_383, 2))
-//   )
-//
-//   t.is(response, 32_767 - 1)
-// })
-//
-// test('mulInt32', async t => {
-//   const response = await t.context.exampleQuery('mulInt32_0',
-//     build(e => e.mulInt32(1_073_741_823, 2))
-//   )
-//
-//   t.is(response, 2_147_483_647 - 1)
-// })
-//
-// test('mulInt64', async t => {
-//   const response = await t.context.exampleQuery('mulInt64_0',
-//     build(e => e.mulInt64(Math.floor(Number.MAX_SAFE_INTEGER / 2), 2))
-//   )
-//
-//   t.is(response, Number.MAX_SAFE_INTEGER - 1)
-// })
-//
-// test('mulUint8', async t => {
-//   const response = await t.context.exampleQuery('mulUint8_0',
-//     build(e => e.mulUint8(e.uint8(127), e.uint8(2)))
-//   )
-//
-//   t.is(response, 255 - 1)
-// })
-//
-// test('mulUint16', async t => {
-//   const response = await t.context.exampleQuery('mulUint16_0',
-//     build(e => e.mulUint16(e.uint16(32_767), e.uint16(2)))
-//   )
-//
-//   t.is(response, 65_535 - 1)
-// })
-//
-// test('mulUint32', async t => {
-//   const response = await t.context.exampleQuery('mulUint32_0',
-//     build(e => e.mulUint32(e.uint32(2_147_483_647), e.uint32(2)))
-//   )
-//
-//   t.is(response, 4_294_967_295 - 1)
-// })
-//
-// test('mulUint64', async t => {
-//   const response = await t.context.exampleQuery('mulUint64_0',
-//     build(e => e.mulUint64(e.uint64(Math.floor(Number.MAX_SAFE_INTEGER / 2)), e.uint64(2)))
-//   )
-//
-//   t.is(response, Number.MAX_SAFE_INTEGER - 1)
-// })
-//
-// // Less Than
-// // =========
-//
-// test('ltFloat', async t => {
-//   const response = await t.context.exampleQuery('ltFloat_0',
-//     build(e => e.ltFloat(e.float(Number.MIN_VALUE), e.float(Number.MAX_VALUE)))
-//   )
-//
-//   t.is(response, true)
-// })
-//
-// test('ltInt8', async t => {
-//   const response = await t.context.exampleQuery('ltInt8_0',
-//     build(e => e.ltInt8(-128, 127))
-//   )
-//
-//   t.is(response, true)
-// })
-//
-// test('ltInt16', async t => {
-//   const response = await t.context.exampleQuery('ltInt16_0',
-//     build(e => e.ltInt16(-32_768, 32_767))
-//   )
-//
-//   t.is(response, true)
-// })
-//
-// test('ltInt32', async t => {
-//   const response = await t.context.exampleQuery('ltInt32_0',
-//     build(e => e.ltInt32(-2_147_483_648, 2_147_483_647))
-//   )
-//
-//   t.is(response, true)
-// })
-//
-// test('ltInt64', async t => {
-//   const response = await t.context.exampleQuery('ltInt64_0',
-//     build(e => e.ltInt64(Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER))
-//   )
-//
-//   t.is(response, true)
-// })
-//
-// test('ltUint8', async t => {
-//   const response = await t.context.exampleQuery('ltUint8_0',
-//     build(e => e.ltUint8(e.uint8(0), e.uint8(255)))
-//   )
-//
-//   t.is(response, true)
-// })
-//
-// test('ltUint16', async t => {
-//   const response = await t.context.exampleQuery('ltUint16_0',
-//     build(e => e.ltUint16(e.uint16(0), e.uint16(65_535)))
-//   )
-//
-//   t.is(response, true)
-// })
-//
-// test('ltUint32', async t => {
-//   const response = await t.context.exampleQuery('ltUint32_0',
-//     build(e => e.ltUint32(e.uint32(0), e.uint32(4_294_967_295)))
-//   )
-//
-//   t.is(response, true)
-// })
-//
-// test('ltUint64', async t => {
-//   const response = await t.context.exampleQuery('ltUint64_0',
-//     build(e => e.ltUint64(e.uint64(0), e.uint64(Number.MAX_SAFE_INTEGER)))
-//   )
-//
-//   t.is(response, true)
-// })
-//
-// // Greater Than
-// // ============
-//
-// test('gtFloat', async t => {
-//   const response = await t.context.exampleQuery('gtFloat_0',
-//     build(e => e.gtFloat(e.float(Number.MIN_VALUE), e.float(Number.MAX_VALUE)))
-//   )
-//
-//   t.is(response, false)
-// })
-//
-// test('gtInt8', async t => {
-//   const response = await t.context.exampleQuery('gtInt8_0',
-//     build(e => e.gtInt8(-128, 127))
-//   )
-//
-//   t.is(response, false)
-// })
-//
-// test('gtInt16', async t => {
-//   const response = await t.context.exampleQuery('gtInt16_0',
-//     build(e => e.gtInt16(-32_768, 32_767))
-//   )
-//
-//   t.is(response, false)
-// })
-//
-// test('gtInt32', async t => {
-//   const response = await t.context.exampleQuery('gtInt32_0',
-//     build(e => e.gtInt32(-2_147_483_648, 2_147_483_647))
-//   )
-//
-//   t.is(response, false)
-// })
-//
-// test('gtInt64', async t => {
-//   const response = await t.context.exampleQuery('gtInt64_0',
-//     build(e => e.gtInt64(Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER))
-//   )
-//
-//   t.is(response, false)
-// })
-//
-// test('gtUint8', async t => {
-//   const response = await t.context.exampleQuery('gtUint8_0',
-//     build(e => e.gtUint8(e.uint8(0), e.uint8(255)))
-//   )
-//
-//   t.is(response, false)
-// })
-//
-// test('gtUint16', async t => {
-//   const response = await t.context.exampleQuery('gtUint16_0',
-//     build(e => e.gtUint16(e.uint16(0), e.uint16(65_535)))
-//   )
-//
-//   t.is(response, false)
-// })
-//
-// test('gtUint32', async t => {
-//   const response = await t.context.exampleQuery('gtUint32_0',
-//     build(e => e.gtUint32(e.uint32(0), e.uint32(4_294_967_295)))
-//   )
-//
-//   t.is(response, false)
-// })
-//
-// test('gtUint64', async t => {
-//   const response = await t.context.exampleQuery('gtUint64_0',
-//     build(e => e.gtUint64(e.uint64(0), e.uint64(Number.MAX_SAFE_INTEGER)))
-//   )
-//
-//   t.is(response, false)
-// })
-//
-// // Conversion
-// // ==========
-//
-// test('toFloat', async t => {
-//   const response = await t.context.exampleQuery('toFloat_0',
-//     build(e => e.toFloat(e.uint64(Number.MAX_SAFE_INTEGER)))
-//   )
-//
-//   t.is(response, Number.MAX_SAFE_INTEGER)
-// })
-//
-// test('toInt8', async t => {
-//   const response = await t.context.exampleQuery('toInt8_0',
-//     build(e => e.toInt8(e.float(127.5)))
-//   )
-//
-//   t.is(response, 127)
-// })
-//
-// test('toInt16', async t => {
-//   const response = await t.context.exampleQuery('toInt16_0',
-//     build(e => e.toInt16(e.float(32_767.5)))
-//   )
-//
-//   t.is(response, 32_767)
-// })
-//
-// test('toInt32', async t => {
-//   const response = await t.context.exampleQuery('toInt32_0',
-//     build(e => e.toInt32(e.float(2_147_483_647.5)))
-//   )
-//
-//   t.is(response, 2_147_483_647)
-// })
-//
-// test('toInt64', async t => {
-//   const response = await t.context.exampleQuery('toInt64_0',
-//     build(e => e.toInt64(e.float(Number.MAX_SAFE_INTEGER - 0.5)))
-//   )
-//
-//   t.is(response, Number.MAX_SAFE_INTEGER - 1)
-// })
-//
-// test('toUint8', async t => {
-//   const response = await t.context.exampleQuery('toUint8_0',
-//     build(e => e.toUint8(e.float(127.5)))
-//   )
-//
-//   t.is(response, 127)
-// })
-//
-// test('toUint16', async t => {
-//   const response = await t.context.exampleQuery('toUint16_0',
-//     build(e => e.toUint16(e.float(32_767.5)))
-//   )
-//
-//   t.is(response, 32_767)
-// })
-//
-// test('toUint32', async t => {
-//   const response = await t.context.exampleQuery('toUint32_0',
-//     build(e => e.toUint32(e.float(2_147_483_647.5)))
-//   )
-//
-//   t.is(response, 2_147_483_647)
-// })
-//
-// test('toUint64', async t => {
-//   const response = await t.context.exampleQuery('toUint64_0',
-//     build(e => e.toUint64(e.float(Number.MAX_SAFE_INTEGER - 0.5)))
-//   )
-//
-//   t.is(response, Number.MAX_SAFE_INTEGER - 1)
-// })
+test('subUint16', async t => {
+  const response = await t.context.exampleQuery('subUint16_0',
+    e.subUint16(
+      e.data(d.uint16(32_768).toDataConstructor()),
+      e.data(d.uint16(32_767).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 1)
+})
+
+test('subUint32', async t => {
+  const response = await t.context.exampleQuery('subUint32_0',
+    e.subUint32(
+      e.data(d.uint32(2_147_483_648).toDataConstructor()),
+      e.data(d.uint32(2_147_483_647).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 1)
+})
+
+test('subUint64', async t => {
+  const response = await t.context.exampleQuery('subUint64_0',
+    e.subUint64(
+      e.data(d.uint64(Number.MAX_SAFE_INTEGER).toDataConstructor()),
+      e.data(d.uint64(Number.MAX_SAFE_INTEGER - 1).toDataConstructor())
+    )
+  )
+
+  t.is(response, 1)
+})
+
+// Multiplication
+// ==============
+
+test('divFloat', async t => {
+  const response = await t.context.exampleQuery('divFloat_0',
+    e.divFloat(
+      e.data(d.float(1).toDataConstructor()),
+      e.data(d.float(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 0.5)
+})
+
+test('divInt8', async t => {
+  const response = await t.context.exampleQuery('divInt8_0',
+    e.divInt8(
+      e.data(d.int8(127).toDataConstructor()),
+      e.data(d.int8(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 63)
+})
+
+test('divInt16', async t => {
+  const response = await t.context.exampleQuery('divInt16_0',
+    e.divInt16(
+      e.data(d.int16(32_767).toDataConstructor()),
+      e.data(d.int16(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 16_383)
+})
+
+test('divInt32', async t => {
+  const response = await t.context.exampleQuery('divInt32_0',
+    e.divInt32(
+      e.data(d.int32(2_147_483_647).toDataConstructor()),
+      e.data(d.int32(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 1_073_741_823)
+})
+
+test('divInt64', async t => {
+  const response = await t.context.exampleQuery('divInt64_0',
+    e.divInt64(
+      e.data(d.int64(Number.MAX_SAFE_INTEGER).toDataConstructor()),
+      e.data(d.int64(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, Math.floor(Number.MAX_SAFE_INTEGER / 2))
+})
+
+test('divUint8', async t => {
+  const response = await t.context.exampleQuery('divUint8_0',
+    e.divUint8(
+      e.data(d.uint8(255).toDataConstructor()),
+      e.data(d.uint8(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 127)
+})
+
+test('divUint16', async t => {
+  const response = await t.context.exampleQuery('divUint16_0',
+    e.divUint16(
+      e.data(d.uint16(65_535).toDataConstructor()),
+      e.data(d.uint16(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 32_767)
+})
+
+test('divUint32', async t => {
+  const response = await t.context.exampleQuery('divUint32_0',
+    e.divUint32(
+      e.data(d.uint32(4_294_967_295).toDataConstructor()),
+      e.data(d.uint32(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 2_147_483_647)
+})
+
+test('divUint64', async t => {
+  const response = await t.context.exampleQuery('divUint64_0',
+    e.divUint64(
+      e.data(d.uint64(Number.MAX_SAFE_INTEGER).toDataConstructor()),
+      e.data(d.uint64(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, Math.floor(Number.MAX_SAFE_INTEGER / 2))
+})
+
+// Multiplication
+// ==============
+
+test('mulFloat', async t => {
+  const response = await t.context.exampleQuery('mulFloat_0',
+    e.mulFloat(
+      e.data(d.float(0.5).toDataConstructor()),
+      e.data(d.float(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 1)
+})
+
+test('mulInt8', async t => {
+  const response = await t.context.exampleQuery('mulInt8_0',
+    e.mulInt8(
+      e.data(d.int8(63).toDataConstructor()),
+      e.data(d.int8(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 127 - 1)
+})
+
+test('mulInt16', async t => {
+  const response = await t.context.exampleQuery('mulInt16_0',
+    e.mulInt16(
+      e.data(d.int16(16_383).toDataConstructor()),
+      e.data(d.int16(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 32_767 - 1)
+})
+
+test('mulInt32', async t => {
+  const response = await t.context.exampleQuery('mulInt32_0',
+    e.mulInt32(
+      e.data(d.int32(1_073_741_823).toDataConstructor()),
+      e.data(d.int32(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 2_147_483_647 - 1)
+})
+
+test('mulInt64', async t => {
+  const response = await t.context.exampleQuery('mulInt64_0',
+    e.mulInt64(
+      e.data(d.int64(Math.floor(Number.MAX_SAFE_INTEGER / 2)).toDataConstructor()),
+      e.data(d.int64(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, Number.MAX_SAFE_INTEGER - 1)
+})
+
+test('mulUint8', async t => {
+  const response = await t.context.exampleQuery('mulUint8_0',
+    e.mulUint8(
+      e.data(d.uint8(127).toDataConstructor()),
+      e.data(d.uint8(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 255 - 1)
+})
+
+test('mulUint16', async t => {
+  const response = await t.context.exampleQuery('mulUint16_0',
+    e.mulUint16(
+      e.data(d.uint16(32_767).toDataConstructor()),
+      e.data(d.uint16(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 65_535 - 1)
+})
+
+test('mulUint32', async t => {
+  const response = await t.context.exampleQuery('mulUint32_0',
+    e.mulUint32(
+      e.data(d.uint32(2_147_483_647).toDataConstructor()),
+      e.data(d.uint32(2).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 4_294_967_295 - 1)
+})
+
+test('mulUint64', async t => {
+  const response = await t.context.exampleQuery('mulUint64_0',
+    e.mulUint64(
+      e.data(d.uint64(Math.floor(Number.MAX_SAFE_INTEGER / 2)).toDataConstructor()),
+      e.data(d.uint64(2).toDataConstructor()),
+    )
+  )
+  t.is(response, Number.MAX_SAFE_INTEGER - 1)
+})
+
+// Less Than
+// =========
+
+test('ltFloat', async t => {
+  const response = await t.context.exampleQuery('ltFloat_0',
+    e.ltFloat(
+      e.data(d.float(Number.MIN_VALUE).toDataConstructor()),
+      e.data(d.float(Number.MAX_VALUE).toDataConstructor()),
+    )
+  )
+
+  t.is(response, true)
+})
+
+test('ltInt8', async t => {
+  const response = await t.context.exampleQuery('ltInt8_0',
+    e.ltInt8(
+      e.data(d.int8(-128).toDataConstructor()),
+      e.data(d.int8(127).toDataConstructor()),
+    )
+  )
+
+  t.is(response, true)
+})
+
+test('ltInt16', async t => {
+  const response = await t.context.exampleQuery('ltInt16_0',
+    e.ltInt16(
+      e.data(d.int16(-32_768).toDataConstructor()),
+      e.data(d.int16(32_767).toDataConstructor()),
+    )
+  )
+
+  t.is(response, true)
+})
+
+test('ltInt32', async t => {
+  const response = await t.context.exampleQuery('ltInt32_0',
+    e.ltInt32(
+      e.data(d.int32(-2_147_483_648).toDataConstructor()),
+      e.data(d.int32(2_147_483_647).toDataConstructor()),
+    )
+  )
+
+  t.is(response, true)
+})
+
+test('ltInt64', async t => {
+  const response = await t.context.exampleQuery('ltInt64_0',
+    e.ltInt64(
+      e.data(d.int64(Number.MIN_SAFE_INTEGER).toDataConstructor()),
+      e.data(d.int64(Number.MAX_SAFE_INTEGER).toDataConstructor()),
+    )
+  )
+
+  t.is(response, true)
+})
+
+test('ltUint8', async t => {
+  const response = await t.context.exampleQuery('ltUint8_0',
+    e.ltUint8(
+      e.data(d.uint8(0).toDataConstructor()),
+      e.data(d.uint8(255).toDataConstructor()),
+    )
+  )
+
+  t.is(response, true)
+})
+
+test('ltUint16', async t => {
+  const response = await t.context.exampleQuery('ltUint16_0',
+    e.ltUint16(
+      e.data(d.uint16(0).toDataConstructor()),
+      e.data(d.uint16(65_535).toDataConstructor()),
+    )
+  )
+
+  t.is(response, true)
+})
+
+test('ltUint32', async t => {
+  const response = await t.context.exampleQuery('ltUint32_0',
+    e.ltUint32(
+      e.data(d.uint32(0).toDataConstructor()),
+      e.data(d.uint32(4_294_967_295).toDataConstructor()),
+    )
+  )
+
+  t.is(response, true)
+})
+
+test('ltUint64', async t => {
+  const response = await t.context.exampleQuery('ltUint64_0',
+    e.ltUint64(
+      e.data(d.uint64(0).toDataConstructor()),
+      e.data(d.uint64(Number.MAX_SAFE_INTEGER).toDataConstructor()),
+    )
+  )
+
+  t.is(response, true)
+})
+
+// Greater Than
+// ============
+
+test('gtFloat', async t => {
+  const response = await t.context.exampleQuery('gtFloat_0',
+    e.gtFloat(
+      e.data(d.float(Number.MIN_VALUE).toDataConstructor()),
+      e.data(d.float(Number.MAX_VALUE).toDataConstructor()),
+    )
+  )
+
+  t.is(response, false)
+})
+
+test('gtInt8', async t => {
+  const response = await t.context.exampleQuery('gtInt8_0',
+    e.gtInt8(
+      e.data(d.int8(-128).toDataConstructor()),
+      e.data(d.int8(127).toDataConstructor()),
+    )
+  )
+
+  t.is(response, false)
+})
+
+test('gtInt16', async t => {
+  const response = await t.context.exampleQuery('gtInt16_0',
+    e.gtInt16(
+      e.data(d.int16(-32_768).toDataConstructor()),
+      e.data(d.int16(32_767).toDataConstructor()),
+    )
+  )
+
+  t.is(response, false)
+})
+
+test('gtInt32', async t => {
+  const response = await t.context.exampleQuery('gtInt32_0',
+    e.gtInt32(
+      e.data(d.int32(-2_147_483_648).toDataConstructor()),
+      e.data(d.int32(2_147_483_647).toDataConstructor()),
+    )
+  )
+
+  t.is(response, false)
+})
+
+test('gtInt64', async t => {
+  const response = await t.context.exampleQuery('gtInt64_0',
+    e.gtInt64(
+      e.data(d.int64(Number.MIN_SAFE_INTEGER).toDataConstructor()),
+      e.data(d.int64(Number.MAX_SAFE_INTEGER).toDataConstructor()),
+    )
+  )
+
+  t.is(response, false)
+})
+
+test('gtUint8', async t => {
+  const response = await t.context.exampleQuery('gtUint8_0',
+    e.gtUint8(
+      e.data(d.uint8(0).toDataConstructor()),
+      e.data(d.uint8(255).toDataConstructor()),
+    )
+  )
+
+  t.is(response, false)
+})
+
+test('gtUint16', async t => {
+  const response = await t.context.exampleQuery('gtUint16_0',
+    e.gtUint16(
+      e.data(d.uint16(0).toDataConstructor()),
+      e.data(d.uint16(65_535).toDataConstructor()),
+    )
+  )
+
+  t.is(response, false)
+})
+
+test('gtUint32', async t => {
+  const response = await t.context.exampleQuery('gtUint32_0',
+    e.gtUint32(
+      e.data(d.uint32(0).toDataConstructor()),
+      e.data(d.uint32(4_294_967_295).toDataConstructor()),
+    )
+  )
+
+  t.is(response, false)
+})
+
+test('gtUint64', async t => {
+  const response = await t.context.exampleQuery('gtUint64_0',
+    e.gtUint64(
+      e.data(d.uint64(0).toDataConstructor()),
+      e.data(d.uint64(Number.MAX_SAFE_INTEGER).toDataConstructor()),
+    )
+  )
+
+  t.is(response, false)
+})
+
+// Conversion
+// ==========
+
+test('toFloat', async t => {
+  const response = await t.context.exampleQuery('toFloat_0',
+    e.toFloat(
+      e.data(d.uint64(Number.MAX_SAFE_INTEGER).toDataConstructor()),
+    )
+  )
+
+  t.is(response, Number.MAX_SAFE_INTEGER)
+})
+
+test('toInt8', async t => {
+  const response = await t.context.exampleQuery('toInt8_0',
+    e.toInt8(
+      e.data(d.float(127.5).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 127)
+})
+
+test('toInt16', async t => {
+  const response = await t.context.exampleQuery('toInt16_0',
+    e.toInt16(
+      e.data(d.float(32_767.5).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 32_767)
+})
+
+test('toInt32', async t => {
+  const response = await t.context.exampleQuery('toInt32_0',
+    e.toInt32(
+      e.data(d.float(2_147_483_647.5).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 2_147_483_647)
+})
+
+test('toInt64', async t => {
+  const response = await t.context.exampleQuery('toInt64_0',
+    e.toInt64(
+      e.data(d.float(Number.MAX_SAFE_INTEGER - 0.5).toDataConstructor()),
+    )
+  )
+
+  t.is(response, Number.MAX_SAFE_INTEGER - 1)
+})
+
+test('toUint8', async t => {
+  const response = await t.context.exampleQuery('toUint8_0',
+    e.toUint8(
+      e.data(d.float(127.5).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 127)
+})
+
+test('toUint16', async t => {
+  const response = await t.context.exampleQuery('toUint16_0',
+    e.toUint16(
+      e.data(d.float(32_767.5).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 32_767)
+})
+
+test('toUint32', async t => {
+  const response = await t.context.exampleQuery('toUint32_0',
+    e.toUint32(
+      e.data(d.float(2_147_483_647.5).toDataConstructor()),
+    )
+  )
+
+  t.is(response, 2_147_483_647)
+})
+
+test('toUint64', async t => {
+  const response = await t.context.exampleQuery('toUint64_0',
+    e.toUint64(
+      e.data(d.float(Number.MAX_SAFE_INTEGER - 0.5).toDataConstructor()),
+    )
+  )
+
+  t.is(response, Number.MAX_SAFE_INTEGER - 1)
+})
