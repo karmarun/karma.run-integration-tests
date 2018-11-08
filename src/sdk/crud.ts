@@ -22,9 +22,7 @@ test.serial('model create', async t => {
 
   const response = await t.context.exampleQuery('create_0',
     e.create(e.tag('_model'),
-      (arg) => {
-        return e.data(model.toValue(metaRef.id).toDataConstructor())
-      }
+      arg => e.data(model.toValue(metaRef.id).toDataConstructor())
     )
   )
 
@@ -44,19 +42,15 @@ test.serial('nested create', async t => {
   const response = await t.context.exampleQuery('create_1',
     e.define('myNewModel',
       e.create(e.tag('_model'),
-        (arg) => {
-          return e.data(model.toValue(metaRef.id).toDataConstructor())
-        }
+        arg => e.data(model.toValue(metaRef.id).toDataConstructor())
       )
     ),
     e.create(e.tag('_tag'),
-      (arg) => {
-        return e.data(dataContext.struct({
-            'tag': dataContext.string('myModel'),
-            'model': dataContext.expr(e.scope('myNewModel'))
-          })
-        )
-      }
+      arg => e.data(dataContext.struct({
+          'tag': dataContext.string('myModel'),
+          'model': dataContext.expr(e.scope('myNewModel'))
+        })
+      )
     )
   )
 
@@ -67,13 +61,11 @@ test.serial('create record', async t => {
   const response = await t.context.exampleQuery('create_2',
     e.create(
       e.tag('myModel'),
-      (arg) => {
-        return e.data(d.struct({
-          'myString': d.string('my string content'),
-          'myInt': d.int32(333),
-          'myBool': d.bool(true)
-        }).toDataConstructor())
-      }
+      arg => e.data(d.struct({
+        'myString': d.string('my string content'),
+        'myInt': d.int32(333),
+        'myBool': d.bool(true)
+      }).toDataConstructor())
     )
   )
 
@@ -125,9 +117,7 @@ test('zero', async t => {
   const response = await t.context.exampleQuery(undefined,
     e.create(
       e.tag('myModel'),
-      (arg) => {
-        return e.zero()
-      }
+      arg => e.zero()
     )
   )
 

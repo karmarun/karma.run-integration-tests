@@ -27,7 +27,7 @@ Test specific file
 -----------
 ```
 yarn watch:build
-yarn ava dist/queries/expressions/<file>.js --serial
+yarn ava dist/sdk/expressions/<file>.js --serial
 ```
 
 Test specific test in file
