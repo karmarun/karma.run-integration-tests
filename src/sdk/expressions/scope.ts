@@ -38,10 +38,10 @@ test.skip('signature', async t => {
   // t.true(isRef(response[1].ref))
 })
 
-test.skip('with', async t => {
-  // const response = await t.context.exampleQuery('with_0',
-  //   e.with(e.string('foo'), value => value)
-  // )
-  //
-  // t.is(response, 'foo')
+test('with', async t => {
+  const response = await t.context.exampleQuery('with_0',
+    e.with_(e.string('foo'), value => value)
+  )
+
+  t.is(response, 'foo')
 })
