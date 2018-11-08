@@ -1,18 +1,24 @@
 import test from '../_before'
-import { xpr as e, val as d, mod as m } from 'karma-sdk-typescript'
+import { xpr as e, val as d } from 'karma-sdk-typescript'
 
-test.skip('after', async t => {
-  // const response = await t.context.exampleQuery('after_0',
-  //   e.after(new Date(0), new Date(1))
-  // )
-  //
-  // t.is(response, false)
+test('after', async t => {
+  const response = await t.context.exampleQuery('after_0',
+    e.after(
+      e.data(d.dateTime(new Date(0)).toDataConstructor()),
+      e.data(d.dateTime(new Date(1)).toDataConstructor()),
+    )
+  )
+
+  t.is(response, false)
 })
 
-test.skip('before', async t => {
-  // const response = await t.context.exampleQuery('before_0',
-  //   e.before(new Date(0), new Date(1))
-  // )
-  //
-  // t.is(response, true)
+test('before', async t => {
+  const response = await t.context.exampleQuery('before_0',
+    e.before(
+      e.data(d.dateTime(new Date(0)).toDataConstructor()),
+      e.data(d.dateTime(new Date(1)).toDataConstructor()),
+    )
+  )
+
+  t.is(response, true)
 })
