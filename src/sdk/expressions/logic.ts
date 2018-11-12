@@ -136,52 +136,50 @@ test('not', async t => {
   t.is(response, false)
 })
 
-// test('switchCase', async t => {
-//   const response = await t.context.exampleQuery('switchCase_0',
-//    e.switchCase(e.data(d.union('foo', d.string('bar'))), value => value)
-//   )
-//
-//   t.is(response, 'bar')
-// })
+test('switchCase', async t => {
+  const response = await t.context.exampleQuery('switchCase_0',
+    e.switchCase(e.data(d.union('foo', d.string('bar')).toDataConstructor()), {
+      'foo': val => e.scope(val.name)
+    })
+  )
+
+  t.is(response, 'bar')
+})
 
 // TODO
 test.skip('switchModelRef', async t => {
   t.fail()
 })
 
-// test('assertCase', async t => {
-//   const response = await t.context.exampleQuery('assertCase_0',
-//     e.assertCase('foo', e.data(d => d.union('foo', d.string('bar'))))
-//   )
-//
-//   t.is(response, 'bar')
-//
-//   const error: KarmaError = await t.throws(async () => {
-//     await t.context.exampleQuery(
-//       'assertCase_1',
-//       build(e => e.assertCase('bar', e.data(d => d.union('foo', d.string('bar')))))
-//     )
-//   }, KarmaError)
-//
-//   t.is(error.type, KarmaErrorType.CompilationError)
-// })
+test('assertCase', async t => {
+  const response = await t.context.exampleQuery('assertCase_0',
+    e.assertCase('foo', e.data(d.union('foo', d.string('bar')).toDataConstructor()))
+  )
+  t.is(response, 'bar')
 
-// test('assertPresent', async t => {
-//   const response = await t.context.exampleQuery('assertPresent_0',
-//     e.assertPresent(e.string('foo'))
-//   )
-//
-//   t.is(response, 'foo')
-//
-//   const error = await t.throws(async () => {
-//     await t.context.exampleQuery('assertPresent_1',
-//       e.assertPresent(e.data(d.bool(false).toDataConstructor()))
-//     )
-//   })
-//
-//   t.is(error.type, '')
-// })
-//
+  const error: any = await t.throwsAsync(async () => {
+    await t.context.exampleQuery('assertCase_1',
+      e.assertCase('bar', e.data(d.union('foo', d.string('bar')).toDataConstructor()))
+    )
+  }, Error)
+
+  t.truthy(error)
+})
+
+test('assertPresent', async t => {
+  const response = await t.context.exampleQuery('assertPresent_0',
+    e.assertPresent(e.string('foo'))
+  )
+  t.is(response, 'foo')
+
+  const error: any = await t.throwsAsync(async () => {
+    await t.context.exampleQuery('assertPresent_1',
+      e.assertPresent(e.tag("notPresent"))
+    )
+  }, Error)
+  t.truthy(error)
+})
+
 // test('assertModelRef', async t => {
 //   const response = await t.context.exampleQuery('assertModelRef_0',
 //     e.assertModelRef(e.tag('_tag'), e.first(e.all(e.tag('_tag'))))

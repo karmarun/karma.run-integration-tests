@@ -36,21 +36,22 @@ test('field', async t => {
   t.is(response, 1)
 })
 
-test.skip('setField', async t => {
-  // const response = await t.context.exampleQuery('setField_0',
-  //   e.setField('d', e.int8(4), e.data(d.struct({
-  //       a: d.int8(1),
-  //       b: d.int8(2),
-  //       c: d.int8(3)
-  //     }
-  //     ))
-  //   )
-  // )
-  //
-  // t.deepEqual(response, {
-  //   a: 1,
-  //   b: 2,
-  //   c: 3,
-  //   d: 4
-  // })
+test('setField', async t => {
+  const response = await t.context.exampleQuery('setField_0',
+    e.setField('d', e.int8(4), e.data(
+      d.struct({
+          a: d.int8(1),
+          b: d.int8(2),
+          c: d.int8(3)
+        }
+      ).toDataConstructor())
+    )
+  )
+
+  t.deepEqual(response, {
+    a: 1,
+    b: 2,
+    c: 3,
+    d: 4
+  })
 })

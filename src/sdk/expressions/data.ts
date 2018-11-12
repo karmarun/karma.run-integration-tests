@@ -187,27 +187,38 @@ test.skip('null', async t => {
   t.deepEqual(response, null)
 })
 
-// test('unique', async t => {
-//   try {
-//     await t.context.exampleQuery('unique_1',
-//       e.createMultiple(e.tag(d.string("_user")), {
-//         a: f.function(["refs"], e.data(d.struct({
-//           username: d.string("test-user"),
-//           password: d.string("$2a$04$0grY4cHFfy330bCokWYDJ.9CvTG5gqEeOGlNnbGxZDkVYThCC8eOS"),
-//           roles: d.list(d.expr(e.refTo(e.first(e.all(e.tag(d.string("_role"))))))),
-//         }))),
-//         b: f.function(["refs"], e.data(d.struct({
-//           username: d.string("test-user"),
-//           password: d.string("$2a$04$0grY4cHFfy330bCokWYDJ.9CvTG5gqEeOGlNnbGxZDkVYThCC8eOS"),
-//           roles: d.list(d.expr(e.refTo(e.first(e.all(e.tag(d.string("_role"))))))),
-//         })))
-//       })
-//     )
-//   } catch (e) {
-//     t.deepEqual(e.data, {problem: 'unique constraint violation'})
-//   }
-// })
-//
+test('unique', async t => {
+  const dc = e.DataContext
+  const error = await t.throwsAsync(async () => {
+    await t.context.exampleQuery('createMultiple_0',
+      e.define('roleRef',
+        e.refTo(e.first(e.all(e.tag("_role"))))
+      ),
+      e.createMultiple(
+        e.tag('_user'),
+        {
+          a: refs => {
+            return e.data(dc.struct({
+              username: dc.string('test-user'),
+              password: dc.string('$2a$04$0grY4cHFfy330bCokWYDJ.9CvTG5gqEeOGlNnbGxZDkVYThCC8eOS'),
+              roles: dc.list([dc.expr(e.scope('roleRef'))])
+            }))
+          },
+
+          b: refs => {
+            return e.data(dc.struct({
+              username: dc.string('test-user'),
+              password: dc.string('$2a$04$0grY4cHFfy330bCokWYDJ.9CvTG5gqEeOGlNnbGxZDkVYThCC8eOS'),
+              roles: dc.list([dc.expr(e.scope('roleRef'))])
+            }))
+          }
+        }
+      )
+    )
+  }, Error)
+  t.truthy(error)
+})
+
 test('optional', async t => {
   const response = await t.context.exampleQuery('optional_1',
     e.data(

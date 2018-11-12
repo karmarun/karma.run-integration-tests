@@ -117,21 +117,21 @@ test('model', async t => {
   t.deepEqual(response, tagResponse)
 })
 
-test.skip('referrers', async t => {
-  // let response = await t.context.exampleQuery('referrers_0',
-  //   e.referrers(e.refTo(e.first(e.all(e.tag('_role')))), e.tag('_user'))
-  // )
-  // t.truthy(response[0][0])
-  // t.truthy(response[0][1])
+test('referrers', async t => {
+  let response = await t.context.exampleQuery('referrers_0',
+    e.referrers(e.refTo(e.first(e.all(e.tag('_role')))), e.tag('_user'))
+  )
+  t.truthy(response[0][0])
+  t.truthy(response[0][1])
 })
 
-test.skip('referred', async t => {
-  // let response = await t.context.exampleQuery(
-  //   'referred_0',
-  //   e.referred(e.refTo(e.first(e.all(e.tag('_user')))), e.tag('_role'))
-  // )
-  // t.truthy(response[0][0])
-  // t.truthy(response[0][1])
+test('referred', async t => {
+  let response = await t.context.exampleQuery(
+    'referred_0',
+    e.referred(e.refTo(e.first(e.all(e.tag('_user')))), e.tag('_role'))
+  )
+  t.truthy(response[0][0])
+  t.truthy(response[0][1])
 })
 
 test('resolveAllRefs', async t => {
@@ -156,35 +156,37 @@ test('resolveAllRefs', async t => {
   })
 })
 
-test.skip('resolveRefs', async t => {
-  // let response = await t.context.exampleQuery(
-  //   'resolveRefs_0',
-  //     e.resolveRefs(e.resolveRefs(e.first(e.all(e.tag('_user'))), [e.tag('_role')]), [
-  //       e.tag('_expression')
-  //     ])
-  // )
-  //
-  // t.deepEqual(response, {
-  //   password: '',
-  //   roles: [
-  //     {
-  //       name: 'admins',
-  //       permissions: {
-  //         create: {function: [['_'], [{data: {bool: true}}]]},
-  //         delete: {function: [['_'], [{data: {bool: true}}]]},
-  //         read: {function: [['_'], [{data: {bool: true}}]]},
-  //         update: {function: [['_'], [{data: {bool: true}}]]}
-  //       }
-  //     }
-  //   ],
-  //   username: 'admin'
-  // })
+test('resolveRefs', async t => {
+  let response = await t.context.exampleQuery('resolveRefs_0',
+    e.resolveRefs(
+      e.resolveRefs(e.first(e.all(e.tag('_user'))),
+        e.tag('_role')
+      ),
+      e.tag('_expression')
+    )
+  )
+
+  t.deepEqual(response, {
+    password: '',
+    roles: [
+      {
+        name: 'admins',
+        permissions: {
+          create: {function: [['_'], [{data: {bool: true}}]]},
+          delete: {function: [['_'], [{data: {bool: true}}]]},
+          read: {function: [['_'], [{data: {bool: true}}]]},
+          update: {function: [['_'], [{data: {bool: true}}]]}
+        }
+      }
+    ],
+    username: 'admin'
+  })
 })
 
 test.skip('graphFlow', async t => {
   // const response = await t.context.exampleQuery('graphFlow_0',
   //
-  //   e.graphFlow(e.refTo(e.first(e.all(e.tag(DefaultTags.Role)))), [
+  //   e.graphFlow(e.refTo(e.first(e.all(e.tag('_role')))), [
   //     {
   //       from: e.tag('_role'),
   //       backward: [e.tag('_user')],

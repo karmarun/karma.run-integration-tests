@@ -28,6 +28,8 @@ test.before(async t => {
   const client = new tpt.Remote(KARMA_ENDPOINT)
   t.context.client = client
   let adminSession = await client.adminLogin('admin', KARMA_INSTANCE_SECRET)
+  await adminSession.resetDatabase()
+  adminSession = await client.adminLogin('admin', KARMA_INSTANCE_SECRET)
   t.context.adminSession = adminSession
 
   t.context.exampleQuery = async (name, ...queries) => {

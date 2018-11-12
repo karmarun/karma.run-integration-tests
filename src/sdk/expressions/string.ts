@@ -1,18 +1,21 @@
 import test from '../_before'
 import { xpr as e, val as d } from 'karma-sdk-typescript'
 
-test.skip('joinStrings', async t => {
-  // const response = await t.context.exampleQuery('joinStrings_0',
-  //   e.joinStrings(e.string(','), e.data(
-  //     d.list(
-  //       d.string('foo'),
-  //       d.string('bar'),
-  //       d.string('baz')
-  //     ).toDataConstructor()
-  //   ))
-  // )
-  //
-  // t.is(response, 'foo,bar,baz')
+test('joinStrings', async t => {
+  const response = await t.context.exampleQuery('joinStrings_0',
+    e.joinStrings(
+      e.data(
+        d.list([
+          d.string('foo'),
+          d.string('bar'),
+          d.string('baz'),
+        ]).toDataConstructor()
+      ),
+      e.string(',')
+    )
+  )
+
+  t.is(response, 'foo,bar,baz')
 })
 
 test('stringToLower', async t => {
@@ -44,18 +47,18 @@ test('searchRegex', async t => {
   t.is(response, 4)
 })
 
-test.skip('stringContains', async t => {
-  // const response = await t.context.exampleQuery('stringContains_0',
-  //   e.stringContains(d.string('foobar'), d.string('oba'))
-  // )
-  //
-  // t.true(response)
+test.failing('stringContains', async t => {
+  const response = await t.context.exampleQuery('stringContains_0',
+    e.stringContains(e.string('foobar'), e.string('bar'))
+  )
+
+  t.true(response)
 })
 
-test.skip('substringIndex', async t => {
-  // const response = await t.context.exampleQuery('substringIndex_0',
-  //   e.substringIndex(d.string('foobar'), d.string('oba'))
-  // )
-  //
-  // t.is(response, 2)
+test('substringIndex', async t => {
+  const response = await t.context.exampleQuery('substringIndex_0',
+    e.substringIndex(e.string('foobar'), e.string('oba'))
+  )
+
+  t.is(response, 2)
 })
