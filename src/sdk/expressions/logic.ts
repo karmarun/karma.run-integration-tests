@@ -140,16 +140,11 @@ test('not', async t => {
 test('switchCase', async t => {
   const response = await t.context.exampleQuery('switchCase_0',
     e.switchCase(e.data(d.union('foo', d.string('bar')).toDataConstructor()), {
-      'foo': val => e.scope(val.name)
+      'foo': val => val
     })
   )
 
   t.is(response, 'bar')
-})
-
-// TODO
-test.skip('switchModelRef', async t => {
-  t.fail()
 })
 
 test('assertCase', async t => {
