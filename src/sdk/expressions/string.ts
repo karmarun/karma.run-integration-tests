@@ -47,7 +47,7 @@ test('searchRegex', async t => {
   t.is(response, 4)
 })
 
-test.failing('stringContains', async t => {
+test('stringContains', async t => {
   const response = await t.context.exampleQuery('stringContains_0',
     e.stringContains(e.string('foobar'), e.string('bar'))
   )

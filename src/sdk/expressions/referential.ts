@@ -183,31 +183,30 @@ test('resolveRefs', async t => {
   })
 })
 
-test.skip('graphFlow', async t => {
-  // const response = await t.context.exampleQuery('graphFlow_0',
-  //
-  //   e.graphFlow(e.refTo(e.first(e.all(e.tag('_role')))), [
-  //     {
-  //       from: e.tag('_role'),
-  //       backward: [e.tag('_user')],
-  //       forward: [e.tag('_expression')]
-  //     }
-  //   ])
-  // )
-  //
-  // const modelEntries = Object.entries(response)
-  // t.is(modelEntries.length, 3)
-  //
-  // for (const [modelID, modelObj] of modelEntries) {
-  //   const recordEntries = Object.entries(modelObj)
-  //   t.is(recordEntries.length, 1)
-  //
-  //   for (const [recordID, recordObj] of recordEntries) {
-  //     t.truthy(modelID)
-  //     t.truthy(modelObj)
-  //
-  //     t.truthy(recordID)
-  //     t.truthy(recordObj)
-  //   }
-  // }
+test('graphFlow', async t => {
+  const response = await t.context.exampleQuery('graphFlow_0',
+    e.graphFlow(e.refTo(e.first(e.all(e.tag('_role')))), [
+      {
+        from: e.tag('_role'),
+        backward: [e.tag('_user')],
+        forward: [e.tag('_expression')]
+      }
+    ])
+  )
+
+  const modelEntries = Object.entries(response)
+  t.is(modelEntries.length, 3)
+
+  for (const [modelID, modelObj] of modelEntries) {
+    const recordEntries = Object.entries(modelObj)
+    t.is(recordEntries.length, 1)
+
+    for (const [recordID, recordObj] of recordEntries) {
+      t.truthy(modelID)
+      t.truthy(modelObj)
+
+      t.truthy(recordID)
+      t.truthy(recordObj)
+    }
+  }
 })
