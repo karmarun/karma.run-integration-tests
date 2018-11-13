@@ -180,20 +180,20 @@ test('assertPresent', async t => {
   t.truthy(error)
 })
 
-// test('assertModelRef', async t => {
-//   const response = await t.context.exampleQuery('assertModelRef_0',
-//     e.assertModelRef(e.tag('_tag'), e.first(e.all(e.tag('_tag'))))
-//   )
-//
-//   t.is(typeof response, 'object')
-//   t.is(typeof response.tag, 'string')
-//   t.true(isRef(response.model))
-//
-//   const error: KarmaError = await t.throws(async () => {
-//     await t.context.exampleQuery('assertModelRef_1',
-//       e.assertModelRef(e.tag('_tag'), e.first(e.all(e.tag('_user'))))
-//     )
-//   }, KarmaError)
-//
-//   t.is(error.type, KarmaErrorType.ExecutionError)
-// })
+test.skip('assertModelRef', async t => {
+  // const response = await t.context.exampleQuery('assertModelRef_0',
+  //   e.assertModelRef(e.tag('_tag'), e.first(e.all(e.tag('_tag'))))
+  // )
+  //
+  // t.is(typeof response, 'object')
+  // t.is(typeof response.tag, 'string')
+  // t.true(isRef(response.model))
+  //
+  // const error: KarmaError = await t.throws(async () => {
+  //   await t.context.exampleQuery('assertModelRef_1',
+  //     e.assertModelRef(e.tag('_tag'), e.first(e.all(e.tag('_user'))))
+  //   )
+  // }, KarmaError)
+  //
+  // t.is(error.type, KarmaErrorType.ExecutionError)
+})
