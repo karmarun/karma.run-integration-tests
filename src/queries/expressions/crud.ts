@@ -1,9 +1,11 @@
-import { buildExpression as build, KarmaError, KarmaErrorType, isRef } from '@karma.run/sdk'
 import test from '../_before'
 
+import * as e from '@karma.run/sdk/expression'
+import {isRef} from '../utility'
+
 test('all', async t => {
-  const response: any[] = await t.context.exampleQuery('all_0', build(e =>
-    e.all(e.tag('_tag')))
+  const response: any[] = await t.context.exampleQuery('all_0',
+    e.all(e.tag('_tag'))
   )
 
   t.true(Array.isArray(response))
@@ -15,109 +17,121 @@ test('all', async t => {
 })
 
 test('create', async t => {
-  const response = await t.context.exampleQuery(undefined, build(e =>
-    e.create(e.tag('_tag'), () => e.data(d =>
-      d.struct({
-        tag: d.string('createTestTag'),
-        model: d.expr(e => e.tag('_model'))
-      })
-    ))
-  ))
+  const dataContext = e.DataContext
+
+  const response = await t.context.exampleQuery(undefined,
+    e.create(
+      e.tag('_tag'),
+      arg => e.data(
+        dataContext.struct({
+          tag: dataContext.string('createTestTag'),
+          model: dataContext.expr(e.tag('_model')),
+        })
+      )
+    )
+  )
 
   t.true(isRef(response))
 })
 
 test('createMultiple', async t => {
-  const response = await t.context.exampleQuery(undefined, build(e =>
+  const dataContext = e.DataContext
+
+  const response = await t.context.exampleQuery(undefined,
     e.createMultiple(e.tag('_tag'), {
-      tagA: () => e.data(d =>
-        d.struct({
-          tag: d.string('createMultipleTestTag_0'),
-          model: d.expr(e => e.tag('_model'))
+      tagA: arg => e.data(
+        dataContext.struct({
+          tag: dataContext.string('createMultipleTestTag_0'),
+          model: dataContext.expr(e.tag('_model'))
         })
       ),
 
-      tagB: () => e.data(d =>
-        d.struct({
-          tag: d.string('createMultipleTestTag_1'),
-          model: d.expr(e => e.tag('_model'))
+      tagB: arg => e.data(
+        dataContext.struct({
+          tag: dataContext.string('createMultipleTestTag_1'),
+          model: dataContext.expr(e.tag('_model'))
         })
       )
     }),
-  ))
+  )
 
   t.true(isRef(response.tagA))
   t.true(isRef(response.tagB))
 })
 
 test('get', async t => {
-  const response = await t.context.exampleQuery(undefined,
-    build(e =>
-      e.define('getTestTag', e.create(e.tag('_tag'), () => e.data(d =>
-        d.struct({
-          tag: d.string('getTestTag'),
-          model: d.expr(e => e.tag('_model'))
-        })
-      )),
-    )),
+  const dataContext = e.DataContext
 
-    build(e =>
-      e.get(e.scope('getTestTag'))
-    )
+  const response = await t.context.exampleQuery(undefined,
+    e.define('getTestTag',
+      e.create(
+        e.tag('_tag'),
+        arg => e.data(
+          dataContext.struct({
+            tag: dataContext.string('getTestTag'),
+            model: dataContext.expr(e.tag('_model'))
+          })
+        ),
+      )),
+
+    e.get(e.scope('getTestTag'))
   )
 
   t.is(response.tag, 'getTestTag')
 })
 
 test('update', async t => {
+  const dataContext = e.DataContext
   const response = await t.context.exampleQuery(undefined,
-    build(e =>
-      e.define('updateTestTag', e.create(e.tag('_tag'), () => e.data(d =>
-        d.struct({
-          tag: d.string('updateTestTag'),
-          model: d.expr(e => e.tag('_model'))
-        })
-      )),
-    )),
 
-    build(e =>
-      e.update(e.scope('updateTestTag'), e.data(d =>
-        d.struct({
-          tag: d.string('renamedUpdateTestTag'),
-          model: d.expr(e => e.tag('_model'))
-        })
-      ))
+    e.define('updateTestTag',
+      e.create(
+        e.tag('_tag'),
+        arg => e.data(
+          dataContext.struct({
+            tag: dataContext.string('updateTestTag'),
+            model: dataContext.expr(e.tag('_model'))
+          })
+        )
+      )
     ),
 
-    build(e =>
-      e.get(e.scope('updateTestTag')),
-    )
+    e.update(
+      e.scope('updateTestTag'),
+      e.data(arg =>
+        dataContext.struct({
+          tag: dataContext.string('renamedUpdateTestTag'),
+          model: dataContext.expr(e.tag('_model'))
+        })
+      )
+    ),
+
+    e.get(e.scope('updateTestTag')),
   )
 
   t.is(response.tag, 'renamedUpdateTestTag')
 })
 
 test('delete', async t => {
-  const error: KarmaError = await t.throws(async () => {
+  const dataContext = e.DataContext
+
+  const error = await t.throws(async () => {
     await t.context.exampleQuery(undefined,
-      build(e =>
-        e.define('deleteTestTag', e.create(e.tag('_tag'), () => e.data(d =>
-          d.struct({
-            tag: d.string('deleteTestTag'),
-            model: d.expr(e => e.tag('_model'))
-          })
-        )),
-      )),
-
-      build(e =>
-        e.delete(e.scope('deleteTestTag')),
+      e.define('deleteTestTag',
+        e.create(
+          e.tag('_tag'),
+          art => e.data(
+            dataContext.struct({
+              tag: dataContext.string('deleteTestTag'),
+              model: dataContext.expr(e.tag('_model'))
+            })
+          )
+        )
       ),
-
-      build(e =>
-        e.get(e.scope('deleteTestTag')),
-      ),
+      e.delete_(e.scope('deleteTestTag')),
+      e.get(e.scope('deleteTestTag')),
     )
-  }, KarmaError)
+  }, Error)
 
-  t.is(error.type, KarmaErrorType.ObjectNotFoundError)
+  t.truthy(error)
 })

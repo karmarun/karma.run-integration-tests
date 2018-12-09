@@ -1,34 +1,37 @@
-import {
-  expression as e,
-  data as d,
-  buildExpression,
-  isRef,
-  DefaultTags,
-  buildExpressions
-} from '@karma.run/sdk'
-
 import test from '../_before'
 
+import * as e from '@karma.run/sdk/expression'
+import * as m from '@karma.run/sdk/model'
+import * as d from '@karma.run/sdk/value'
+import * as u from '@karma.run/sdk/utility'
+
+import {isRef} from '../utility'
+
 test('allReferrers', async t => {
-  const modelResponse = await t.context.exampleQuery(
-    'allReferrers_0',
-    buildExpression(e =>
-      e.util.createModels({
-        modelA: m => m.string(),
-        modelB: (m, d, r) => m.ref(d.expr(e => e.field('modelA', r))),
-        modelC: (m, d, r) => m.ref(d.expr(e => e.field('modelA', r)))
-      })
-    )
+  const modelA = m.string
+  const modelB = m.dynamicRef('modelA')
+  const modelC = m.dynamicRef('modelA')
+
+  const modelResponse = await t.context.exampleQuery('allReferrers_0',
+    u.createModels({modelA, modelB, modelC})
   )
 
-  const response = await t.context.exampleQuery(
-    'allReferrers_1',
-    ...buildExpressions(e => [
-      e.define('record', e.create(e.data(d => d.ref(modelResponse.modelA)), () => e.string('foo'))),
-      e.create(e.data(d => d.ref(modelResponse.modelB)), () => e.scope('record')),
-      e.create(e.data(d => d.ref(modelResponse.modelC)), () => e.scope('record')),
-      e.allReferrers(e.scope('record'))
-    ])
+  const response = await t.context.exampleQuery('allReferrers_1',
+    e.define('record', e.create(
+      e.data(
+        d => d.ref(modelResponse.modelA)),
+        () => e.data(d => d.string("foo"))
+      )
+    ),
+    e.create(
+      e.data(d => d.ref(modelResponse.modelB)),
+      () => e.scope('record')
+    ),
+    e.create(
+      e.data(d => d.ref(modelResponse.modelC)),
+      () => e.scope('record')
+    ),
+    e.allReferrers(e.scope('record'))
   )
 
   t.true(Array.isArray(response))
@@ -43,11 +46,13 @@ test.skip('relocateRef', async t => {
 })
 
 test('tagExists', async t => {
-  const response = await t.context.exampleQuery(
-    'tagExists_0',
-    buildExpression(e =>
-      e.data(d =>
-        d.tuple(d.expr(e.tagExists(DefaultTags.User)), d.expr(e.tagExists('idonotexist')))
+  const dataContext = e.DataContext
+
+  const response = await t.context.exampleQuery('tagExists_0',
+    e.data(
+      dataContext.tuple(
+        dataContext.expr(e.tagExists(e.string("_role"))),
+        dataContext.expr(e.tagExists(e.string("idonotexist"))),
       )
     )
   )
@@ -57,43 +62,45 @@ test('tagExists', async t => {
 })
 
 test('tag', async t => {
-  const response = await t.context.exampleQuery('tag_0', e.tag(e.data(d.string('_tag'))))
+  const response = await t.context.exampleQuery('tag_0',
+    e.tag(e.string('_tag'))
+  )
 
   t.true(Array.isArray(response))
   t.is(response.length, 2)
 })
 
 test('refTo', async t => {
-  const response = await t.context.exampleQuery('refTo_0', e.refTo(e.first(e.all(e.tag('_tag')))))
+  const response = await t.context.exampleQuery('refTo_0',
+    e.refTo(e.first(e.all(e.tag('_tag')))))
 
   t.true(isRef(response))
 })
 
 test('ref', async t => {
-  let response = await t.context.exampleQuery(
-    undefined,
+  let response = await t.context.exampleQuery(undefined,
     e.metarialize(e.first(e.all(e.tag('_tag'))))
   )
-  response = await t.context.exampleQuery('ref_0', e.data(d.ref(response.id)))
+  response = await t.context.exampleQuery('ref_0', e.data(d.ref(response.id[0], response.id[1]).toDataConstructor()))
 
   t.truthy(response[0])
   t.truthy(response[1])
 })
 
 test('model', async t => {
-  const tagResponse = await t.context.query(buildExpression(e => e.tag('_tag')))
+  const tagResponse = await t.context.exampleQuery(undefined,
+    e.tag('_tag')
+  )
 
-  const response = await t.context.exampleQuery(
-    'model_0',
-    buildExpression(e => e.model(e.string(tagResponse[1])))
+  const response = await t.context.exampleQuery('model_0',
+    e.model(e.string(tagResponse[1]))
   )
 
   t.deepEqual(response, tagResponse)
 })
 
 test('referrers', async t => {
-  let response = await t.context.exampleQuery(
-    'referrers_0',
+  let response = await t.context.exampleQuery('referrers_0',
     e.referrers(e.refTo(e.first(e.all(e.tag('_role')))), e.tag('_user'))
   )
   t.truthy(response[0][0])
@@ -110,8 +117,7 @@ test('referred', async t => {
 })
 
 test('resolveAllRefs', async t => {
-  let response = await t.context.exampleQuery(
-    'resolveAllRefs_0',
+  let response = await t.context.exampleQuery('resolveAllRefs_0',
     e.resolveAllRefs(e.resolveAllRefs(e.first(e.all(e.tag('_user')))))
   )
 
@@ -133,12 +139,12 @@ test('resolveAllRefs', async t => {
 })
 
 test('resolveRefs', async t => {
-  let response = await t.context.exampleQuery(
-    'resolveRefs_0',
-    buildExpression(e =>
-      e.resolveRefs(e.resolveRefs(e.first(e.all(e.tag('_user'))), [e.tag('_role')]), [
-        e.tag('_expression')
-      ])
+  let response = await t.context.exampleQuery('resolveRefs_0',
+    e.resolveRefs(
+      e.resolveRefs(e.first(e.all(e.tag('_user'))),
+        e.tag('_role')
+      ),
+      e.tag('_expression')
     )
   )
 
@@ -160,17 +166,14 @@ test('resolveRefs', async t => {
 })
 
 test('graphFlow', async t => {
-  const response = await t.context.exampleQuery(
-    'graphFlow_0',
-    buildExpression(e =>
-      e.graphFlow(e.refTo(e.first(e.all(e.tag(DefaultTags.Role)))), [
-        {
-          from: e.tag('_role'),
-          backward: [e.tag('_user')],
-          forward: [e.tag('_expression')]
-        }
-      ])
-    )
+  const response = await t.context.exampleQuery('graphFlow_0',
+    e.graphFlow(e.refTo(e.first(e.all(e.tag('_role')))), [
+      {
+        from: e.tag('_role'),
+        backward: [e.tag('_user')],
+        forward: [e.tag('_expression')]
+      }
+    ])
   )
 
   const modelEntries = Object.entries(response)

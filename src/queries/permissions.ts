@@ -1,15 +1,14 @@
-import {
-  Client,
-  isRef,
-  expression as e,
-  data as d,
-  func as f,
-  model as m,
-  CreateFn, DataExpression, buildExpression
-} from '@karma.run/sdk'
-
-import {KARMA_ENDPOINT} from '../helpers/_environment'
 import test from './_before'
+
+import { Remote } from '@karma.run/sdk'
+
+import * as e from '@karma.run/sdk/expression'
+import * as m from '@karma.run/sdk/model'
+import * as d from '@karma.run/sdk/value'
+import * as u from '@karma.run/sdk/utility'
+
+import {isRef} from './utility'
+import { KARMA_ENDPOINT } from '../helpers/_environment'
 
 test.serial('create roles and permissions', async t => {
 
@@ -26,18 +25,28 @@ test.serial('create roles and permissions', async t => {
   t.true(isRef(refRoleB))
 
   let response = await t.context.exampleQuery(undefined,
-    create('modelA', d.struct({
-      text: d.string('recordGroupA'),
-      owner: d.ref(refRoleA)
-    }))
+    e.create(
+      e.tag('modelA'),
+      arg => e.data(
+        d.struct({
+          text: d.string('recordGroupA'),
+          owner: d.ref(...refRoleA)
+        }).toDataConstructor()
+      )
+    )
   )
   t.true(isRef(response))
 
   response = await t.context.exampleQuery(undefined,
-    create('modelA', d.struct({
-      text: d.string('recordGroupB'),
-      owner: d.ref(refRoleB)
-    }))
+    e.create(
+      e.tag('modelA'),
+      arg => e.data(
+        d.struct({
+          text: d.string('recordGroupB'),
+          owner: d.ref(...refRoleB)
+        }).toDataConstructor()
+      )
+    )
   )
   t.true(isRef(response))
 })
@@ -46,31 +55,26 @@ test.serial('create roles and permissions', async t => {
 //**********************************************************************************************************************
 // check permissions with different users
 //**********************************************************************************************************************
-let client: Client
 
 test.serial('check userA', async t => {
-  client = new Client(KARMA_ENDPOINT)
-  const signature = await client.authenticate('GroupA', 'asdf')
-  t.truthy(signature)
+  let client = new Remote(KARMA_ENDPOINT)
+  let session = await client.login('GroupA', 'asdf')
+  t.truthy(session)
 
-  const response = await client.query(
-    f.function([],
-      e.all(e.tag('modelA'))
-    )
+  const response = await session.do(
+    e.all(e.tag('modelA'))
   )
   t.is(response[0].text, 'recordGroupA')
   t.is(response.length, 1)
 })
 
 test.serial('check userB', async t => {
-  client = new Client(KARMA_ENDPOINT)
-  const signature = await client.authenticate('GroupB', 'asdf')
-  t.truthy(signature)
+  let client = new Remote(KARMA_ENDPOINT)
+  let session = await client.login('GroupB', 'asdf')
+  t.truthy(session)
 
-  const response = await client.query(
-    f.function([],
-      e.all(e.tag('modelA'))
-    )
+  const response = await session.do(
+    e.all(e.tag('modelA'))
   )
   t.is(response[0].text, 'recordGroupB')
   t.is(response.length, 1)
@@ -80,91 +84,95 @@ test.serial('check userB', async t => {
 // Utils
 //**********************************************************************************************************************
 
-function create(tag: string, data: DataExpression): CreateFn {
-  return e.create(
-    e.tag(tag),
-    f.function(['ref'],
-      e.data(data)
-    )
-  )
-}
-
 async function createTestModel(t: any) {
-  let query = e.create(
-    e.tag('_tag'),
-    f.function(['ref'],
-      e.data(
-        d.struct({
-            tag: d.string('modelA'),
-            model: d.expr(
-              e.create(
-                e.tag('_model'),
-                f.function(['ref'],
-                  e.data(
-                    m.struct({
-                        text: m.string(),
-                        owner: m.ref(d.expr(e.tag('_role')))
-                      }
-                    )
-                  )
-                )
-              )
-            )
-          }
-        )
+  const metaRef = await t.context.adminSession.getMetaModelRef()
+  const dataContext = e.DataContext
+
+  const model = m.struct({
+    text: m.string,
+    owner: m.tagRef(u.Tag.Role),
+  })
+
+  u.createModels({
+    model: model
+  })
+
+  return await t.context.exampleQuery('create_1',
+    e.define('myNewModelA',
+      e.create(e.tag('_model'),
+        arg => e.data(model.toValue(metaRef.id).toDataConstructor())
+      )
+    ),
+    e.create(e.tag('_tag'),
+      arg => e.data(dataContext.struct({
+          tag: dataContext.string('modelA'),
+          model: dataContext.expr(e.scope('myNewModelA'))
+        })
       )
     )
   )
-  return await t.context.exampleQuery(undefined, query)
 }
 
+
 async function createExpression(t: any) {
-  const query = buildExpression(e =>
-    e.util.createStoredExpression(value =>
-      e.switchModelRef(value, e.data(d.bool(false)), [
+
+  const expression = e.func(
+    param => e.switchModelRef(
+      param,
+      e.bool(true),
+      [
         {
           match: e.tag('_role'),
-          return: f.function(['value'], d.bool(true))
+          return: value => e.bool(true)
         },
         {
           match: e.tag('modelA'),
-          return: f.function(
-            ['value'],
-            e.equal(
-              e.field('owner', e.scope('value')),
-              e.first(e.referred(e.currentUser(), e.tag('_role')))
-            )
+          return: value => e.equal(
+            e.field('owner', value),
+            e.first(e.referred(e.currentUser(), e.tag('_role')))
           )
         }
-      ])
+      ]
     )
+  )
+
+  const query = e.create(
+    e.tag('_expression'),
+    arg => e.data(expression.toValue().toDataConstructor())
   )
 
   return await t.context.exampleQuery(undefined, query)
 }
 
 async function createRoleAndUser(t: any, expressionRef: [string, string], group: string) {
-  let query = create('_role',
-    d.struct({
-      name: d.string(group),
-      permissions: d.struct({
-        create: d.ref(expressionRef),
-        delete: d.ref(expressionRef),
-        read: d.ref(expressionRef),
-        update: d.ref(expressionRef)
-      })
-    }))
-  const refRole = await t.context.exampleQuery(undefined, query)
+  let query = e.create(
+    e.tag('_role'),
+    arg => e.data(
+      d.struct({
+        name: d.string(group),
+        permissions: d.struct({
+          create: d.ref(...expressionRef),
+          delete: d.ref(...expressionRef),
+          read: d.ref(...expressionRef),
+          update: d.ref(...expressionRef)
+        })
+      }).toDataConstructor()
+    )
+  )
+  const refRole: [string, string] = await t.context.exampleQuery(undefined, query)
   t.true(isRef(refRole))
 
-  query = create('_user',
-    d.struct({
-      username: d.string(group),
-      password: d.string('$2a$04$I/wYipwpWzai1f/7orFrFOudssqCr7/itDcaczlwmTtaCtkeb8QS6'),
-      roles: d.list(
-        d.ref(refRole)
-      )
-    })
+  query = e.create(
+    e.tag('_user'),
+    (arg) => e.data(
+      d.struct({
+        username: d.string(group),
+        password: d.string('$2a$04$I/wYipwpWzai1f/7orFrFOudssqCr7/itDcaczlwmTtaCtkeb8QS6'),
+        roles: d.list([
+          d.ref(...refRole)
+        ])
+      }).toDataConstructor()
+    )
   )
   await t.context.exampleQuery(undefined, query)
   t.true(isRef(refRole))

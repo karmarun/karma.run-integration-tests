@@ -1,13 +1,18 @@
-import { buildExpression as build, isRef } from '@karma.run/sdk'
 import test from '../_before'
 
+import * as e from '@karma.run/sdk/expression'
+import * as m from '@karma.run/sdk/model'
+import * as d from '@karma.run/sdk/value'
+
+import {isRef} from '../utility'
+
 test('modelOf', async t => {
-  const response = await t.context.exampleQuery('modelOf_0', build(e =>
-    e.modelOf(e.data(d => d.struct({
+  const response = await t.context.exampleQuery('modelOf_0',
+    e.modelOf(e.data(d.struct({
       foo: d.string('foo'),
       bar: d.int32(0)
-    })))
-  ))
+    }).toDataConstructor()))
+  )
 
   t.deepEqual(response, {
     struct: {
@@ -18,9 +23,9 @@ test('modelOf', async t => {
 })
 
 test('metarialize', async t => {
-  const response = await t.context.exampleQuery('metarialize_0', build(e =>
+  const response = await t.context.exampleQuery('metarialize_0',
     e.metarialize(e.first(e.all(e.tag('_tag'))))
-  ))
+  )
 
   t.is(typeof response, 'object')
   t.true(Array.isArray(response.id))
@@ -31,35 +36,36 @@ test('metarialize', async t => {
 
 // TODO: Test some more zeroable and unzeroable types.
 test('zero', async t => {
-  const modelResponse: [string, string] = await t.context.query(build(e =>
-    e.util.createModel(m =>
-      m.struct({
-        foo: m.string(),
-        bar: m.int32()
-      })
+  const metaRef = await t.context.adminSession.getMetaModelRef()
+  const dataContext = e.DataContext
+
+  const model = m.struct({
+    foo: m.string,
+    bar: m.int32
+  })
+
+  const modelResponse: [string, string] = await t.context.exampleQuery(undefined,
+    e.create(e.tag('_model'),
+      arg => e.data(model.toValue(metaRef.id).toDataConstructor())
     )
-  ))
+  )
 
   const response = await t.context.exampleQuery('zero_0',
-    build(e =>
-      e.define('record', e.create(
-        e.data(d => d.ref(modelResponse)),
-        () => e.zero()
-      ))
+    e.define('record', e.create(
+      e.data(dataContext.ref(modelResponse[0], modelResponse[1])),
+      arg => e.zero()
+      )
     ),
-
-    build(e =>
-      e.get(e.scope('record'))
-    ),
+    e.get(e.scope('record'))
   )
 
   t.deepEqual(response, {foo: '', bar: 0})
 })
 
 test('currentUser', async t => {
-  const response = await t.context.exampleQuery('currentUser_0', build(e =>
+  const response = await t.context.exampleQuery('currentUser_0',
     e.currentUser()
-  ))
+  )
 
   t.true(isRef(response))
 })
