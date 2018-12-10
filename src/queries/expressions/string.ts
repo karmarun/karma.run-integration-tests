@@ -1,52 +1,59 @@
-import {buildExpression as build, expression as e, data as d} from '@karma.run/sdk'
 import test from '../_before'
 
+import * as e from '@karma.run/sdk/expression'
+import * as d from '@karma.run/sdk/value'
+
+import {isRef} from '../utility'
+
 test('joinStrings', async t => {
-  const response = await t.context.exampleQuery('joinStrings_0', build(e =>
-    e.joinStrings(e.string(','), e.data(d =>
-      d.list(
-        d.string('foo'),
-        d.string('bar'),
-        d.string('baz')
-      )
-    ))
-  ))
+  const response = await t.context.exampleQuery('joinStrings_0',
+    e.joinStrings(
+      e.data(
+        d.list([
+          d.string('foo'),
+          d.string('bar'),
+          d.string('baz'),
+        ]).toDataConstructor()
+      ),
+      e.string(',')
+    )
+  )
 
   t.is(response, 'foo,bar,baz')
 })
 
 test('stringToLower', async t => {
-  const response = await t.context.exampleQuery('stringToLower_0', build(e =>
+  const response = await t.context.exampleQuery('stringToLower_0',
     e.stringToLower(e.string('CAPSÜÄÖË'))
-  ))
+  )
 
   t.is(response, 'capsüäöë')
 })
 
 test('matchRegex', async t => {
   const response = await t.context.exampleQuery('matchRegex_0',
-    e.matchRegex('[0-9]{3}', d.string('123'), true, false)
+    e.matchRegex(e.string('123'), '[0-9]{3}', true, false)
   )
   t.is(response, true)
 })
 
 test('searchAllRegex', async t => {
   const response = await t.context.exampleQuery('searchAllRegex_0',
-    e.searchAllRegex('[0-9]{3}', d.string('123 qwer 456 asdf 789'), true, false)
+    e.searchAllRegex(e.string('123 qwer 456 asdf 789'), '[0-9]{3}', true, false)
   )
   t.deepEqual(response, [0, 9, 18])
 })
 
 test('searchRegex', async t => {
   const response = await t.context.exampleQuery('searchRegex_0',
-    e.searchRegex('[0-9]{3}', d.string('qwer456asdf789'), true, false)
+    e.searchRegex(e.string('qwer456asdf789'), '[0-9]{3}', true, false)
   )
   t.is(response, 4)
 })
 
 test('stringContains', async t => {
   const response = await t.context.exampleQuery('stringContains_0',
-    e.stringContains(d.string('foobar'), d.string('oba'))
+    e.stringContains(e.string('foobar'), e.string('bar'))
   )
 
   t.true(response)
@@ -54,7 +61,7 @@ test('stringContains', async t => {
 
 test('substringIndex', async t => {
   const response = await t.context.exampleQuery('substringIndex_0',
-    e.substringIndex(d.string('foobar'), d.string('oba'))
+    e.substringIndex(e.string('foobar'), e.string('oba'))
   )
 
   t.is(response, 2)
