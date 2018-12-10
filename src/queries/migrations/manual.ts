@@ -1,65 +1,110 @@
-// import {buildExpressions} from '@karma.run/sdk'
-// import test from '../_before'
+import * as e from '@karma.run/sdk/expression'
+import * as m from '@karma.run/sdk/model'
+import * as d from '@karma.run/sdk/value'
+import * as u from '@karma.run/sdk/utility'
+import test from '../../utils/_before'
 
-// test('add struct field', async t => {
-//   const response = await t.context.exampleQuery(
-//     'manual_migration_add_struct_field_0',
-//     ...buildExpressions(e => [
-//       e.define(
-//         'modelA',
-//         e.util.createModel(m =>
-//           m.struct({
-//             foo: m.string()
-//           })
-//         )
-//       ),
-//       e.define(
-//         'modelB',
-//         e.util.createModel(m =>
-//           m.struct({
-//             foo: m.string(),
-//             bar: m.string()
-//           })
-//         )
-//       ),
-//       e.util.createMigration({
-//         from: e.scope('modelA'),
-//         to: e.scope('modelB'),
-//         manualExpression: value => e.setField('bar', e.string('bar'), value)
-//       }),
-//       e.data(d =>
-//         d.struct({
-//           modelA: d.expr(e => e.scope('modelA')),
-//           modelB: d.expr(e => e.scope('modelB'))
-//         })
-//       )
-//     ])
-//   )
+test('same types', async t => {
+  const metaRef = await t.context.adminSession.getMetaModelRef()
+  const dataContext = e.DataContext
 
-//   const createResponse = await t.context.exampleQuery(
-//     'manual_migration_add_struct_field_1',
-//     ...buildExpressions(e => [
-//       e.create(e.data(d => d.ref(response.modelA)), () =>
-//         e.data(d =>
-//           d.struct({
-//             foo: e.string('foo')
-//           })
-//         )
-//       ),
-//       e.data(d =>
-//         d.struct({
-//           recordA: d.expr(e.all(e.data(d => d.ref(response.modelA)))),
-//           recordB: d.expr(e.all(e.data(d => d.ref(response.modelB))))
-//         })
-//       )
-//     ])
-//   )
+  const modelA = m.struct({
+    foo: m.string,
+  })
 
-//   t.deepEqual(createResponse, {
-//     recordA: [{foo: 'foo'}],
-//     recordB: [{foo: 'foo', bar: 'bar'}]
-//   })
-// })
+  const modelB = m.struct({
+    foo: m.string,
+    bar: m.string,
+  })
+
+  const expression = e.func(
+    value => e.setField(
+      'bar',
+      e.string('bar'),
+      value
+    )
+  )
+
+  const response = await t.context.exampleQuery('manual_migration_add_struct_field_0',
+    e.define('modelA',
+      e.create(e.tag('_model'),
+        arg => e.data(modelA.toValue(metaRef.id).toDataConstructor())
+      )
+    ),
+    e.define('modelB',
+      e.create(e.tag('_model'),
+        arg => e.data(modelB.toValue(metaRef.id).toDataConstructor())
+      )
+    ),
+    e.define('migrationExpression',
+      e.create(
+        e.tag('_expression'),
+        arg => e.data(expression.toValue().toDataConstructor())
+      ),
+    ),
+    e.create(e.tag('_tag'),
+      arg => e.data(dataContext.struct({
+        tag: dataContext.string('modelA'),
+        model: dataContext.expr(e.scope('modelA'))
+      })
+      )
+    ),
+    e.create(e.tag('_migration'),
+      arg => e.data(
+        dataContext.list([
+          dataContext.struct({
+            expression: dataContext.union('manual', dataContext.expr(e.scope('migrationExpression'))),
+            source: dataContext.expr(e.scope('modelA')),
+            target: dataContext.expr(e.scope('modelB')),
+          })
+        ])
+      )
+    ),
+    e.data(
+      dataContext.struct({
+        modelA: dataContext.expr(e.scope('modelA')),
+        modelB: dataContext.expr(e.scope('modelB'))
+      })
+    ),
+  )
+
+  const createResponse = await t.context.exampleQuery(
+    'manual_migration_add_struct_field_1',
+    e.create(
+      e.data(d => d.ref(response.modelA)),
+      () => e.data(d => d.struct({
+        foo: d.string('foo')
+      }))
+    ),
+    e.data(d =>
+      d.struct({
+        recordA: d.expr(e.all(e.data(d => d.ref(response.modelA)))),
+        recordB: d.expr(e.all(e.data(d => d.ref(response.modelB))))
+      })
+    )
+  )
+
+  const a = {
+    "recordA": [
+      {
+        "foo": "foo"
+      }
+    ],
+    "recordB": [
+      {
+        "bar": "bar",
+        "foo": "foo"
+      }
+    ]
+  }
+
+  t.deepEqual(createResponse,
+    {
+      recordA: [{ foo: 'foo' }],
+      recordB: [{ foo: 'foo', bar: 'bar' }]
+    }
+  )
+})
 
 // test('remove struct field', async t => {
 //   const response = await t.context.exampleQuery(

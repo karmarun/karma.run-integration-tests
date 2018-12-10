@@ -1,44 +1,79 @@
-// import {buildExpressions, KarmaError, KarmaErrorType, isRef} from '@karma.run/sdk'
+import * as e from '@karma.run/sdk/expression'
+import * as m from '@karma.run/sdk/model'
+import * as d from '@karma.run/sdk/value'
+import * as u from '@karma.run/sdk/utility'
+import test from '../../utils/_before'
 
-// import test from '../_before'
+test('same types', async t => {
+  const metaRef = await t.context.adminSession.getMetaModelRef()
+  const dataContext = e.DataContext
 
-// test('same types', async t => {
-//   const response = await t.context.exampleQuery(
-//     'auto_migration_same_0',
-//     ...buildExpressions(e => [
-//       e.define('modelA', e.util.createModel(m => m.string())),
-//       e.define('modelB', e.util.createModel(m => m.string())),
-//       e.util.createMigration({
-//         from: e.scope('modelA'),
-//         to: e.scope('modelB')
-//       }),
-//       e.data(d =>
-//         d.struct({
-//           modelA: d.expr(e => e.scope('modelA')),
-//           modelB: d.expr(e => e.scope('modelB'))
-//         })
-//       )
-//     ])
-//   )
+  const model = m.string
 
-//   const createResponse = await t.context.exampleQuery(
-//     'auto_migration_same_1',
-//     ...buildExpressions(e => [
-//       e.create(e.data(d => d.ref(response.modelA)), () => e.data(d => d.string('foo'))),
-//       e.data(d =>
-//         d.struct({
-//           recordA: d.expr(e.all(e.data(d => d.ref(response.modelA)))),
-//           recordB: d.expr(e.all(e.data(d => d.ref(response.modelB))))
-//         })
-//       )
-//     ])
-//   )
+  u.createModels({
+    model: model
+  })
 
-//   t.deepEqual(createResponse, {
-//     recordA: ['foo'],
-//     recordB: ['foo']
-//   })
-// })
+  const response = await t.context.exampleQuery('create_1',
+    e.define('modelA',
+      e.create(e.tag('_model'),
+        arg => e.data(model.toValue(metaRef.id).toDataConstructor())
+      )
+    ),
+    e.define('modelB',
+      e.create(e.tag('_model'),
+        arg => e.data(model.toValue(metaRef.id).toDataConstructor())
+      )
+    ),
+    e.create(e.tag('_tag'),
+      arg => e.data(dataContext.struct({
+        tag: dataContext.string('modelA'),
+        model: dataContext.expr(e.scope('modelA'))
+      })
+      )
+    ),
+    e.create(e.tag('_migration'),
+      arg => e.data(
+        dataContext.list([
+          dataContext.struct({
+            expression: dataContext.union('auto',
+              dataContext.struct({})
+            ),
+            source: dataContext.expr(e.scope('modelA')),
+            target: dataContext.expr(e.scope('modelB')),
+          })
+        ])
+      )
+    ),
+    e.data(
+      dataContext.struct({
+        modelA: dataContext.expr(e.scope('modelA')),
+        modelB: dataContext.expr(e.scope('modelB'))
+      })
+    ),
+  )
+
+  const createResponse = await t.context.exampleQuery(
+    'auto_migration_same_1',
+    e.create(
+      e.data(d => d.ref(response.modelA)),
+      () => e.data(d => d.string('foo'))
+    ),
+    e.data(d =>
+      d.struct({
+        recordA: d.expr(e.all(e.data(d => d.ref(response.modelA)))),
+        recordB: d.expr(e.all(e.data(d => d.ref(response.modelB))))
+      })
+    )
+  )
+
+  t.deepEqual(createResponse, {
+    recordA: ['foo'],
+    recordB: ['foo']
+  })
+})
+
+
 
 // test('different types', async t => {
 //   const error: KarmaError = await t.throws(
