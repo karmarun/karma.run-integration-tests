@@ -1,4 +1,4 @@
-import test from './_before'
+import test from '../utils/_before'
 
 import { Remote } from '@karma.run/sdk'
 
@@ -7,8 +7,8 @@ import * as m from '@karma.run/sdk/model'
 import * as d from '@karma.run/sdk/value'
 import * as u from '@karma.run/sdk/utility'
 
-import {isRef} from './utility'
-import { KARMA_ENDPOINT } from '../helpers/_environment'
+import {isRef} from '../utils/_utility'
+import { KARMA_ENDPOINT } from '../utils/_environment'
 
 test.serial('create roles and permissions', async t => {
 

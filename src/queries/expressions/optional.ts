@@ -1,9 +1,9 @@
-import test from '../_before'
+import test from '../../utils/_before'
 
 import * as e from '@karma.run/sdk/expression'
 import * as m from '@karma.run/sdk/model'
 
-import {isRef} from '../utility'
+import {isRef} from '../../utils/_utility'
 
 test.skip('isPresent', async t => {
   // const metaRef = await t.context.adminSession.getMetaModelRef()

@@ -1,7 +1,7 @@
-import test from '../_before'
+import test from '../../utils/_before'
 
 import * as e from '@karma.run/sdk/expression'
-import {isRef} from '../utility'
+import {isRef} from '../../utils/_utility'
 
 test('data', async t => {
   const response = await t.context.exampleQuery(undefined,

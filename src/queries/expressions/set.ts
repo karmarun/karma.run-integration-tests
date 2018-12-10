@@ -1,9 +1,9 @@
-import test from '../_before'
+import test from '../../utils/_before'
 
 import * as e from '@karma.run/sdk/expression'
 import * as d from '@karma.run/sdk/value'
 
-import {isRef} from '../utility'
+import {isRef} from '../../utils/_utility'
 
 test('mapSet', async t => {
   const response = await t.context.exampleQuery('mapSet_0',

@@ -4,7 +4,7 @@ import * as fs from 'fs'
 import {Remote} from '@karma.run/sdk'
 import * as xpr from '@karma.run/sdk/expression'
 
-import { KARMA_ENDPOINT, KARMA_INSTANCE_SECRET } from '../helpers/_environment'
+import { KARMA_ENDPOINT, KARMA_INSTANCE_SECRET } from './_environment'
 
 export interface QueryTestContext {
   client: Remote

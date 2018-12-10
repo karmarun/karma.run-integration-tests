@@ -1,11 +1,11 @@
-import test from '../_before'
+import test from '../../utils/_before'
 
 import * as e from '@karma.run/sdk/expression'
 import * as m from '@karma.run/sdk/model'
 import * as d from '@karma.run/sdk/value'
 import * as u from '@karma.run/sdk/utility'
 
-import {isRef} from '../utility'
+import {isRef} from '../../utils/_utility'
 
 test('allReferrers', async t => {
   const modelA = m.string
