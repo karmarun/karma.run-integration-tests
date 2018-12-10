@@ -1,16 +1,14 @@
-// import { buildExpression as build, KarmaError, KarmaErrorType } from '@karma.run/sdk'
-// import test from './_before'
+import test from '../utils/_before'
+import * as e from '@karma.run/sdk/expression'
 
-// // TODO: Currently crashes server, so we skip.
-// test.skip('zeroStackOverflow', async t => {
-//   const error: KarmaError = await t.throws(async () =>
-//     await t.context.exampleQuery('zero_0', build(e =>
-//       e.create(
-//         e.tag('_model'),
-//         () => e.zero()
-//       )
-//     ))
-//   , KarmaError)
-
-//   t.is(error.type, KarmaErrorType.CompilationError)
-// })
+test('zeroStackOverflow', async t => {
+  const error = await t.throwsAsync(async () => {
+    await t.context.exampleQuery(undefined,
+      e.create(
+        e.tag('_model'),
+        () => e.zero()
+      )
+    )
+  }, Error)
+  t.truthy(error)
+})

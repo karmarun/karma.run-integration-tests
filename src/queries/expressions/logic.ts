@@ -150,7 +150,7 @@ test('assertCase', async t => {
   )
   t.is(response, 'bar')
 
-  const error: any = await t.throws(async () => {
+  const error: any = await t.throwsAsync(async () => {
     await t.context.exampleQuery('assertCase_1',
       e.assertCase('bar', e.data(d.union('foo', d.string('bar')).toDataConstructor()))
     )
@@ -165,7 +165,7 @@ test('assertPresent', async t => {
   )
   t.is(response, 'foo')
 
-  const error: any = await t.throws(async () => {
+  const error: any = await t.throwsAsync(async () => {
     await t.context.exampleQuery('assertPresent_1',
       e.assertPresent(e.tag("notPresent"))
     )
@@ -182,7 +182,7 @@ test('assertModelRef', async t => {
   t.is(typeof response.tag, 'string')
   t.true(isRef(response.model))
 
-  const error: any = await t.throws(async () => {
+  const error: any = await t.throwsAsync(async () => {
     await t.context.exampleQuery('assertModelRef_1',
       e.assertModelRef(e.tag('_tag'), e.first(e.all(e.tag('_user'))))
     )

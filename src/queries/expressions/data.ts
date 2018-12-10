@@ -191,7 +191,7 @@ test.skip('null', async t => {
 
 test('unique', async t => {
   const dc = e.DataContext
-  const error = await t.throws(async () => {
+  const error = await t.throwsAsync(async () => {
     await t.context.exampleQuery('createMultiple_0',
       e.define('roleRef',
         e.refTo(e.first(e.all(e.tag("_role"))))
