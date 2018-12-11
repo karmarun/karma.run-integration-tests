@@ -19,7 +19,7 @@ test.serial('valid', async t => {
 })
 
 test.serial('invalid', async t => {
-  const error: Error = await t.throwsAsync(async () => {
+  const error: Error = await t.throws(async () => {
     return await t.context.client.login('admin', 'invalidpassword')
   }, Error)
   t.truthy(error)

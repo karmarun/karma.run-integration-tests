@@ -156,7 +156,7 @@ test.serial('create multiple record', async t => {
   t.true(isRef(response.b))
 })
 
-test.serial('simple self reference', async t => {
+test.serial('self reference', async t => {
   const modelA = m.struct({
     title: m.string,
     node: m.dynamicRef('modelA')

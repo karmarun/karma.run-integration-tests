@@ -115,7 +115,7 @@ test('update', async t => {
 test('delete', async t => {
   const dataContext = e.DataContext
 
-  const error = await t.throwsAsync(async () => {
+  const error = await t.throws(async () => {
     await t.context.exampleQuery(undefined,
       e.define('deleteTestTag',
         e.create(
