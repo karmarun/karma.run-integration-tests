@@ -3,6 +3,7 @@ import test from '../utils/_before'
 import * as e from '@karma.run/sdk/expression'
 import * as m from '@karma.run/sdk/model'
 import * as d from '@karma.run/sdk/value'
+import * as utl from '@karma.run/sdk/utility'
 
 import {isRef} from '../utils/_utility'
 
@@ -153,6 +154,16 @@ test.serial('create multiple record', async t => {
 
   t.true(isRef(response.a))
   t.true(isRef(response.b))
+})
+
+test.serial('simple self reference', async t => {
+  const modelA = m.struct({
+    title: m.string,
+    node: m.dynamicRef('modelA')
+  })
+
+  const response = await t.context.exampleQuery(undefined, utl.createModels({modelA}))
+  t.true(isRef(response.modelA))
 })
 
 //
