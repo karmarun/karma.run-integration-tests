@@ -1,6 +1,9 @@
 import baseTest, { TestInterface } from 'ava'
 import { Remote, UserSession, DatabaseAdminSession } from '@karma.run/sdk'
 import { KARMA_ENDPOINT, KARMA_INSTANCE_SECRET } from '../utils/_environment'
+import { createModel } from '@karma.run/sdk/utility';
+import * as mdl from '@karma.run/sdk/model'
+import * as xpr from '@karma.run/sdk/expression'
 
 interface AdminTestContext {
   client: Remote
@@ -16,18 +19,22 @@ test.before(async t => {
   t.context.adminSession = session
 })
 
-// TODO: Reenable once "gzip" problem is solved
-// test.skip('exportDB/importDB', async t => {
-//   const response = await t.context.adminSession.exportDB()
+test.serial('exportDB/importDB', async t => {
+  const queryResponse = await t.context.adminSession.do(createModel(mdl.string))
+  const ref = queryResponse.this
 
-//   // Will be ArrayBuffer in browser
-//   t.true(response instanceof Buffer)
+  const response = await t.context.adminSession.export()
 
-//   await t.notThrows(async () => {
-//     const importResponse = await t.context.adminSession.importDB(response)
-//     console.log(importResponse)
-//   })
-// })
+  // Will be ArrayBuffer in browser
+  t.true(response instanceof Buffer || response instanceof ArrayBuffer)
+
+  await t.notThrows(async () => {
+    const newSession = await t.context.adminSession.import(response)
+    const queryResponse = await newSession.do(xpr.get(xpr.data(d => d.ref(ref))))
+
+    t.deepEqual(queryResponse, {string: {}})
+  })
+})
 
 test.serial('reset', async t => {
   await t.notThrows(async () => {
