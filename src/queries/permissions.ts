@@ -90,7 +90,7 @@ async function createTestModel(t: any) {
 
   const model = m.struct({
     text: m.string,
-    owner: m.tagRef(u.Tag.Role),
+    owner: m.tagRef(u.BuiltInTag.Role),
   })
 
   u.createModels({

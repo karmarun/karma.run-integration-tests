@@ -9,8 +9,8 @@ import { KARMA_ENDPOINT, KARMA_INSTANCE_SECRET } from './_environment'
 export interface QueryTestContext {
   client: Remote
   adminSession: any
+  query: (...queries: xpr.Expression[]) => Promise<any>
   exampleQuery: (name?: string, ...queries: xpr.Expression[]) => Promise<any>
-  // query: (...queries: Expression[]) => Promise<any>
 }
 
 export const test = baseTest as TestInterface<QueryTestContext>
@@ -30,11 +30,11 @@ async function writeFile(filePath: string, json: any) {
 test.before(async t => {
   const client = new Remote(KARMA_ENDPOINT)
   t.context.client = client
-  let adminSession = await client.adminLogin('admin', KARMA_INSTANCE_SECRET)
+  let adminSession = await client.adminLogin(KARMA_INSTANCE_SECRET)
   await adminSession.resetDatabase()
-  adminSession = await client.adminLogin('admin', KARMA_INSTANCE_SECRET)
-  t.context.adminSession = adminSession
 
+  t.context.adminSession = adminSession
+  t.context.query = async (...queries) => await adminSession.do(...queries)
   t.context.exampleQuery = async (name, ...queries) => {
     const result = await adminSession.do(...queries)
 
