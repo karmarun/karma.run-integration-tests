@@ -293,10 +293,10 @@
   dependencies:
     arrify "^1.0.1"
 
-"@karma.run/sdk@^0.6.0-beta.1":
-  version "0.6.0-beta.1"
-  resolved "https://registry.yarnpkg.com/@karma.run/sdk/-/sdk-0.6.0-beta.1.tgz#aff3583121be45050cba10d6d2e8b67ba4791b1d"
-  integrity sha512-2eUGQ/IqpAbK9tBHVIRCgesfkIa4y9PMaygwtOqAdrDRXJPkP0rcA7dJ5RSCm9vyXDviZDSfh8XBxcwFnggFMA==
+"@karma.run/sdk@^0.6.0-beta.2":
+  version "0.6.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@karma.run/sdk/-/sdk-0.6.0-beta.2.tgz#7dd7fab755ee78859d47fa2b69913e47f659ddc3"
+  integrity sha512-Z9sKcXE35aBNcLOCvSmeUjOMNSL0PCp9bgpgyq4elH6Hmni6CKO2K4y0SkeWFXyaIiuXH9Wdn4WWMWYgPFVb3w==
   dependencies:
     axios "^0.18.0"
 
