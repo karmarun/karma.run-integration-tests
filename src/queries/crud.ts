@@ -6,6 +6,7 @@ import * as d from '@karma.run/sdk/value'
 import * as utl from '@karma.run/sdk/utility'
 
 import {isRef} from '../utils/_utility'
+import { string } from '@karma.run/sdk/expression';
 
 test.serial('get', async t => {
   const response = await t.context.exampleQuery('get_0',
@@ -164,6 +165,50 @@ test.serial('self reference', async t => {
 
   const response = await t.context.exampleQuery(undefined, utl.createModels({modelA}))
   t.true(isRef(response.modelA))
+})
+
+test.serial('recursive model', async t => {
+  const model = m.struct({
+    title: m.string,
+    items: m.list(
+      m.recursive({
+        foo: (rec) => m.struct({
+          foo: m.list(rec.foo),
+          bar: m.list(rec.bar)
+        }),
+        bar: (rec) => m.struct({
+          label: m.string,
+          recurse: m.optional(rec.bar)
+        })
+      }, 'foo')
+    )
+  })
+
+  const response = await t.context.query(utl.createModel(model))
+  t.true(isRef(response))
+
+  const recordResponse = await t.context.query(
+    e.create(
+      e.data(d => d.ref(response )),
+      () => e.data(model.decode({
+        title: '123',
+        items: [
+          {
+            foo: [
+              {foo: [], bar: []}
+            ],
+            bar: [
+              {label: '123', recurse: {
+                label: '321', recurse: null
+              }}
+            ]
+          }
+        ]
+      }).toDataConstructor())
+    )
+  )
+
+  t.true(isRef(recordResponse))
 })
 
 //
