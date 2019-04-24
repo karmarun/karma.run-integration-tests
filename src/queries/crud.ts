@@ -177,7 +177,7 @@ test.serial('recursive model', async t => {
           bar: m.list(rec.bar)
         }),
         bar: (rec) => m.struct({
-          label: m.string,
+          label: m.enum_(['123', '321']),
           recurse: m.optional(rec.bar)
         })
       }, 'foo')
