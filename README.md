@@ -3,8 +3,6 @@ Karma.run Integration Tests
 
 ## REQUIREMENTS
 * Docker (CE) app is running
-* installed [gcloud](https://cloud.google.com/sdk/install)
-* configured [gcloud as a docker credential helper](https://cloud.google.com/container-registry/docs/advanced-authentication#gcloud_as_a_docker_credential_helper)
 
 ## SETUP DEVELOPMENT ENVIRONMENT
 * `make setup-env` create .env file, npm install
