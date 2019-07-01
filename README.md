@@ -16,7 +16,7 @@ Karma.run Integration Tests
 ## Test once
 * `make test` create .env file, npm install
 
-### sh
+## sh
 * `make sh` get a sh and run some commands like:
 
 #### Test specific file
