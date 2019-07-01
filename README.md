@@ -1,38 +1,28 @@
 Karma.run Integration Tests
 ===========================
 
-Prerequisites
--------------
-- Node.js >= v9.11.0
-- Yarn >= v1.6.0
+## REQUIREMENTS
+* Docker (CE) app is running
+* installed [gcloud](https://cloud.google.com/sdk/install)
+* configured [gcloud as a docker credential helper](https://cloud.google.com/container-registry/docs/advanced-authentication#gcloud_as_a_docker_credential_helper)
 
-Get Started
------------
-```
-cp .env.example .env
-```
-// Fill in required env variables in .env file
-```
-yarn install
-yarn watch
-```
+## SETUP DEVELOPMENT ENVIRONMENT
+* `make setup-env` create .env file, npm install
+* `make dev` start docker-compose
 
-Test specific file
------------
-```
-yarn test
-```
+## Watch
+* `make watch` create .env file, npm install
 
-Test specific file
------------
-```
-yarn watch:build
-`yarn ava dist/sdk/expressions/`<file>.js --serial
-```
+## Test once
+* `make test` create .env file, npm install
 
-Test specific test in file
------------
-```
-yarn watch:build
-yarn ava dist/queries/expressions/<file>.js --serial -m <test>
-```
+### sh
+* `make sh` get a sh and run some commands like:
+
+#### Test specific file
+`yarn ava dist/sdk/expressions/<file>.js --serial`
+eg. `yarn ava dist/queries/expressions/crud.js --serial`
+
+#### Test specific test in file
+`yarn ava dist/queries/expressions/<file>.js --serial -m <test>`
+eg. `yarn ava dist/queries/expressions/crud.js --serial -m all`

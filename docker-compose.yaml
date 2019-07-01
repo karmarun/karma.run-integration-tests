@@ -1,0 +1,43 @@
+version: '3'
+services:
+
+  nodejs:
+    container_name: nodejs
+    image: node:12
+    depends_on:
+      - karma
+      - karma-migration
+    volumes:
+      - .:/usr/src/service:delegated
+    working_dir: /usr/src/service
+    command: npm run watch:build
+    env_file:
+      - .env
+
+  karma:
+    container_name: karma
+    image: karmarun/karma.run
+    env_file:
+      - .env
+    environment:
+      - DATA_FILE=/dbs/db-karma-run.data
+    ports:
+      - "8004:80"
+    volumes:
+      - integration-tests-karma-db-data:/dbs
+
+  karma-migration:
+    container_name: karma-migration
+    image: karmarun/karma.run
+    env_file:
+      - .env
+    environment:
+      - DATA_FILE=/dbs/db-karma-run.data
+    ports:
+      - "8014:80"
+    volumes:
+      - integration-tests-karma-db-data-migration:/dbs
+
+volumes:
+  integration-tests-karma-db-data:
+  integration-tests-karma-db-data-migration:

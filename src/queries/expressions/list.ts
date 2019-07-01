@@ -1,7 +1,11 @@
 import test from '../../utils/_before'
 
 import * as e from '@karma.run/sdk/expression'
+import * as m from '@karma.run/sdk/model'
 import * as d from '@karma.run/sdk/value'
+import * as utl from '@karma.run/sdk/utility'
+
+import { isRef } from '../../utils/_utility'
 
 test('concatLists', async t => {
   const response = await t.context.exampleQuery('concatLists_0',
@@ -103,7 +107,7 @@ test('memSortFunction', async t => {
       d.list([
         d.int8(2), d.int8(8), d.int8(4)
       ]).toDataConstructor()
-      ), (valueA, valueB) =>
+    ), (valueA, valueB) =>
         e.gtInt8(valueA, valueB)
     )
   )
@@ -149,7 +153,7 @@ test('leftFoldList', async t => {
   const response = await t.context.exampleQuery('leftFoldList_0',
     e.leftFoldList(
       e.data(d.list([d.string('bar'), d.string('baz')]).toDataConstructor()),
-      e.data(d.struct({value: d.string('foo')}).toDataConstructor()),
+      e.data(d.struct({ value: d.string('foo') }).toDataConstructor()),
       (aggregator, value) =>
         e.setField(
           'value',
@@ -165,7 +169,7 @@ test('leftFoldList', async t => {
     )
   )
 
-  t.deepEqual(response, {value: 'foo bar baz'})
+  t.deepEqual(response, { value: 'foo bar baz' })
 })
 
 test('rightFoldList', async t => {
@@ -174,7 +178,7 @@ test('rightFoldList', async t => {
   const response = await t.context.exampleQuery('rightFoldList_0',
     e.rightFoldList(
       e.data(d.list([d.string('bar'), d.string('baz')]).toDataConstructor()),
-      e.data(d.struct({value: d.string('foo')}).toDataConstructor()),
+      e.data(d.struct({ value: d.string('foo') }).toDataConstructor()),
       (aggregator, value) =>
         e.setField(
           'value',
@@ -190,5 +194,52 @@ test('rightFoldList', async t => {
     )
   )
 
-  t.deepEqual(response, {value: 'foo baz bar'})
+  t.deepEqual(response, { value: 'foo baz bar' })
+})
+
+
+
+
+test('createEmpty', async t => {
+
+  const model = m.struct({
+    myList: m.list(m.struct({
+      a: m.string
+    })),
+  })
+
+  const modelRef = await t.context.exampleQuery(undefined,
+    utl.createModelsAndTags({
+      model
+    })
+  )
+  t.true(modelRef && isRef(modelRef.model))
+
+  const createMultiple = e.createMultiple(
+    e.tag('model'),
+    {
+      exampleA: refs => {
+        return e.data(d.struct({
+          myList: d.list([d.struct({
+            a: d.string('a')
+          })]),
+        }).toDataConstructor())
+      },
+      exampleB: refs => {
+        return e.data(d.struct({
+          myList: d.list([]),
+        }).toDataConstructor())
+      },
+      exampleC: refs => {
+        return e.data(model.decode(
+          {
+            myList: [],
+          }
+        ).toDataConstructor())
+      },
+    }
+  )
+
+  const result = await t.context.exampleQuery(undefined, createMultiple)
+  t.true(result && isRef(result.exampleA))
 })
