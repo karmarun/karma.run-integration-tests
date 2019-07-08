@@ -9,10 +9,10 @@ Karma.run Integration Tests
 * `make dev` start docker-compose
 
 ## Watch
-* `make watch` create .env file, npm install
+* `make watch` test continuously
 
 ## Test once
-* `make test` create .env file, npm install
+* `make test` test once
 
 ## sh
 * `make sh` get a sh and run some commands like:
